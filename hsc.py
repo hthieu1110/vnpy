@@ -8,10 +8,6 @@ from vnpy_ctabacktester import CtaBacktesterApp
 from vnpy.gateway.hsc import HSC_GATEWAY_NAME, HscGateway
 import os
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 def main():
     """Start VeighNa Trader"""

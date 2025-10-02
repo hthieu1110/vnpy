@@ -1,0 +1,5 @@
+{
+    "centri_url": "wss://market-streaming-krx-internal.hsc.com.vn/connection/websocket",
+    "tickers_ref_url": "https://api.tickers.vn",
+    "api_token": "1234567890"
+}
