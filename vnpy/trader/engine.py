@@ -171,7 +171,7 @@ class MainEngine:
         """
         gateway: BaseGateway | None = self.gateways.get(gateway_name, None)
         if not gateway:
-            self.write_log(_("找不到底层接口：{}").format(gateway_name))
+            self.write_log(_("Gateway not found: {}").format(gateway_name))
         return gateway
 
     def get_engine(self, engine_name: str) -> BaseEngine | None:
@@ -180,7 +180,7 @@ class MainEngine:
         """
         engine: BaseEngine | None = self.engines.get(engine_name, None)
         if not engine:
-            self.write_log(_("找不到引擎：{}").format(engine_name))
+            self.write_log(_("Engine not found: {}").format(engine_name))
         return engine
 
     def get_default_setting(self, gateway_name: str) -> dict[str, str | bool | int | float] | None:
@@ -600,7 +600,7 @@ class EmailEngine(BaseEngine):
                         smtp.send_message(msg)
                         smtp.close()
                 except Exception:
-                    log_msg: str = _("邮件发送失败: {}").format(traceback.format_exc())
+                    log_msg: str = _("Sending email failed: {}").format(traceback.format_exc())
                     self.main_engine.write_log(log_msg, "EMAIL")
             except Empty:
                 pass

@@ -43,6 +43,7 @@ dependencies = [
     "pydantic>=2.11.9",
     "centrifuge-python>=0.4.1",
     "vnpy-sqlite>=1.1.3",
+    "vnpy-paperaccount>=1.0.6",
 ]
 keywords = ["quant", "quantitative", "investment", "trading", "algotrading"]
 
