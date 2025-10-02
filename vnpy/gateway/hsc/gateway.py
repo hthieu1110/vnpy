@@ -1,6 +1,8 @@
+import asyncio
 import threading
 import time
 from typing import Dict
+from datetime import datetime, UTC
 
 from vnpy.trader.constant import (
     Exchange,
@@ -17,76 +19,87 @@ from vnpy.trader.event import (
     EVENT_POSITION,
     EVENT_LOG,
 )
-from vnpy.trader.object import AccountData, OrderData, PositionData, TickData, TradeData
-
-from .vnfuture_socket import VNFutureSocketClient
-from .vnfuture_rest import VNFutureRestClient
-from .constants import ORDER_TYPE_MAP, STATUS_MAP
+from vnpy.trader.object import (
+    AccountData,
+    OrderData,
+    PositionData,
+    SubscribeRequest,
+    TickData,
+    TradeData,
+)
 from vnpy.trader.gateway import BaseGateway
+from vnpy.trader.logger import logger
+
+from .settings import VNFutureSettings
+from .socket_client import HscSocketClient
+from .rest_client import HscRestClient
+from .constants import ORDER_TYPE_MAP, STATUS_MAP
+from .utils import gateway_log, handle_future
 
 
-class VNFutureGateway(BaseGateway):
+class HscGateway(BaseGateway):
     """
     Implement VNFuture gateway.
     """
 
     def __init__(self, event_engine, gateway_name="VNFuture"):
-        self.event_engine = event_engine
-        self.gateway_name = gateway_name
+        super().__init__(event_engine, gateway_name)
 
-        self.market_client: VNFutureSocketClient = None
-        self.rest_client: VNFutureRestClient = None
+        self.socket_client: HscSocketClient = None
+        self.rest_client: HscRestClient = None
+
+        # create dedicated thread for asyncio
+        self.loop = asyncio.new_event_loop()
+        # self.loop.set_debug(True)
+
+        self.thread = threading.Thread(target=self.loop.run_forever, daemon=True)
+        self.thread.start()
 
         # local map: local_order_id -> remote_order_id
         self._local_to_remote: Dict[str, str] = {}
         self._remote_to_local: Dict[str, str] = {}
 
-    def connect(self, settings: dict):
-        """
-        settings example:
-        {
-            "market_ws": "wss://md.internal:443/ws",
-            "trade_rest": "https://api.internal/trade",
-            "api_key": "...",
-            "secret": "...",
-            "account": "ACC123",
-        }
-        """
-        # create clients
-        self.rest_client = VNFutureRestClient(
-            settings["trade_rest"], settings["api_key"], settings.get("secret")
+    @gateway_log
+    def connect(self, settings: VNFutureSettings):
+        self.rest_client = HscRestClient(settings.get("api_token", ""))
+        self.socket_client = HscSocketClient(
+            centri_endpoint=settings["centri_endpoint"],
+            on_tick=self._on_tick,
         )
-        self.market_client = VNFutureSocketClient(
-            settings["market_ws"], on_tick=self._on_tick
-        )
-        # start market client in background loop
-        self.market_client.start()
+
+        fut = asyncio.run_coroutine_threadsafe(self.socket_client.start(), self.loop)
+        self._handle_future(fut)
 
         # optionally start a thread to poll order/account updates (if REST push not available)
-        self._start_polling()
+        # self._start_polling()
 
-    def _start_polling(self):
-        t = threading.Thread(target=self._poll_loop, daemon=True)
-        t.start()
+    @gateway_log
+    def subscribe(self, sub_req: SubscribeRequest):
+        symbol = sub_req.vt_symbol.split(".")[0]
 
-    def _poll_loop(self):
-        while True:
-            try:
-                orders = self.rest_client.get_open_orders()
-                for od in orders:
-                    self._handle_remote_order(od)
-                # accounts/positions
-                acct = self.rest_client.get_account()
-                self._emit_account(acct)
-                pos = self.rest_client.get_positions()
-                self._emit_positions(pos)
-            except Exception as e:
-                self._write_log(f"Polling error: {e}")
-            time.sleep(1)  # adjust
+        fut = asyncio.run_coroutine_threadsafe(
+            self.socket_client.subscribe(symbol), self.loop
+        )
+        self._handle_future(fut)
 
-    def subscribe(self, subscribe_req):
-        # subscribe via market client
-        self.market_client.subscribe(subscribe_req.vt_symbol)
+    # def _start_polling(self):
+    #     t = threading.Thread(target=self._poll_loop, daemon=True)
+    #     t.start()
+
+    # def _poll_loop(self):
+    #     while True:
+    #         try:
+    #             orders = self.rest_client.get_open_orders()
+    #             for od in orders:
+    #                 self._handle_remote_order(od)
+    #             # accounts/positions
+    #             acct = self.rest_client.get_account()
+    #             self._emit_account(acct)
+    #             pos = self.rest_client.get_positions()
+    #             self._emit_positions(pos)
+    #         except Exception as e:
+    #             self._write_log(f"Polling error: {e}")
+    #         time.sleep(1)  # adjust
 
     def send_order(self, order_request):
         """
@@ -145,16 +158,56 @@ class VNFutureGateway(BaseGateway):
         """
         raw_tick is provider-specific; convert to vn.py TickData
         """
+        # hsc last data
+        # { 'symbol': 'HPG', 'lp': 1854, 'vol': 221621, 'val': 41445860400000, 'avg': 1870.12, 'lv': 2, 'bv1': 6, 'bp1': 1854, 'av1': 1, 'ap1': 1854.3 }
+
+        utc_now = datetime.now(UTC)
+
         tick = TickData(
-            symbol=raw_tick["symbol"],
-            exchange=Exchange.SSE,
-            datetime=raw_tick["datetime"],
-            name=raw_tick.get("name", ""),
-            volume=raw_tick.get("volume", 0),
-            last_price=raw_tick["last_price"],
-            limit_up=raw_tick.get("limit_up"),
-            limit_down=raw_tick.get("limit_down"),
             gateway_name=self.gateway_name,
+            symbol=raw_tick["symbol"],
+            exchange=Exchange.VNEX,
+            datetime=utc_now,
+            #
+            name="",
+            volume=raw_tick.get("vol", 0),
+            turnover=0,
+            open_interest=0,
+            last_price=raw_tick.get("lp", 0),
+            last_volume=raw_tick.get("lv", 0),
+            limit_up=0,
+            limit_down=0,
+            #
+            open_price=0,
+            high_price=0,
+            low_price=0,
+            pre_close=0,
+            #
+            bid_price_1=raw_tick.get("bp1", 0),
+            bid_price_2=raw_tick.get("bp2", 0),
+            bid_price_3=raw_tick.get("bp3", 0),
+            bid_price_4=raw_tick.get("bp4", 0),
+            bid_price_5=raw_tick.get("bp5", 0),
+            #
+            ask_price_1=raw_tick.get("ap1", 0),
+            ask_price_2=raw_tick.get("ap2", 0),
+            ask_price_3=raw_tick.get("ap3", 0),
+            ask_price_4=raw_tick.get("ap4", 0),
+            ask_price_5=raw_tick.get("ap5", 0),
+            #
+            bid_volume_1=raw_tick.get("bv1", 0),
+            bid_volume_2=raw_tick.get("bv2", 0),
+            bid_volume_3=raw_tick.get("bv3", 0),
+            bid_volume_4=raw_tick.get("bv4", 0),
+            bid_volume_5=raw_tick.get("bv5", 0),
+            #
+            ask_volume_1=raw_tick.get("av1", 0),
+            ask_volume_2=raw_tick.get("av2", 0),
+            ask_volume_3=raw_tick.get("av3", 0),
+            ask_volume_4=raw_tick.get("av4", 0),
+            ask_volume_5=raw_tick.get("av5", 0),
+            #
+            localtime=utc_now,
         )
         self.event_engine.put(Event(EVENT_TICK, tick))
 
@@ -228,7 +281,14 @@ class VNFutureGateway(BaseGateway):
         self.event_engine.put(Event(EVENT_LOG, msg))
 
     def close(self):
-        if self.market_client:
-            self.market_client.stop()
+        if self.socket_client:
+            self.socket_client.stop()
         if self.rest_client:
             self.rest_client.close()
+
+    def _handle_future(self, fut: asyncio.Future):
+        try:
+            fut.result()
+        except Exception as e:
+            logger.error(f"Async task failed: {e}")
+            # traceback.print_exc()

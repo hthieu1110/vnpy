@@ -2,7 +2,7 @@
 Global setting of the trading platform.
 """
 
-from logging import CRITICAL
+from logging import CRITICAL, INFO
 from tzlocal import get_localzone_name
 
 from .utility import load_json
@@ -12,7 +12,7 @@ SETTINGS: dict = {
     "font.family": "Arial",
     "font.size": 12,
     "log.active": True,
-    "log.level": CRITICAL,
+    "log.level": INFO,
     "log.console": True,
     "log.file": True,
     "email.server": "smtp.qq.com",

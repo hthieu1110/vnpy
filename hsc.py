@@ -5,7 +5,12 @@ from vnpy.trader.ui import MainWindow, create_qapp
 # from vnpy_ctp import CtpGateway
 from vnpy_ctastrategy import CtaStrategyApp
 from vnpy_ctabacktester import CtaBacktesterApp
-from vnpy.gateway.vnfuture import VNFutureGateway
+from vnpy.gateway.hsc import HSC_GATEWAY, HscGateway
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def main():
@@ -15,7 +20,13 @@ def main():
     event_engine = EventEngine()
     main_engine = MainEngine(event_engine)
 
-    main_engine.add_gateway(VNFutureGateway)
+    main_engine.add_gateway(HscGateway, HSC_GATEWAY)
+    setting = {
+        "api_token": os.getenv("API_TOKEN"),
+        "centri_endpoint": os.getenv("CENTRI_ENDPOINT"),
+    }
+    main_engine.connect(setting, HSC_GATEWAY)
+
     main_engine.add_app(CtaStrategyApp)
     main_engine.add_app(CtaBacktesterApp)
 

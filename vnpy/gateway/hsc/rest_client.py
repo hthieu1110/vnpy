@@ -2,13 +2,12 @@
 import requests
 
 
-class VNFutureRestClient:
-    def __init__(self, base_url, api_key, secret=None):
-        self.base_url = base_url
-        self.api_key = api_key
-        self.secret = secret
+class HscRestClient:
+    def __init__(self, api_token: str):
+        self.base_url = "https://api.internal"
+        self.api_key = api_token
         self._session = requests.Session()
-        self._session.headers.update({"Authorization": f"Bearer {api_key}"})
+        self._session.headers.update({"Authorization": f"Bearer {api_token}"})
 
     def send_order(self, payload):
         # payload: symbol, price, volume, side, type
