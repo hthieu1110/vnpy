@@ -1217,6 +1217,7 @@ class AboutDialog(QtWidgets.QDialog):
             By Traders, For Traders.
 
             Created by VeighNa Technology
+            Adapted by Yo HA for Vietnamese Market
 
 
             License：MIT
