@@ -161,6 +161,7 @@ class Currency(Enum):
     HKD = "HKD"
     CNY = "CNY"
     CAD = "CAD"
+    VND = "VND"
 
 
 class Interval(Enum):
