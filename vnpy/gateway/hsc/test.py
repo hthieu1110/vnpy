@@ -1,4 +1,5 @@
 import asyncio
+import json
 import time
 from vnpy.event import EventEngine
 from vnpy.trader.engine import MainEngine
@@ -13,10 +14,12 @@ from vnpy.trader.object import (
 from vnpy.trader.constant import Exchange
 
 from vnpy.gateway.hsc.gateway import HscGateway
-from vnpy.gateway.hsc.settings import VNFutureSettings
+from vnpy.gateway.hsc.settings import HscGatewaySettings
 
 import os
 from dotenv import load_dotenv
+
+from vnpy.trader.utility import load_json
 
 load_dotenv()
 
@@ -51,11 +54,14 @@ def run():
     event_engine.register(EVENT_TRADE, print_trade)
 
     # 3. Connect gateway (replace with your API keys)
-    setting: VNFutureSettings = {
-        "api_token": os.getenv("API_TOKEN"),
-        "centri_endpoint": os.getenv("CENTRI_ENDPOINT"),
-    }
-    main_engine.connect(setting, GATEWAY_NAME)
+
+    workdir = os.getcwd()
+    filepath = os.path.join(workdir, ".vntrader/connect_hscgateway.json")
+
+    with open(filepath, encoding="UTF-8") as f:
+        settings: dict = json.load(f)
+
+    main_engine.connect(settings, GATEWAY_NAME)
 
     # 4. Subscribe to market data
     sub = SubscribeRequest(symbol=SYMBOL, exchange=Exchange.VNEX)

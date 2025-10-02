@@ -12,7 +12,7 @@ from math import floor, ceil
 
 import numpy as np
 import talib
-from zoneinfo import ZoneInfo, available_timezones      # noqa
+from zoneinfo import ZoneInfo, available_timezones  # noqa
 
 from .object import BarData, TickData
 from .constant import Exchange, Interval
@@ -92,7 +92,6 @@ def load_json(filename: str) -> dict:
     Load data from json file in temp path.
     """
     filepath: Path = get_file_path(filename)
-
     if filepath.exists():
         with open(filepath, encoding="UTF-8") as f:
             data: dict = json.load(f)
@@ -108,12 +107,7 @@ def save_json(filename: str, data: dict) -> None:
     """
     filepath: Path = get_file_path(filename)
     with open(filepath, mode="w+", encoding="UTF-8") as f:
-        json.dump(
-            data,
-            f,
-            indent=4,
-            ensure_ascii=False
-        )
+        json.dump(data, f, indent=4, ensure_ascii=False)
 
 
 def round_to(value: float, target: float) -> float:
@@ -178,7 +172,7 @@ class BarGenerator:
         window: int = 0,
         on_window_bar: Callable | None = None,
         interval: Interval = Interval.MINUTE,
-        daily_end: time | None = None
+        daily_end: time | None = None,
     ) -> None:
         """Constructor"""
         self.bar: BarData | None = None
@@ -212,13 +206,10 @@ class BarGenerator:
 
         if not self.bar:
             new_minute = True
-        elif (
-            (self.bar.datetime.minute != tick.datetime.minute)
-            or (self.bar.datetime.hour != tick.datetime.hour)
+        elif (self.bar.datetime.minute != tick.datetime.minute) or (
+            self.bar.datetime.hour != tick.datetime.hour
         ):
-            self.bar.datetime = self.bar.datetime.replace(
-                second=0, microsecond=0
-            )
+            self.bar.datetime = self.bar.datetime.replace(second=0, microsecond=0)
             self.on_bar(self.bar)
 
             new_minute = True
@@ -234,7 +225,7 @@ class BarGenerator:
                 high_price=tick.last_price,
                 low_price=tick.last_price,
                 close_price=tick.last_price,
-                open_interest=tick.open_interest
+                open_interest=tick.open_interest,
             )
         elif self.bar:
             self.bar.high_price = max(self.bar.high_price, tick.last_price)
@@ -281,18 +272,12 @@ class BarGenerator:
                 gateway_name=bar.gateway_name,
                 open_price=bar.open_price,
                 high_price=bar.high_price,
-                low_price=bar.low_price
+                low_price=bar.low_price,
             )
         # Otherwise, update high/low price into window bar
         else:
-            self.window_bar.high_price = max(
-                self.window_bar.high_price,
-                bar.high_price
-            )
-            self.window_bar.low_price = min(
-                self.window_bar.low_price,
-                bar.low_price
-            )
+            self.window_bar.high_price = max(self.window_bar.high_price, bar.high_price)
+            self.window_bar.low_price = min(self.window_bar.low_price, bar.low_price)
 
         # Update close price/volume/turnover into window bar
         self.window_bar.close_price = bar.close_price
@@ -323,7 +308,7 @@ class BarGenerator:
                 close_price=bar.close_price,
                 volume=bar.volume,
                 turnover=bar.turnover,
-                open_interest=bar.open_interest
+                open_interest=bar.open_interest,
             )
             return
 
@@ -331,14 +316,8 @@ class BarGenerator:
 
         # If minute is 59, update minute bar into window bar and push
         if bar.datetime.minute == 59:
-            self.hour_bar.high_price = max(
-                self.hour_bar.high_price,
-                bar.high_price
-            )
-            self.hour_bar.low_price = min(
-                self.hour_bar.low_price,
-                bar.low_price
-            )
+            self.hour_bar.high_price = max(self.hour_bar.high_price, bar.high_price)
+            self.hour_bar.low_price = min(self.hour_bar.low_price, bar.low_price)
 
             self.hour_bar.close_price = bar.close_price
             self.hour_bar.volume += bar.volume
@@ -364,18 +343,12 @@ class BarGenerator:
                 close_price=bar.close_price,
                 volume=bar.volume,
                 turnover=bar.turnover,
-                open_interest=bar.open_interest
+                open_interest=bar.open_interest,
             )
         # Otherwise only update minute bar
         else:
-            self.hour_bar.high_price = max(
-                self.hour_bar.high_price,
-                bar.high_price
-            )
-            self.hour_bar.low_price = min(
-                self.hour_bar.low_price,
-                bar.low_price
-            )
+            self.hour_bar.high_price = max(self.hour_bar.high_price, bar.high_price)
+            self.hour_bar.low_price = min(self.hour_bar.low_price, bar.low_price)
 
             self.hour_bar.close_price = bar.close_price
             self.hour_bar.volume += bar.volume
@@ -400,16 +373,14 @@ class BarGenerator:
                     gateway_name=bar.gateway_name,
                     open_price=bar.open_price,
                     high_price=bar.high_price,
-                    low_price=bar.low_price
+                    low_price=bar.low_price,
                 )
             else:
                 self.window_bar.high_price = max(
-                    self.window_bar.high_price,
-                    bar.high_price
+                    self.window_bar.high_price, bar.high_price
                 )
                 self.window_bar.low_price = min(
-                    self.window_bar.low_price,
-                    bar.low_price
+                    self.window_bar.low_price, bar.low_price
                 )
 
             self.window_bar.close_price = bar.close_price
@@ -437,18 +408,12 @@ class BarGenerator:
                 gateway_name=bar.gateway_name,
                 open_price=bar.open_price,
                 high_price=bar.high_price,
-                low_price=bar.low_price
+                low_price=bar.low_price,
             )
         # Otherwise, update high/low price into daily bar
         else:
-            self.daily_bar.high_price = max(
-                self.daily_bar.high_price,
-                bar.high_price
-            )
-            self.daily_bar.low_price = min(
-                self.daily_bar.low_price,
-                bar.low_price
-            )
+            self.daily_bar.high_price = max(self.daily_bar.high_price, bar.high_price)
+            self.daily_bar.low_price = min(self.daily_bar.low_price, bar.low_price)
 
         # Update close price/volume/turnover into daily bar
         self.daily_bar.close_price = bar.close_price
@@ -459,10 +424,7 @@ class BarGenerator:
         # Check if daily bar completed
         if bar.datetime.time() == self.daily_end:
             self.daily_bar.datetime = bar.datetime.replace(
-                hour=0,
-                minute=0,
-                second=0,
-                microsecond=0
+                hour=0, minute=0, second=0, microsecond=0
             )
 
             if self.on_window_bar:
@@ -623,16 +585,12 @@ class ArrayManager:
         return result_value
 
     def apo(
-        self,
-        fast_period: int,
-        slow_period: int,
-        matype: int = 0,
-        array: bool = False
+        self, fast_period: int, slow_period: int, matype: int = 0, array: bool = False
     ) -> float | np.ndarray:
         """
         APO.
         """
-        result_array: np.ndarray = talib.APO(self.close, fast_period, slow_period, matype)      # type: ignore
+        result_array: np.ndarray = talib.APO(self.close, fast_period, slow_period, matype)  # type: ignore
         if array:
             return result_array
 
@@ -662,16 +620,12 @@ class ArrayManager:
         return result_value
 
     def ppo(
-        self,
-        fast_period: int,
-        slow_period: int,
-        matype: int = 0,
-        array: bool = False
+        self, fast_period: int, slow_period: int, matype: int = 0, array: bool = False
     ) -> float | np.ndarray:
         """
         PPO.
         """
-        result_array: np.ndarray = talib.PPO(self.close, fast_period, slow_period, matype)      # type: ignore
+        result_array: np.ndarray = talib.PPO(self.close, fast_period, slow_period, matype)  # type: ignore
         if array:
             return result_array
 
@@ -804,7 +758,7 @@ class ArrayManager:
         fast_period: int,
         slow_period: int,
         signal_period: int,
-        array: bool = False
+        array: bool = False,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | tuple[float, float, float]:
         """
         MACD.
@@ -887,12 +841,14 @@ class ArrayManager:
         time_period1: int = 7,
         time_period2: int = 14,
         time_period3: int = 28,
-        array: bool = False
+        array: bool = False,
     ) -> float | np.ndarray:
         """
         Ultimate Oscillator.
         """
-        result_array: np.ndarray = talib.ULTOSC(self.high, self.low, self.close, time_period1, time_period2, time_period3)
+        result_array: np.ndarray = talib.ULTOSC(
+            self.high, self.low, self.close, time_period1, time_period2, time_period3
+        )
         if array:
             return result_array
 
@@ -911,10 +867,7 @@ class ArrayManager:
         return result_value
 
     def boll(
-        self,
-        n: int,
-        dev: float,
-        array: bool = False
+        self, n: int, dev: float, array: bool = False
     ) -> tuple[np.ndarray, np.ndarray] | tuple[float, float]:
         """
         Bollinger Channel.
@@ -934,10 +887,7 @@ class ArrayManager:
             return up, down
 
     def keltner(
-        self,
-        n: int,
-        dev: float,
-        array: bool = False
+        self, n: int, dev: float, array: bool = False
     ) -> tuple[np.ndarray, np.ndarray] | tuple[float, float]:
         """
         Keltner Channel.
@@ -970,9 +920,7 @@ class ArrayManager:
         return up[-1], down[-1]
 
     def aroon(
-        self,
-        n: int,
-        array: bool = False
+        self, n: int, array: bool = False
     ) -> tuple[np.ndarray, np.ndarray] | tuple[float, float]:
         """
         Aroon indicator.
@@ -1023,7 +971,9 @@ class ArrayManager:
         """
         Money Flow Index.
         """
-        result_array: np.ndarray = talib.MFI(self.high, self.low, self.close, self.volume, n)
+        result_array: np.ndarray = talib.MFI(
+            self.high, self.low, self.close, self.volume, n
+        )
         if array:
             return result_array
 
@@ -1034,7 +984,9 @@ class ArrayManager:
         """
         AD.
         """
-        result_array: np.ndarray = talib.AD(self.high, self.low, self.close, self.volume)
+        result_array: np.ndarray = talib.AD(
+            self.high, self.low, self.close, self.volume
+        )
         if array:
             return result_array
 
@@ -1042,15 +994,14 @@ class ArrayManager:
         return result_value
 
     def adosc(
-        self,
-        fast_period: int,
-        slow_period: int,
-        array: bool = False
+        self, fast_period: int, slow_period: int, array: bool = False
     ) -> float | np.ndarray:
         """
         ADOSC.
         """
-        result_array: np.ndarray = talib.ADOSC(self.high, self.low, self.close, self.volume, fast_period, slow_period)
+        result_array: np.ndarray = talib.ADOSC(
+            self.high, self.low, self.close, self.volume, fast_period, slow_period
+        )
         if array:
             return result_array
 
@@ -1076,7 +1027,7 @@ class ArrayManager:
         slowk_matype: int,
         slowd_period: int,
         slowd_matype: int,
-        array: bool = False
+        array: bool = False,
     ) -> tuple[float, float] | tuple[np.ndarray, np.ndarray]:
         """
         Stochastic Indicator
@@ -1087,15 +1038,17 @@ class ArrayManager:
             self.close,
             fastk_period,
             slowk_period,
-            slowk_matype,    # type: ignore
+            slowk_matype,  # type: ignore
             slowd_period,
-            slowd_matype     # type: ignore
+            slowd_matype,  # type: ignore
         )
         if array:
             return k, d
         return k[-1], d[-1]
 
-    def sar(self, acceleration: float, maximum: float, array: bool = False) -> float | np.ndarray:
+    def sar(
+        self, acceleration: float, maximum: float, array: bool = False
+    ) -> float | np.ndarray:
         """
         SAR.
         """

@@ -1,8 +1,12 @@
 import asyncio
+from dataclasses import asdict
 import threading
 import time
 from typing import Dict
 from datetime import datetime, UTC
+import requests
+import aiohttp
+from time import sleep
 
 from vnpy.trader.constant import (
     Exchange,
@@ -12,7 +16,6 @@ from vnpy.trader.constant import (
 )
 from vnpy.event import Event
 from vnpy.trader.event import (
-    EVENT_TICK,
     EVENT_ORDER,
     EVENT_TRADE,
     EVENT_ACCOUNT,
@@ -21,6 +24,7 @@ from vnpy.trader.event import (
 )
 from vnpy.trader.object import (
     AccountData,
+    ContractData,
     OrderData,
     PositionData,
     SubscribeRequest,
@@ -30,11 +34,16 @@ from vnpy.trader.object import (
 from vnpy.trader.gateway import BaseGateway
 from vnpy.trader.logger import logger
 
-from .settings import VNFutureSettings
+from .settings import HscGatewaySettings
 from .socket_client import HscSocketClient
 from .rest_client import HscRestClient
-from .constants import ORDER_TYPE_MAP, STATUS_MAP
-from .utils import gateway_log, handle_future
+from .constants import ORDER_TYPE_MAP, STATUS_MAP, HSC_GATEWAY_NAME
+from .adapters import (
+    get_contract_size,
+    get_contract_pricetick,
+    get_contact_product,
+)
+from .utils import gateway_log
 
 
 class HscGateway(BaseGateway):
@@ -42,7 +51,15 @@ class HscGateway(BaseGateway):
     Implement VNFuture gateway.
     """
 
-    def __init__(self, event_engine, gateway_name="VNFuture"):
+    default_setting = {
+        "centri_url": "",
+        "tickers_ref_url": "",
+        "api_token": "",
+    }
+
+    exchanges = [Exchange.VNEX]
+
+    def __init__(self, event_engine, gateway_name=HSC_GATEWAY_NAME):
         super().__init__(event_engine, gateway_name)
 
         self.socket_client: HscSocketClient = None
@@ -59,19 +76,63 @@ class HscGateway(BaseGateway):
         self._local_to_remote: Dict[str, str] = {}
         self._remote_to_local: Dict[str, str] = {}
 
-    @gateway_log
-    def connect(self, settings: VNFutureSettings):
-        self.rest_client = HscRestClient(settings.get("api_token", ""))
+        self._ticks_cache: Dict[str, TickData] = {}
+
+    def connect(self, settings: HscGatewaySettings):
+        self.rest_client = HscRestClient(settings["api_token"])
         self.socket_client = HscSocketClient(
-            centri_endpoint=settings["centri_endpoint"],
+            centri_url=settings["centri_url"],
             on_tick=self._on_tick,
         )
 
         fut = asyncio.run_coroutine_threadsafe(self.socket_client.start(), self.loop)
         self._handle_future(fut)
 
-        # optionally start a thread to poll order/account updates (if REST push not available)
-        # self._start_polling()
+        logger.info(f"Gateway {self.gateway_name} connected")
+
+        fut2 = asyncio.run_coroutine_threadsafe(
+            self._fetch_contracts_async(settings["tickers_ref_url"]), self.loop
+        )
+        self._handle_future(fut2)
+
+    async def _fetch_contracts_async(self, tickers_ref_url: str):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(tickers_ref_url) as response:
+                data = await response.json()
+                for ticker_ref in data:
+                    contract = ContractData(
+                        gateway_name=self.gateway_name,
+                        size=get_contract_size(ticker_ref),
+                        pricetick=get_contract_pricetick(ticker_ref),
+                        symbol=ticker_ref["symbol"],
+                        exchange=Exchange.VNEX,
+                        name=ticker_ref["name"],
+                        product=get_contact_product(ticker_ref),
+                        min_volume=100,  # minimum order volume
+                        stop_supported=True,  # whether server supports stop order
+                        net_position=True,  # whether gateway uses net position volume
+                        history_data=True,  # whether gateway provides bar history data
+                    )
+                    self.on_contract(contract)
+
+    def _fetch_contracts(self, tickers_ref_url: str):
+        response = requests.get(tickers_ref_url)
+        data = response.json()
+        for ticker_ref in data:
+            contract = ContractData(
+                gateway_name=self.gateway_name,
+                size=get_contract_size(ticker_ref),
+                pricetick=get_contract_pricetick(ticker_ref),
+                symbol=ticker_ref["symbol"],
+                exchange=Exchange.VNEX,
+                name=ticker_ref["name"],
+                product=get_contact_product(ticker_ref),
+                min_volume=100,  # minimum order volume
+                stop_supported=True,  # whether server supports stop order
+                net_position=True,  # whether gateway uses net position volume
+                history_data=True,  # whether gateway provides bar history data
+            )
+            self.on_contract(contract)
 
     @gateway_log
     def subscribe(self, sub_req: SubscribeRequest):
@@ -81,6 +142,11 @@ class HscGateway(BaseGateway):
             self.socket_client.subscribe(symbol), self.loop
         )
         self._handle_future(fut)
+
+    # def stop(self):
+    #     self.rest_client.close()
+    #     self.loop.stop()
+    #     self.thread.join()
 
     # def _start_polling(self):
     #     t = threading.Thread(target=self._poll_loop, daemon=True)
@@ -162,10 +228,11 @@ class HscGateway(BaseGateway):
         # { 'symbol': 'HPG', 'lp': 1854, 'vol': 221621, 'val': 41445860400000, 'avg': 1870.12, 'lv': 2, 'bv1': 6, 'bp1': 1854, 'av1': 1, 'ap1': 1854.3 }
 
         utc_now = datetime.now(UTC)
+        symbol = raw_tick["symbol"]
 
         tick = TickData(
             gateway_name=self.gateway_name,
-            symbol=raw_tick["symbol"],
+            symbol=symbol,
             exchange=Exchange.VNEX,
             datetime=utc_now,
             #
@@ -177,11 +244,6 @@ class HscGateway(BaseGateway):
             last_volume=raw_tick.get("lv", 0),
             limit_up=0,
             limit_down=0,
-            #
-            open_price=0,
-            high_price=0,
-            low_price=0,
-            pre_close=0,
             #
             bid_price_1=raw_tick.get("bp1", 0),
             bid_price_2=raw_tick.get("bp2", 0),
@@ -209,7 +271,22 @@ class HscGateway(BaseGateway):
             #
             localtime=utc_now,
         )
-        self.event_engine.put(Event(EVENT_TICK, tick))
+        if symbol not in self._ticks_cache:
+            tick.open_price = tick.last_price
+            tick.high_price = tick.last_price
+            tick.low_price = tick.last_price
+            tick.pre_close = tick.last_price
+
+            self._ticks_cache[symbol] = tick
+        else:
+            # merge tick
+            current = self._ticks_cache[symbol]
+            for k, v in asdict(tick).items():
+                current_val = getattr(current, k)
+                # update only if value is not None
+                setattr(current, k, v or current_val)
+
+        self.on_tick(self._ticks_cache[symbol])
 
     def _handle_remote_order(self, remote_order):
         """
@@ -282,7 +359,8 @@ class HscGateway(BaseGateway):
 
     def close(self):
         if self.socket_client:
-            self.socket_client.stop()
+            fut = asyncio.run_coroutine_threadsafe(self.socket_client.stop(), self.loop)
+            self._handle_future(fut)
         if self.rest_client:
             self.rest_client.close()
 

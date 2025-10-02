@@ -1,6 +1,5 @@
 from .gateway import HscGateway
-from .settings import VNFutureSettings
+from .settings import HscGatewaySettings
+from .constants import HSC_GATEWAY_NAME
 
-HSC_GATEWAY = "HscGateway"
-
-__all__ = ["HscGateway", "VNFutureSettings"]
+__all__ = ["HscGateway", "HscGatewaySettings", "HSC_GATEWAY_NAME"]

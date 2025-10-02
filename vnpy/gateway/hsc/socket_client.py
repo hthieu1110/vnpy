@@ -13,8 +13,8 @@ from .utils import socket_log
 
 
 class HscSocketClient:
-    def __init__(self, centri_endpoint: str, on_tick: Callable):
-        self.centri_endpoint = centri_endpoint
+    def __init__(self, centri_url: str, on_tick: Callable):
+        self.centri_url = centri_url
         self._client: Client = None
 
         self.on_tick = on_tick
@@ -22,7 +22,7 @@ class HscSocketClient:
     @socket_log
     async def start(self):
         client = Client(
-            self.centri_endpoint,
+            self.centri_url,
             events=ClientEventHandler(),
         )
 
@@ -58,3 +58,8 @@ class HscSocketClient:
         )
 
         await sub.subscribe()
+
+    async def stop(self):
+        if self._client:
+            await self._client.disconnect()
+            self._client = None

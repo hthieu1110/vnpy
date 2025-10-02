@@ -622,7 +622,7 @@ class ConnectDialog(QtWidgets.QDialog):
 
     def init_ui(self) -> None:
         """"""
-        self.setWindowTitle(_("连接{}").format(self.gateway_name))
+        self.setWindowTitle(_("Connect {}").format(self.gateway_name))
 
         # Default setting provides field name, field data type and field default value.
         default_setting: dict | None = self.main_engine.get_default_setting(
@@ -657,17 +657,20 @@ class ConnectDialog(QtWidgets.QDialog):
                         saved_value = loaded_setting[field_name]
                         line.setText(str(saved_value))
 
-                    if _("密码") in field_name:
+                    if _("password") in field_name:
                         line.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
 
                     if field_type is int:
                         validator: QtGui.QIntValidator = QtGui.QIntValidator()
                         line.setValidator(validator)
 
+                    # Set minimum width for input field
+                    line.setMinimumWidth(400)
+
                     form.addRow(f"{field_name} <{field_type.__name__}>", line)
                     self.widgets[field_name] = (line, field_type)
 
-        button: QtWidgets.QPushButton = QtWidgets.QPushButton(_("连接"))
+        button: QtWidgets.QPushButton = QtWidgets.QPushButton(_("connect"))
         button.clicked.connect(self.connect_gateway)
         form.addRow(button)
 
@@ -1252,7 +1255,7 @@ class GlobalDialog(QtWidgets.QDialog):
 
     def init_ui(self) -> None:
         """"""
-        self.setWindowTitle(_("全局配置"))
+        self.setWindowTitle(_("Global config"))
         self.setMinimumWidth(800)
 
         settings: dict = copy(SETTINGS)
