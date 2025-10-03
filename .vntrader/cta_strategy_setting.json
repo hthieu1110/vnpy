@@ -1,0 +1,15 @@
+{
+    "test": {
+        "class_name": "AtrRsiStrategy",
+        "vt_symbol": "HPG.VNEX",
+        "setting": {
+            "class_name": "AtrRsiStrategy",
+            "atr_length": 22,
+            "atr_ma_length": 10,
+            "rsi_length": 5,
+            "rsi_entry": 16,
+            "trailing_percent": 0.8,
+            "fixed_size": 1
+        }
+    }
+}
