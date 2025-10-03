@@ -17,3 +17,7 @@ local:
 PHONY: binance
 binance:
 	python cmd/binance.py
+
+PHONY: ib
+ib:
+	python cmd/ib.py

@@ -67,9 +67,11 @@ class HscGateway(BaseGateway):
         "orders_url": "",
     }
 
+    default_name: str = HSC_GATEWAY_NAME
+
     exchanges = [Exchange.VNEX]
 
-    def __init__(self, event_engine, gateway_name=HSC_GATEWAY_NAME):
+    def __init__(self, event_engine, gateway_name: str):
         super().__init__(event_engine, gateway_name)
 
         self.socket_client: HscSocketClient = None

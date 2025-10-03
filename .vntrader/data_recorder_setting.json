@@ -4,6 +4,11 @@
             "symbol": "HPG",
             "exchange": "VNEX",
             "gateway_name": "HscGateway"
+        },
+        "BTCUSDT_SPOT_BINANCE.GLOBAL": {
+            "symbol": "BTCUSDT_SPOT_BINANCE",
+            "exchange": "GLOBAL",
+            "gateway_name": "BINANCE_SPOT"
         }
     },
     "bar": {
@@ -11,6 +16,11 @@
             "symbol": "HPG",
             "exchange": "VNEX",
             "gateway_name": "HscGateway"
+        },
+        "BTCUSDT_SPOT_BINANCE.GLOBAL": {
+            "symbol": "BTCUSDT_SPOT_BINANCE",
+            "exchange": "GLOBAL",
+            "gateway_name": "BINANCE_SPOT"
         }
     }
 }
