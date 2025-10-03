@@ -4,8 +4,12 @@ test:
 
 PHONY: hsc
 hsc:
-	python hsc.py
+	python cmd/hsc.py
 
 PHONY: local
 local:
-	python local.py
+	python cmd/local.py
+
+PHONY: binance
+binance:
+	python cmd/binance.py

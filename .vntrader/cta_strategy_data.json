@@ -1,1 +1,7 @@
-{}
+{
+    "Test": {
+        "pos": 0,
+        "tick_count": 0,
+        "test_all_done": false
+    }
+}

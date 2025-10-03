@@ -1,1 +1,24 @@
-{}
+{
+    "font.family": "Arial",
+    "font.size": 12,
+    "log.active": true,
+    "log.level": 20,
+    "log.console": true,
+    "log.file": true,
+    "email.server": "smtp.qq.com",
+    "email.port": 465,
+    "email.username": "",
+    "email.password": "",
+    "email.sender": "",
+    "email.receiver": "",
+    "datafeed.name": "BINANCE",
+    "datafeed.username": "bTVoA301STi0t8HSPajvfEop6ofpGR4QU6bv1miQGDetmBZmdmq7f2c3wTXOS4bU",
+    "datafeed.password": "gG7ZZFPwdRCDRRASnp79er6pAlsRXqGiwgVvoB1kBHJEmJ12jNsslt2q67skb52o",
+    "database.timezone": "Asia/Ho_Chi_Minh",
+    "database.name": "sqlite",
+    "database.database": "database.db",
+    "database.host": "",
+    "database.port": 0,
+    "database.user": "",
+    "database.password": ""
+}

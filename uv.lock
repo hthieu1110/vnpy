@@ -3568,6 +3568,7 @@ dependencies = [
     { name = "ta-lib" },
     { name = "tqdm" },
     { name = "tzlocal" },
+    { name = "vnpy-binance" },
     { name = "vnpy-ctabacktester" },
     { name = "vnpy-ctastrategy" },
     { name = "vnpy-paperaccount" },
@@ -3620,12 +3621,26 @@ requires-dist = [
     { name = "torch", marker = "extra == 'alpha'", specifier = ">=2.6.0" },
     { name = "tqdm", specifier = ">=4.67.1" },
     { name = "tzlocal", specifier = ">=5.3.1" },
+    { name = "vnpy-binance", specifier = ">=2025.6.17" },
     { name = "vnpy-ctabacktester", specifier = ">=1.2.0" },
     { name = "vnpy-ctastrategy", specifier = ">=1.3.3" },
     { name = "vnpy-paperaccount", specifier = ">=1.0.6" },
     { name = "vnpy-sqlite", specifier = ">=1.1.3" },
 ]
 provides-extras = ["alpha", "dev"]
+
+[[package]]
+name = "vnpy-binance"
+version = "2025.6.17"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "vnpy-rest" },
+    { name = "vnpy-websocket" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/51/46/b78cda9d1fe4d71f95025adb4a535b019393d23d8a2118c9707be05c11c0/vnpy_binance-2025.6.17.tar.gz", hash = "sha256:0c46d6398fad83f13a6acf86feea0a97ff77fc57457b461a31f5a8c961cff58a", size = 34800, upload-time = "2025-06-17T11:47:26.176Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a5/b0/404f73c234a5083c1e9edc813f84492a552e200bba02a0002de9cf9a1c78/vnpy_binance-2025.6.17-py3-none-any.whl", hash = "sha256:3af57de9395bfbb7a60288483d4f904e6f127f8c102ad11c049cc3ed958554b7", size = 37125, upload-time = "2025-06-17T11:47:24.696Z" },
+]
 
 [[package]]
 name = "vnpy-ctabacktester"
@@ -3667,6 +3682,18 @@ wheels = [
 ]
 
 [[package]]
+name = "vnpy-rest"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/92/63/b93ad1e1a972434cbe5f50bd5f391530ec0f14b3a62833b21b9a07040986/vnpy_rest-1.2.0.tar.gz", hash = "sha256:c1479f43894f1fa65d78f2962bffb525c06736e79892405072e6bb896f846a2c", size = 6339, upload-time = "2025-05-07T14:08:21.898Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/61/17/dd14ece2b2cdc879cc5af75e0696ad144c42132c4c73f34ccfc17a44ffa9/vnpy_rest-1.2.0-py3-none-any.whl", hash = "sha256:e2fa3baf21cd56afbeba0ebe0d7c65730d350e604ed2037b7ee12a8a5fd5e55d", size = 6234, upload-time = "2025-05-07T14:08:20.837Z" },
+]
+
+[[package]]
 name = "vnpy-sqlite"
 version = "1.1.3"
 source = { registry = "https://pypi.org/simple" }
@@ -3676,6 +3703,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/87/76/39b4c7207ed8603354530ac1228f6ad8073db8fcb1a200c5b5b4b02bebff/vnpy_sqlite-1.1.3.tar.gz", hash = "sha256:ed7d76f255b1acd335f479bb8a5ff14931eeec436147ef275ed834208bfd592c", size = 6592, upload-time = "2025-10-02T14:42:21.39Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/13/81/5acf1010985d725e0733c40f591f89a60cf752311ef22e6bb06f37d19af0/vnpy_sqlite-1.1.3-py3-none-any.whl", hash = "sha256:50f80c45737ef9a491aeebb9bfac0cec57f087461b6d7867838ef678cfbe67bb", size = 6482, upload-time = "2025-10-02T14:42:20.118Z" },
+]
+
+[[package]]
+name = "vnpy-websocket"
+version = "1.0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/79/59/d9c548e4fbb6c19de35fa513b1e5ad5aea0f6d697a9e7198008f6b1d87c8/vnpy_websocket-1.0.6.tar.gz", hash = "sha256:9baec71e480d41c3f06a124680d4ce180b3402b87b9566f2d29a841b016849b5", size = 5192, upload-time = "2023-09-03T13:53:55.546Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2b/2f/034b9cbe9248247e3cf28eb7debcff31738ac28468fa49490f0adb5ef785/vnpy_websocket-1.0.6-py3-none-any.whl", hash = "sha256:052da2c0ed722d975a7e4fe0435fc1ea034683eb889090a596d97bf698edebbd", size = 6096, upload-time = "2023-09-03T13:53:54.404Z" },
 ]
 
 [[package]]
