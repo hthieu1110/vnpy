@@ -1,0 +1,9 @@
+{
+    "active": false,
+    "order_flow_limit": 50,
+    "order_flow_clear": 1,
+    "order_size_limit": 100,
+    "trade_limit": 1000,
+    "active_order_limit": 50,
+    "order_cancel_limit": 500
+}

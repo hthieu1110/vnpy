@@ -1,0 +1,16 @@
+{
+    "tick": {
+        "HPG.VNEX": {
+            "symbol": "HPG",
+            "exchange": "VNEX",
+            "gateway_name": "HscGateway"
+        }
+    },
+    "bar": {
+        "HPG.VNEX": {
+            "symbol": "HPG",
+            "exchange": "VNEX",
+            "gateway_name": "HscGateway"
+        }
+    }
+}

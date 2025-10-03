@@ -5,7 +5,10 @@ from vnpy.trader.ui import MainWindow, create_qapp
 # from vnpy_ctp import CtpGateway
 from vnpy_ctastrategy import CtaStrategyApp
 from vnpy_ctabacktester import CtaBacktesterApp
+
 from vnpy_datamanager import DataManagerApp
+from vnpy_portfoliomanager import PortfolioManagerApp
+from vnpy_datarecorder import DataRecorderApp
 from vnpy_riskmanager import RiskManagerApp
 from vnpy.gateway.hsc import HSC_GATEWAY_NAME, HscGateway
 
@@ -20,6 +23,10 @@ def main():
 
     main_engine.add_app(CtaStrategyApp)
     main_engine.add_app(CtaBacktesterApp)
+    main_engine.add_app(RiskManagerApp)
+    main_engine.add_app(PortfolioManagerApp)
+    main_engine.add_app(DataManagerApp)
+    main_engine.add_app(DataRecorderApp)
 
     main_window = MainWindow(main_engine, event_engine)
     main_window.showMaximized()

@@ -3572,6 +3572,7 @@ dependencies = [
     { name = "vnpy-ctabacktester" },
     { name = "vnpy-ctastrategy" },
     { name = "vnpy-paperaccount" },
+    { name = "vnpy-spreadtrading" },
     { name = "vnpy-sqlite" },
     { name = "watchdog" },
 ]
@@ -3626,6 +3627,7 @@ requires-dist = [
     { name = "vnpy-ctabacktester", specifier = ">=1.2.0" },
     { name = "vnpy-ctastrategy", specifier = ">=1.3.3" },
     { name = "vnpy-paperaccount", specifier = ">=1.0.6" },
+    { name = "vnpy-spreadtrading", specifier = ">=1.3.0" },
     { name = "vnpy-sqlite", specifier = ">=1.1.3" },
     { name = "watchdog", specifier = ">=6.0.0" },
 ]
@@ -3693,6 +3695,22 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/92/63/b93ad1e1a972434cbe5f50bd5f391530ec0f14b3a62833b21b9a07040986/vnpy_rest-1.2.0.tar.gz", hash = "sha256:c1479f43894f1fa65d78f2962bffb525c06736e79892405072e6bb896f846a2c", size = 6339, upload-time = "2025-05-07T14:08:21.898Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/61/17/dd14ece2b2cdc879cc5af75e0696ad144c42132c4c73f34ccfc17a44ffa9/vnpy_rest-1.2.0-py3-none-any.whl", hash = "sha256:e2fa3baf21cd56afbeba0ebe0d7c65730d350e604ed2037b7ee12a8a5fd5e55d", size = 6234, upload-time = "2025-05-07T14:08:20.837Z" },
+]
+
+[[package]]
+name = "vnpy-spreadtrading"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "numpy", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "pandas" },
+    { name = "plotly" },
+    { name = "vnpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f3/1d/bba7d69f1d71e533d78acdae473ce4661a6d0721affc3e9921128e606948/vnpy_spreadtrading-1.3.0.tar.gz", hash = "sha256:f37795dce623f12b700d3f94a174a2026adaa09a6d232ec3264762dd081ffb8e", size = 36063, upload-time = "2025-06-13T07:45:22.465Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/58/19/4792621fd15e49dcfa9c4f534758fb80e10c01d345b1db87e4f11db015c4/vnpy_spreadtrading-1.3.0-py3-none-any.whl", hash = "sha256:2ba17368f36e5f1cbf155b6f8ab4379649ed59dd996cdee9fb82ba4dfbab1621", size = 39444, upload-time = "2025-06-13T07:45:19.56Z" },
 ]
 
 [[package]]
