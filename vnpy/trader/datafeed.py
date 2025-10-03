@@ -18,14 +18,18 @@ class BaseDatafeed:
         """
         return False
 
-    def query_bar_history(self, req: HistoryRequest, output: Callable = print) -> list[BarData]:
+    def query_bar_history(
+        self, req: HistoryRequest, output: Callable = print
+    ) -> list[BarData]:
         """
         Query history bar data.
         """
         output(_("Failed to query bar data: the datafeed is not configured correctly"))
         return []
 
-    def query_tick_history(self, req: HistoryRequest, output: Callable = print) -> list[TickData]:
+    def query_tick_history(
+        self, req: HistoryRequest, output: Callable = print
+    ) -> list[TickData]:
         """
         Query history tick data.
         """
@@ -49,7 +53,11 @@ def get_datafeed() -> BaseDatafeed:
     if not datafeed_name:
         datafeed = BaseDatafeed()
 
-        print(_("The datafeed to be used is not configured. Please modify the datafeed settings in the global configuration."))
+        print(
+            _(
+                "The datafeed to be used is not configured. Please modify the datafeed settings in the global configuration."
+            )
+        )
     else:
         module_name: str = f"vnpy_{datafeed_name}"
 
@@ -63,6 +71,10 @@ def get_datafeed() -> BaseDatafeed:
         except ModuleNotFoundError:
             datafeed = BaseDatafeed()
 
-            print(_("Unable to load datafeed module, please run 'pip install {}' to install").format(module_name))
+            print(
+                _(
+                    "Unable to load datafeed module, please run 'pip install {}' to install"
+                ).format(module_name)
+            )
 
     return datafeed

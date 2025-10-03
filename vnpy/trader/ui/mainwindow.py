@@ -26,7 +26,7 @@ from .widget import (
     ContractManager,
     TradingWidget,
     AboutDialog,
-    GlobalDialog
+    GlobalDialog,
 )
 from ..engine import MainEngine, BaseApp
 from ..utility import get_icon_path, TRADER_DIR
@@ -48,7 +48,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.main_engine: MainEngine = main_engine
         self.event_engine: EventEngine = event_engine
 
-        self.window_title: str = _("VeighNa Trader Community Edition - {} [{}]").format(vnpy.__version__, TRADER_DIR)
+        self.window_title: str = _("VeighNa Trader Community Edition - {} [{}]").format(
+            vnpy.__version__, TRADER_DIR
+        )
 
         self.widgets: dict[str, QtWidgets.QWidget] = {}
         self.monitors: dict[str, BaseMonitor] = {}
@@ -75,7 +77,9 @@ class MainWindow(QtWidgets.QMainWindow):
             OrderMonitor, _("Order"), QtCore.Qt.DockWidgetArea.RightDockWidgetArea
         )
         active_widget, active_dock = self.create_dock(
-            ActiveOrderMonitor, _("Active"), QtCore.Qt.DockWidgetArea.RightDockWidgetArea
+            ActiveOrderMonitor,
+            _("Active"),
+            QtCore.Qt.DockWidgetArea.RightDockWidgetArea,
         )
         trade_widget, trade_dock = self.create_dock(
             TradeMonitor, _("Trade"), QtCore.Qt.DockWidgetArea.RightDockWidgetArea
@@ -87,7 +91,9 @@ class MainWindow(QtWidgets.QMainWindow):
             AccountMonitor, _("Account"), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea
         )
         position_widget, position_dock = self.create_dock(
-            PositionMonitor, _("Position"), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea
+            PositionMonitor,
+            _("Position"),
+            QtCore.Qt.DockWidgetArea.BottomDockWidgetArea,
         )
 
         self.tabifyDockWidget(active_dock, order_dock)
@@ -100,7 +106,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def init_menu(self) -> None:
         """"""
         bar: QtWidgets.QMenuBar = self.menuBar()
-        bar.setNativeMenuBar(False)     # for mac and linux
+        bar.setNativeMenuBar(False)  # for mac and linux
 
         # System menu
         sys_menu: QtWidgets.QMenu = bar.addMenu(_("System"))
@@ -112,16 +118,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 sys_menu,
                 _("Connect {}").format(name),
                 get_icon_path(__file__, "connect.ico"),
-                func
+                func,
             )
 
         sys_menu.addSeparator()
 
         self.add_action(
-            sys_menu,
-            _("Quit"),
-            get_icon_path(__file__, "exit.ico"),
-            self.close
+            sys_menu, _("Quit"), get_icon_path(__file__, "exit.ico"), self.close
         )
 
         # App menu
@@ -149,21 +152,21 @@ class MainWindow(QtWidgets.QMainWindow):
             _("Find contract"),
             get_icon_path(__file__, "contract.ico"),
             partial(self.open_widget, ContractManager, "contract"),
-            True
+            True,
         )
 
         self.add_action(
             help_menu,
             _("Restore window"),
             get_icon_path(__file__, "restore.ico"),
-            self.restore_window_setting
+            self.restore_window_setting,
         )
 
         self.add_action(
             help_menu,
             _("Test email"),
             get_icon_path(__file__, "email.ico"),
-            self.send_test_email
+            self.send_test_email,
         )
 
         self.add_action(
@@ -171,7 +174,7 @@ class MainWindow(QtWidgets.QMainWindow):
             _("Forum"),
             get_icon_path(__file__, "forum.ico"),
             self.open_forum,
-            True
+            True,
         )
 
         self.add_action(
@@ -206,7 +209,7 @@ class MainWindow(QtWidgets.QMainWindow):
         action_name: str,
         icon_name: str,
         func: Callable,
-        toolbar: bool = False
+        toolbar: bool = False,
     ) -> None:
         """"""
         icon: QtGui.QIcon = QtGui.QIcon(icon_name)
@@ -221,22 +224,22 @@ class MainWindow(QtWidgets.QMainWindow):
             self.toolbar.addAction(action)
 
     def create_dock(
-        self,
-        widget_class: type[WidgetType],
-        name: str,
-        area: QtCore.Qt.DockWidgetArea
+        self, widget_class: type[WidgetType], name: str, area: QtCore.Qt.DockWidgetArea
     ) -> tuple[WidgetType, QtWidgets.QDockWidget]:
         """
         Initialize a dock widget.
         """
-        widget: WidgetType = widget_class(self.main_engine, self.event_engine)      # type: ignore
+        widget: WidgetType = widget_class(self.main_engine, self.event_engine)  # type: ignore
         if isinstance(widget, BaseMonitor):
             self.monitors[name] = widget
 
         dock: QtWidgets.QDockWidget = QtWidgets.QDockWidget(name)
         dock.setWidget(widget)
         dock.setObjectName(name)
-        dock.setFeatures(dock.DockWidgetFeature.DockWidgetFloatable | dock.DockWidgetFeature.DockWidgetMovable)
+        dock.setFeatures(
+            dock.DockWidgetFeature.DockWidgetFloatable
+            | dock.DockWidgetFeature.DockWidgetMovable
+        )
         self.addDockWidget(area, dock)
         return widget, dock
 
@@ -255,7 +258,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self,
             _("Quit"),
             _("Confirm exit?"),
-            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No,
+            QtWidgets.QMessageBox.StandardButton.Yes
+            | QtWidgets.QMessageBox.StandardButton.No,
             QtWidgets.QMessageBox.StandardButton.No,
         )
 
@@ -280,7 +284,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         widget: QtWidgets.QWidget | None = self.widgets.get(name, None)
         if not widget:
-            widget = widget_class(self.main_engine, self.event_engine)      # type: ignore
+            widget = widget_class(self.main_engine, self.event_engine)  # type: ignore
             self.widgets[name] = widget
 
         if isinstance(widget, QtWidgets.QDialog):
@@ -322,12 +326,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.main_engine.send_email("VeighNa Trader", "testing", None)
 
     def open_forum(self) -> None:
-        """
-        """
+        """ """
         webbrowser.open("https://www.vnpy.com/forum/")
 
     def edit_global_setting(self) -> None:
-        """
-        """
+        """ """
         dialog: GlobalDialog = GlobalDialog()
         dialog.exec()

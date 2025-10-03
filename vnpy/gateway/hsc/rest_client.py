@@ -3,11 +3,16 @@ import requests
 
 
 class HscRestClient:
-    def __init__(self, api_token: str):
-        self.base_url = "https://api.internal"
-        self.api_key = api_token
+    def __init__(self, bearer_token: str):
+        self.base_url = ""
+        self.bearer_token = bearer_token
         self._session = requests.Session()
-        self._session.headers.update({"Authorization": f"Bearer {api_token}"})
+        self._session.headers.update({"Authorization": f"Bearer {bearer_token}"})
+
+    def json_query(self, url: str):
+        r = self._session.get(url)
+        r.raise_for_status()
+        return r.json()
 
     def send_order(self, payload):
         # payload: symbol, price, volume, side, type
@@ -17,21 +22,6 @@ class HscRestClient:
 
     def cancel_order(self, remote_order_id):
         r = self._session.post(self.base_url + f"/orders/{remote_order_id}/cancel")
-        r.raise_for_status()
-        return r.json()
-
-    def get_open_orders(self):
-        r = self._session.get(self.base_url + "/orders/open")
-        r.raise_for_status()
-        return r.json()
-
-    def get_account(self):
-        r = self._session.get(self.base_url + "/account")
-        r.raise_for_status()
-        return r.json()
-
-    def get_positions(self):
-        r = self._session.get(self.base_url + "/positions")
         r.raise_for_status()
         return r.json()
 

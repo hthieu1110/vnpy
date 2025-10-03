@@ -23,7 +23,7 @@ from centrifuge import (
 from vnpy.trader.logger import logger
 
 
-class ClientEventLoggerHandler(ClientEventHandler):
+class DebugClientEventLoggerHandler(ClientEventHandler):
     async def on_connecting(self, ctx: ConnectingContext) -> None:
         logger.info(f"Client connecting: {ctx}")
 
@@ -55,7 +55,7 @@ class ClientEventLoggerHandler(ClientEventHandler):
         logger.info(f"Client leave in server-side sub: {ctx}")
 
 
-class SubscriptionEventLoggerHandler(SubscriptionEventHandler):
+class DebugSubscriptionEventLoggerHandler(SubscriptionEventHandler):
     async def on_subscribing(self, ctx: SubscribingContext) -> None:
         logger.info(f"Subscription subscribing: {ctx}")
 

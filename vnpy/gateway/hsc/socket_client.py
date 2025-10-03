@@ -1,5 +1,6 @@
 from centrifuge import (
     Client,
+    ErrorContext,
     PublicationContext,
     SubscribedContext,
     SubscriptionEventHandler,
@@ -12,6 +13,18 @@ from vnpy.trader.logger import logger
 from .utils import socket_log
 
 
+async def _on_client_error(ctx: ErrorContext):
+    logger.error(f"Client error: {ctx}")
+
+
+async def _on_sub_error(ctx: ErrorContext):
+    logger.error(f"Subscription error: {ctx}")
+
+
+async def _on_subscribed(ctx: SubscribedContext):
+    logger.info(f"Subscribed to channel: {ctx.channel}")
+
+
 class HscSocketClient:
     def __init__(self, centri_url: str, on_tick: Callable):
         self.centri_url = centri_url
@@ -21,13 +34,15 @@ class HscSocketClient:
 
     @socket_log
     async def start(self):
+        events_handler = ClientEventHandler()
+        events_handler.on_error = _on_client_error
+
         client = Client(
             self.centri_url,
-            events=ClientEventHandler(),
+            events=events_handler,
         )
 
         await client.connect()
-        await client.ready()
 
         self._client = client
 
@@ -45,10 +60,8 @@ class HscSocketClient:
             ctx.pub.data["symbol"] = symbol
             self.on_tick(ctx.pub.data)
 
-        async def _on_subscribed(ctx: SubscribedContext):
-            logger.info(f"Subscribed to channel: {ctx.channel}")
-
         events_handler.on_publication = _on_publication
+        events_handler.on_error = _on_sub_error
         events_handler.on_subscribed = _on_subscribed
 
         sub = self._client.new_subscription(

@@ -7,6 +7,7 @@ import platform
 from enum import Enum
 from typing import cast, Any
 from copy import copy
+from PySide6.QtCore import QStringListModel
 from tzlocal import get_localzone_name
 from datetime import datetime
 from importlib import metadata
@@ -15,8 +16,10 @@ from .qt import QtCore, QtGui, QtWidgets, Qt
 from ..constant import Direction, Exchange, Offset, OrderType
 from ..engine import MainEngine, Event, EventEngine
 from ..event import (
+    EVENT_ALL_CONTRACTS,
     EVENT_QUOTE,
     EVENT_TICK,
+    EVENT_CONTRACT,
     EVENT_TRADE,
     EVENT_ORDER,
     EVENT_POSITION,
@@ -38,8 +41,8 @@ from ..setting import SETTING_FILENAME, SETTINGS
 from ..locale import _
 
 
-COLOR_LONG = QtGui.QColor("red")
-COLOR_SHORT = QtGui.QColor("green")
+COLOR_LONG = QtGui.QColor("green")
+COLOR_SHORT = QtGui.QColor("red")
 COLOR_BID = QtGui.QColor(255, 174, 201)
 COLOR_ASK = QtGui.QColor(160, 255, 160)
 COLOR_BLACK = QtGui.QColor("black")
@@ -468,11 +471,15 @@ class TradeMonitor(BaseMonitor):
         "orderid": {"display": _("Order ID"), "cell": BaseCell, "update": False},
         "symbol": {"display": _("Symbol"), "cell": BaseCell, "update": False},
         "exchange": {"display": _("Exchange"), "cell": EnumCell, "update": False},
-        "direction": {"display": _("Direction"), "cell": DirectionCell, "update": False},
+        "direction": {
+            "display": _("Direction"),
+            "cell": DirectionCell,
+            "update": False,
+        },
         "offset": {"display": _("Offset"), "cell": EnumCell, "update": False},
         "price": {"display": _("Price"), "cell": BaseCell, "update": False},
-        "volume": {"display": _("数量"), "cell": BaseCell, "update": False},
-        "datetime": {"display": _("时间"), "cell": TimeCell, "update": False},
+        "volume": {"display": _("Volume"), "cell": BaseCell, "update": False},
+        "datetime": {"display": _("Time"), "cell": TimeCell, "update": False},
         "gateway_name": {"display": _("Gateway"), "cell": BaseCell, "update": False},
     }
 
@@ -492,7 +499,11 @@ class OrderMonitor(BaseMonitor):
         "symbol": {"display": _("Symbol"), "cell": BaseCell, "update": False},
         "exchange": {"display": _("Exchange"), "cell": EnumCell, "update": False},
         "type": {"display": _("Type"), "cell": EnumCell, "update": False},
-        "direction": {"display": _("Direction"), "cell": DirectionCell, "update": False},
+        "direction": {
+            "display": _("Direction"),
+            "cell": DirectionCell,
+            "update": False,
+        },
         "offset": {"display": _("Offset"), "cell": EnumCell, "update": False},
         "price": {"display": _("Price"), "cell": BaseCell, "update": False},
         "volume": {"display": _("Total"), "cell": BaseCell, "update": True},
@@ -532,9 +543,17 @@ class PositionMonitor(BaseMonitor):
     headers: dict = {
         "symbol": {"display": _("Symbol"), "cell": BaseCell, "update": False},
         "exchange": {"display": _("Exchange"), "cell": EnumCell, "update": False},
-        "direction": {"display": _("Direction"), "cell": DirectionCell, "update": False},
-        "volume": {"display": _("数量"), "cell": BaseCell, "update": True},
-        "yd_volume": {"display": _("Overnight Position"), "cell": BaseCell, "update": True},
+        "direction": {
+            "display": _("Direction"),
+            "cell": DirectionCell,
+            "update": False,
+        },
+        "volume": {"display": _("Quantity"), "cell": BaseCell, "update": True},
+        "yd_volume": {
+            "display": _("Overnight Position"),
+            "cell": BaseCell,
+            "update": True,
+        },
         "frozen": {"display": _("Frozen"), "cell": BaseCell, "update": True},
         "price": {"display": _("Avg Price"), "cell": BaseCell, "update": True},
         "pnl": {"display": _("P&L"), "cell": PnlCell, "update": True},
@@ -718,6 +737,8 @@ class TradingWidget(QtWidgets.QWidget):
         self.vt_symbol: str = ""
         self.price_digits: int = 0
 
+        self.contracts: list[ContractData] = []
+
         self.init_ui()
         self.register_event()
 
@@ -732,6 +753,18 @@ class TradingWidget(QtWidgets.QWidget):
 
         self.symbol_line: QtWidgets.QLineEdit = QtWidgets.QLineEdit()
         self.symbol_line.returnPressed.connect(self.set_vt_symbol)
+
+        # auto completion for symbol ------------------------------------
+        model = QStringListModel([])
+        self.symbol_line_completer_model = model
+
+        completer: QtWidgets.QCompleter = QtWidgets.QCompleter(model, self.symbol_line)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        completer.setFilterMode(Qt.MatchFlag.MatchStartsWith)
+        completer.activated.connect(self.set_vt_symbol)
+
+        self.symbol_line.setCompleter(completer)
+        # end of auto completion for symbol -----------------------------
 
         self.name_line: QtWidgets.QLineEdit = QtWidgets.QLineEdit()
         self.name_line.setReadOnly(True)
@@ -878,6 +911,18 @@ class TradingWidget(QtWidgets.QWidget):
         self.signal_tick.connect(self.process_tick_event)
         self.event_engine.register(EVENT_TICK, self.signal_tick.emit)
 
+        # update symbol list
+        self.event_engine.register(
+            EVENT_ALL_CONTRACTS, self.process_all_contracts_event
+        )
+
+    def process_all_contracts_event(self, event: Event) -> None:
+        """"""
+        contracts: list[ContractData] = event.data
+        symbols: list[str] = [contract.symbol for contract in contracts]
+
+        self.symbol_line_completer_model.setStringList(symbols)
+
     def process_tick_event(self, event: Event) -> None:
         """"""
         tick: TickData = event.data
@@ -1000,12 +1045,16 @@ class TradingWidget(QtWidgets.QWidget):
         """
         symbol: str = str(self.symbol_line.text())
         if not symbol:
-            QtWidgets.QMessageBox.critical(self, _("Order failed"), _("Please enter the symbol"))
+            QtWidgets.QMessageBox.critical(
+                self, _("Order failed"), _("Please enter the symbol")
+            )
             return
 
         volume_text: str = str(self.volume_line.text())
         if not volume_text:
-            QtWidgets.QMessageBox.critical(self, _("Order failed"), _("Please enter the volume"))
+            QtWidgets.QMessageBox.critical(
+                self, _("Order failed"), _("Please enter the volume")
+            )
             return
         volume: float = float(volume_text)
 
@@ -1127,7 +1176,9 @@ class ContractManager(QtWidgets.QWidget):
 
         self.filter_line: QtWidgets.QLineEdit = QtWidgets.QLineEdit()
         self.filter_line.setPlaceholderText(
-            _("Enter the contract symbol or exchange, leave it blank to query all contracts")
+            _(
+                "Enter the contract symbol or exchange, leave it blank to query all contracts"
+            )
         )
 
         self.button_show: QtWidgets.QPushButton = QtWidgets.QPushButton(_("Find"))

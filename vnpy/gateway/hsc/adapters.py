@@ -19,25 +19,3 @@ def get_contract_pricetick(ticker_ref: dict) -> float:
         return 0.1
     else:
         return 1_000_000  # if unknown then return big number to block
-
-
-def get_contact_product(ticker_ref: dict) -> Product:
-    # {'Derivatives', 'ETF', 'Bond', 'Fund', 'Stock', 'BondFutures', 'CoveredWarrant'}
-    t = ticker_ref["stock_type"]
-    match t:
-        case "Derivatives":
-            return Product.FUTURES
-        case "ETF":
-            return Product.ETF
-        case "Bond":
-            return Product.BOND
-        case "Fund":
-            return Product.FUND
-        case "Stock":
-            return Product.EQUITY
-        case "BondFutures":
-            return Product.BOND
-        case "CoveredWarrant":
-            return Product.WARRANT
-        case _:
-            raise ValueError(f"Unknown product for stock type: {t}")

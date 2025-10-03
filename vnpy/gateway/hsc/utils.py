@@ -1,3 +1,4 @@
+from asyncio import Future
 import traceback
 from vnpy.trader.constant import Product
 from vnpy.trader.logger import logger
@@ -24,11 +25,3 @@ def socket_log(func):
         return res
 
     return wrapper
-
-
-def handle_future(fut):
-    try:
-        fut.result()
-    except Exception as e:
-        logger.error(f"Async task failed: {e}")
-        traceback.print_exc()

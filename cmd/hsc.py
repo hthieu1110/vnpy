@@ -10,22 +10,15 @@ import os
 
 
 def main():
-    """Start VeighNa Trader"""
     qapp = create_qapp()
 
     event_engine = EventEngine()
     main_engine = MainEngine(event_engine)
 
     main_engine.add_gateway(HscGateway, HSC_GATEWAY_NAME)
-    setting = {
-        "api_token": os.getenv("API_TOKEN"),
-        "centri_url": os.getenv("CENTRI_ENDPOINT"),
-        "tickers_ref_url": os.getenv("TICKERS_REF_URL"),
-    }
-    main_engine.connect(setting, HSC_GATEWAY_NAME)
 
     main_engine.add_app(CtaStrategyApp)
-    main_engine.add_app(CtaBacktesterApp)
+    # main_engine.add_app(CtaBacktesterApp)
 
     main_window = MainWindow(main_engine, event_engine)
     main_window.showMaximized()

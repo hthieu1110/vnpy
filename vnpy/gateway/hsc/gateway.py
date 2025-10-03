@@ -2,7 +2,7 @@ import asyncio
 from dataclasses import asdict
 import threading
 import time
-from typing import Dict
+from typing import Callable, Dict
 from datetime import datetime, UTC
 import requests
 import aiohttp
@@ -10,12 +10,15 @@ from time import sleep
 
 from vnpy.trader.constant import (
     Exchange,
+    Offset,
     OrderType,
     Direction,
+    Product,
     Status,
 )
 from vnpy.event import Event
 from vnpy.trader.event import (
+    EVENT_ALL_CONTRACTS,
     EVENT_ORDER,
     EVENT_TRADE,
     EVENT_ACCOUNT,
@@ -37,13 +40,18 @@ from vnpy.trader.logger import logger
 from .settings import HscGatewaySettings
 from .socket_client import HscSocketClient
 from .rest_client import HscRestClient
-from .constants import ORDER_TYPE_MAP, STATUS_MAP, HSC_GATEWAY_NAME
+from .constants import (
+    ORDER_TYPE_MAP,
+    PRODUCT_MAP,
+    STATUS_MAP,
+    HSC_GATEWAY_NAME,
+    NoneEnum,
+    OrderStatus,
+)
 from .adapters import (
     get_contract_size,
     get_contract_pricetick,
-    get_contact_product,
 )
-from .utils import gateway_log
 
 
 class HscGateway(BaseGateway):
@@ -54,7 +62,9 @@ class HscGateway(BaseGateway):
     default_setting = {
         "centri_url": "",
         "tickers_ref_url": "",
-        "api_token": "",
+        "bearer_token": "",
+        "account_url": "",
+        "orders_url": "",
     }
 
     exchanges = [Exchange.VNEX]
@@ -67,7 +77,7 @@ class HscGateway(BaseGateway):
 
         # create dedicated thread for asyncio
         self.loop = asyncio.new_event_loop()
-        # self.loop.set_debug(True)
+        self.loop.set_debug(True)
 
         self.thread = threading.Thread(target=self.loop.run_forever, daemon=True)
         self.thread.start()
@@ -78,24 +88,48 @@ class HscGateway(BaseGateway):
 
         self._ticks_cache: Dict[str, TickData] = {}
 
+    # run async function in sync context
+    def _async_run(
+        self, coro: asyncio.Future, callback: Callable = None, success_msg: str = None
+    ):
+        async def wrapper():
+            res = await coro
+            if callback:
+                callback(res)
+            if success_msg:
+                self.write_log(success_msg)
+
+        try:
+            fut = asyncio.run_coroutine_threadsafe(wrapper(), self.loop)
+            fut.result()
+        except Exception as e:
+            msg = f"Async task failed: {e}"
+            logger.error(msg)
+            self.write_log(msg)
+
     def connect(self, settings: HscGatewaySettings):
-        self.rest_client = HscRestClient(settings["api_token"])
+        self.rest_client = HscRestClient(settings["bearer_token"])
         self.socket_client = HscSocketClient(
             centri_url=settings["centri_url"],
             on_tick=self._on_tick,
         )
 
-        fut = asyncio.run_coroutine_threadsafe(self.socket_client.start(), self.loop)
-        self._handle_future(fut)
-
-        logger.info(f"Gateway {self.gateway_name} connected")
-
-        fut2 = asyncio.run_coroutine_threadsafe(
-            self._fetch_contracts_async(settings["tickers_ref_url"]), self.loop
+        self._async_run(
+            coro=self.socket_client.start(),
+            success_msg="Socket started",
         )
-        self._handle_future(fut2)
 
-    async def _fetch_contracts_async(self, tickers_ref_url: str):
+        self._async_run(
+            coro=self._fetch_contracts(settings["tickers_ref_url"]),
+            success_msg="Contracts fetched",
+            callback=lambda contracts: self.on_event(EVENT_ALL_CONTRACTS, contracts),
+        )
+
+        self.query_account(settings["account_url"])
+        self.query_position(settings["orders_url"])
+
+    async def _fetch_contracts(self, tickers_ref_url: str) -> list[ContractData]:
+        contracts: list[ContractData] = []
         async with aiohttp.ClientSession() as session:
             async with session.get(tickers_ref_url) as response:
                 data = await response.json()
@@ -107,65 +141,25 @@ class HscGateway(BaseGateway):
                         symbol=ticker_ref["symbol"],
                         exchange=Exchange.VNEX,
                         name=ticker_ref["name"],
-                        product=get_contact_product(ticker_ref),
+                        product=PRODUCT_MAP.get(
+                            ticker_ref["stock_type"], Product.EQUITY
+                        ),
                         min_volume=100,  # minimum order volume
                         stop_supported=True,  # whether server supports stop order
                         net_position=True,  # whether gateway uses net position volume
                         history_data=True,  # whether gateway provides bar history data
                     )
                     self.on_contract(contract)
+                    contracts.append(contract)
+        return contracts
 
-    def _fetch_contracts(self, tickers_ref_url: str):
-        response = requests.get(tickers_ref_url)
-        data = response.json()
-        for ticker_ref in data:
-            contract = ContractData(
-                gateway_name=self.gateway_name,
-                size=get_contract_size(ticker_ref),
-                pricetick=get_contract_pricetick(ticker_ref),
-                symbol=ticker_ref["symbol"],
-                exchange=Exchange.VNEX,
-                name=ticker_ref["name"],
-                product=get_contact_product(ticker_ref),
-                min_volume=100,  # minimum order volume
-                stop_supported=True,  # whether server supports stop order
-                net_position=True,  # whether gateway uses net position volume
-                history_data=True,  # whether gateway provides bar history data
-            )
-            self.on_contract(contract)
-
-    @gateway_log
     def subscribe(self, sub_req: SubscribeRequest):
         symbol = sub_req.vt_symbol.split(".")[0]
 
-        fut = asyncio.run_coroutine_threadsafe(
-            self.socket_client.subscribe(symbol), self.loop
+        self._async_run(
+            coro=self.socket_client.subscribe(symbol),
+            success_msg=f"Subscribe to {symbol}",
         )
-        self._handle_future(fut)
-
-    # def stop(self):
-    #     self.rest_client.close()
-    #     self.loop.stop()
-    #     self.thread.join()
-
-    # def _start_polling(self):
-    #     t = threading.Thread(target=self._poll_loop, daemon=True)
-    #     t.start()
-
-    # def _poll_loop(self):
-    #     while True:
-    #         try:
-    #             orders = self.rest_client.get_open_orders()
-    #             for od in orders:
-    #                 self._handle_remote_order(od)
-    #             # accounts/positions
-    #             acct = self.rest_client.get_account()
-    #             self._emit_account(acct)
-    #             pos = self.rest_client.get_positions()
-    #             self._emit_positions(pos)
-    #         except Exception as e:
-    #             self._write_log(f"Polling error: {e}")
-    #         time.sleep(1)  # adjust
 
     def send_order(self, order_request):
         """
@@ -211,13 +205,14 @@ class HscGateway(BaseGateway):
             return
         self.rest_client.cancel_order(remote)
 
-    def query_account(self):
-        acct = self.rest_client.get_account()
+    def query_account(self, account_url: str):
+        acct = self.rest_client.json_query(account_url)
         self._emit_account(acct)
 
-    def query_position(self):
-        pos = self.rest_client.get_positions()
-        self._emit_positions(pos)
+    def query_position(self, orders_url: str):
+        pos = self.rest_client.json_query(orders_url)
+        self._emit_positions(pos["orders"])
+        self._emit_orders(pos["orders"])
 
     # callbacks from internal clients
     def _on_tick(self, raw_tick: dict):
@@ -333,8 +328,8 @@ class HscGateway(BaseGateway):
 
     def _emit_account(self, raw_acct):
         acct = AccountData(
-            accountid=raw_acct["account_id"],
-            balance=raw_acct["balance"],
+            accountid=raw_acct.get("account_id", "Balance"),
+            balance=raw_acct["currentValue"]["accountValue"],
             frozen=raw_acct.get("frozen", 0),
             gateway_name=self.gateway_name,
         )
@@ -342,17 +337,44 @@ class HscGateway(BaseGateway):
 
     def _emit_positions(self, raw_positions):
         for p in raw_positions:
+            # positions = only show executed orders
+            if p["status"] not in [
+                OrderStatus.FULLY_FILLED.name,
+                OrderStatus.PARTIAL_FILLED.name,
+                OrderStatus.COMPLETED.name,
+            ]:
+                continue
+
             pos = PositionData(
-                symbol=p["symbol"],
-                exchange=Exchange.SSE,
-                direction=(
-                    Direction.LONG if p["direction"] == "LONG" else Direction.SHORT
-                ),
-                volume=p["volume"],
-                price=p.get("avg_price", 0),
+                symbol=p["ticker"],
+                exchange=self.exchanges[0],
+                direction=Direction.LONG if p["bidAsk"] == "B" else Direction.SHORT,
+                volume=p["executedQuantity"],
+                price=p["filledPrice"],
                 gateway_name=self.gateway_name,
             )
+
             self.event_engine.put(Event(EVENT_POSITION, pos))
+
+    def _emit_orders(self, raw_orders):
+        for o in raw_orders:
+            order = OrderData(
+                gateway_name=self.gateway_name,
+                symbol=o["ticker"],
+                exchange=self.exchanges[0],
+                orderid=o["coreOrderId"],
+                type=OrderType.LIMIT,
+                direction=Direction.LONG if o["bidAsk"] == "B" else Direction.SHORT,
+                offset=Offset.NONE,
+                price=o["filledPrice"],
+                volume=o["quantity"],
+                traded=o["executedQuantity"],
+                status=STATUS_MAP.get(o["status"], Status.SUBMITTING),
+                datetime=datetime.fromisoformat(o["createdAt"].replace("Z", "+00:00")),
+                reference=o["orn"],
+            )
+
+            self.event_engine.put(Event(EVENT_ORDER, order))
 
     def _write_log(self, msg: str):
         self.event_engine.put(Event(EVENT_LOG, msg))
