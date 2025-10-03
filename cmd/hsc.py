@@ -10,7 +10,7 @@ from vnpy_datamanager import DataManagerApp
 from vnpy_portfoliomanager import PortfolioManagerApp
 from vnpy_datarecorder import DataRecorderApp
 from vnpy_riskmanager import RiskManagerApp
-from vnpy.gateway.hsc import HSC_GATEWAY_NAME, HscGateway
+from vnpy_hsc.gateway import HSC_GATEWAY_NAME, HscGateway
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
     event_engine = EventEngine()
     main_engine = MainEngine(event_engine)
 
-    main_engine.add_gateway(HscGateway, HSC_GATEWAY_NAME)
+    main_engine.add_gateway(HscGateway)
 
     main_engine.add_app(CtaStrategyApp)
     main_engine.add_app(CtaBacktesterApp)
