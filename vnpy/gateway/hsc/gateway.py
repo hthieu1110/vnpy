@@ -87,6 +87,7 @@ class HscGateway(BaseGateway):
         self._remote_to_local: Dict[str, str] = {}
 
         self._ticks_cache: Dict[str, TickData] = {}
+        self._contracts: Dict[str, ContractData] = {}
 
     # run async function in sync context
     def _async_run(
@@ -151,6 +152,8 @@ class HscGateway(BaseGateway):
                     )
                     self.on_contract(contract)
                     contracts.append(contract)
+                    self._contracts[contract.symbol] = contract
+
         return contracts
 
     def subscribe(self, sub_req: SubscribeRequest):
@@ -224,6 +227,7 @@ class HscGateway(BaseGateway):
 
         utc_now = datetime.now(UTC)
         symbol = raw_tick["symbol"]
+        name = self._contracts.get(symbol).name if symbol in self._contracts else "N/A"
 
         tick = TickData(
             gateway_name=self.gateway_name,
@@ -231,7 +235,7 @@ class HscGateway(BaseGateway):
             exchange=Exchange.VNEX,
             datetime=utc_now,
             #
-            name="",
+            name=name,
             volume=raw_tick.get("vol", 0),
             turnover=0,
             open_interest=0,
@@ -266,22 +270,33 @@ class HscGateway(BaseGateway):
             #
             localtime=utc_now,
         )
-        if symbol not in self._ticks_cache:
-            tick.open_price = tick.last_price
-            tick.high_price = tick.last_price
-            tick.low_price = tick.last_price
-            tick.pre_close = tick.last_price
 
-            self._ticks_cache[symbol] = tick
-        else:
-            # merge tick
-            current = self._ticks_cache[symbol]
+        if symbol in self._ticks_cache:
+            cache = self._ticks_cache[symbol]
             for k, v in asdict(tick).items():
-                current_val = getattr(current, k)
-                # update only if value is not None
-                setattr(current, k, v or current_val)
+                if not v:
+                    continue
+                setattr(cache, k, v)
 
-        self.on_tick(self._ticks_cache[symbol])
+            if tick.last_price:
+                if not cache.open_price:
+                    cache.open_price = tick.last_price
+
+                cache.pre_close = tick.last_price
+                cache.low_price = min(
+                    tick.last_price, cache.low_price or tick.last_price
+                )
+                cache.high_price = max(tick.last_price, cache.high_price)
+
+        else:
+            cache = tick
+            cache.pre_close = tick.last_price
+            cache.low_price = tick.last_price
+            cache.high_price = tick.last_price
+            cache.open_price = tick.last_price
+
+        self._ticks_cache[symbol] = cache
+        self.on_tick(cache)
 
     def _handle_remote_order(self, remote_order):
         """

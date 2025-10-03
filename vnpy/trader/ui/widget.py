@@ -19,7 +19,6 @@ from ..event import (
     EVENT_ALL_CONTRACTS,
     EVENT_QUOTE,
     EVENT_TICK,
-    EVENT_CONTRACT,
     EVENT_TRADE,
     EVENT_ORDER,
     EVENT_POSITION,

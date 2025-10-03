@@ -1,7 +1,7 @@
 from enum import Enum
 from vnpy.trader.constant import OrderType, Product, Status
 
-HSC_GATEWAY_NAME = "HscGateway"
+HSC_GATEWAY_NAME = "HSC_FUTURES"
 
 ORDER_TYPE_MAP = {
     OrderType.LIMIT: "LO",
