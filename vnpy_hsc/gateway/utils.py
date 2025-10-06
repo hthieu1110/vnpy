@@ -1,27 +1,28 @@
 from asyncio import Future
-import traceback
-from vnpy.trader.constant import Product
+import asyncio
+from typing import Callable
+from vnpy.trader.gateway import BaseGateway
 from vnpy.trader.logger import logger
 
 
-def gateway_log(func):
-    def wrapper(*args, **kwargs):
-        # first argument is self
-        s = args[0]
+def async_run(
+    gateway: BaseGateway,
+    loop: asyncio.AbstractEventLoop,
+    coro: asyncio.Future, 
+    callback: Callable = None, 
+    success_msg: str = None
+):
+    async def wrapper():
+        res = await coro
+        if callback:
+            callback(res)
+        if success_msg:
+            gateway.write_log(success_msg)
 
-        logger.info(f"Gateway {s.gateway_name} {func.__name__}...")
-        res = func(*args, **kwargs)
-        logger.info(f"Gateway {s.gateway_name} {func.__name__} done")
-        return res
-
-    return wrapper
-
-
-def socket_log(func):
-    async def wrapper(*args, **kwargs):
-        logger.info(f"SocketClient {func.__name__}...")
-        res = await func(*args, **kwargs)
-        logger.info(f"SocketClient {func.__name__} done")
-        return res
-
-    return wrapper
+    try:
+        fut = asyncio.run_coroutine_threadsafe(wrapper(), loop)
+        fut.result()
+    except Exception as e:
+        msg = f"Async task failed: {e}"
+        logger.error(msg)
+        gateway.write_log(msg)

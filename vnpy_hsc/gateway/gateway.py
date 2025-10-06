@@ -36,6 +36,7 @@ from vnpy.trader.object import (
 )
 from vnpy.trader.gateway import BaseGateway
 from vnpy.trader.logger import logger
+from vnpy_hsc.gateway.utils import async_run
 
 from .settings import HscGatewaySettings
 from .socket_client import HscSocketClient
@@ -52,6 +53,7 @@ from .adapters import (
     get_contract_size,
     get_contract_pricetick,
 )
+from vnpy_hsc.gateway.ssl_ctx import get_ssl_ctx
 
 
 class HscGateway(BaseGateway):
@@ -91,77 +93,69 @@ class HscGateway(BaseGateway):
         self._ticks_cache: Dict[str, TickData] = {}
         self._contracts: Dict[str, ContractData] = {}
 
-    # run async function in sync context
-    def _async_run(
-        self, coro: asyncio.Future, callback: Callable = None, success_msg: str = None
-    ):
-        async def wrapper():
-            res = await coro
-            if callback:
-                callback(res)
-            if success_msg:
-                self.write_log(success_msg)
-
-        try:
-            fut = asyncio.run_coroutine_threadsafe(wrapper(), self.loop)
-            fut.result()
-        except Exception as e:
-            msg = f"Async task failed: {e}"
-            logger.error(msg)
-            self.write_log(msg)
-
-    def connect(self, settings: HscGatewaySettings):
-        self.rest_client = HscRestClient(settings["bearer_token"])
+    async def _async_connect(self, settings: HscGatewaySettings):
+        bearer_token = settings["bearer_token"]
+        
+        self.rest_client = HscRestClient(bearer_token)
         self.socket_client = HscSocketClient(
+            gateway=self,
             centri_url=settings["centri_url"],
+            bearer_token=bearer_token,
             on_tick=self._on_tick,
         )
 
-        self._async_run(
-            coro=self.socket_client.start(),
-            success_msg="Socket started",
+        client_start = self.socket_client.start()
+        query_contracts = self.query_contracts(settings["tickers_ref_url"])
+        query_account = self.query_account(settings["account_url"])
+        query_position = self.query_position(settings["orders_url"])
+
+        await asyncio.gather(
+            client_start, 
+            query_contracts, 
+            query_account,
+            query_position,
         )
 
-        self._async_run(
-            coro=self._fetch_contracts(settings["tickers_ref_url"]),
-            success_msg="Contracts fetched",
-            callback=lambda contracts: self.on_event(EVENT_ALL_CONTRACTS, contracts),
+    def connect(self, settings: HscGatewaySettings):
+        async_run(
+            gateway=self,
+            loop=self.loop,
+            coro=self._async_connect(settings),
+            success_msg="Gateway fully connected",
         )
 
-        self.query_account(settings["account_url"])
-        self.query_position(settings["orders_url"])
-
-    async def _fetch_contracts(self, tickers_ref_url: str) -> list[ContractData]:
+    async def query_contracts(self, tickers_ref_url: str):
         contracts: list[ContractData] = []
-        async with aiohttp.ClientSession() as session:
-            async with session.get(tickers_ref_url) as response:
-                data = await response.json()
-                for ticker_ref in data:
-                    contract = ContractData(
-                        gateway_name=self.gateway_name,
-                        size=get_contract_size(ticker_ref),
-                        pricetick=get_contract_pricetick(ticker_ref),
-                        symbol=ticker_ref["symbol"],
-                        exchange=Exchange.VNEX,
-                        name=ticker_ref["name"],
-                        product=PRODUCT_MAP.get(
-                            ticker_ref["stock_type"], Product.EQUITY
-                        ),
-                        min_volume=100,  # minimum order volume
-                        stop_supported=True,  # whether server supports stop order
-                        net_position=True,  # whether gateway uses net position volume
-                        history_data=True,  # whether gateway provides bar history data
-                    )
-                    self.on_contract(contract)
-                    contracts.append(contract)
-                    self._contracts[contract.symbol] = contract
+        ticker_refs = await self.rest_client.async_json_query(tickers_ref_url, verify=None)
+        for ticker_ref in ticker_refs:
+            contract = ContractData(
+                gateway_name=self.gateway_name,
+                size=get_contract_size(ticker_ref),
+                pricetick=get_contract_pricetick(ticker_ref),
+                symbol=ticker_ref["symbol"],
+                exchange=Exchange.VNEX,
+                name=ticker_ref["name"],
+                product=PRODUCT_MAP.get(
+                    ticker_ref["stock_type"], Product.EQUITY
+                ),
+                min_volume=100,  # minimum order volume
+                stop_supported=True,  # whether server supports stop order
+                net_position=True,  # whether gateway uses net position volume
+                history_data=True,  # whether gateway provides bar history data
+            )
+            self.on_contract(contract)
+            contracts.append(contract)
+            self._contracts[contract.symbol] = contract
 
-        return contracts
+        self.on_event(EVENT_ALL_CONTRACTS, contracts)
+        self.write_log("Contracts received")
 
     def subscribe(self, sub_req: SubscribeRequest):
         symbol = sub_req.vt_symbol.split(".")[0]
 
-        self._async_run(
+        async_run(
+            gateway=self,
+            loop=self.loop,
             coro=self.socket_client.subscribe(symbol),
             success_msg=f"Subscribe to {symbol}",
         )
@@ -210,14 +204,16 @@ class HscGateway(BaseGateway):
             return
         self.rest_client.cancel_order(remote)
 
-    def query_account(self, account_url: str):
-        acct = self.rest_client.json_query(account_url)
+    async def query_account(self, account_url: str):
+        acct = await self.rest_client.async_json_query(account_url)
         self._emit_account(acct)
+        self.write_log("Account received")
 
-    def query_position(self, orders_url: str):
-        pos = self.rest_client.json_query(orders_url)
+    async def query_position(self, orders_url: str):
+        pos = await self.rest_client.async_json_query(orders_url)
         self._emit_positions(pos["orders"])
         self._emit_orders(pos["orders"])
+        self.write_log("Positions received")
 
     # callbacks from internal clients
     def _on_tick(self, raw_tick: dict):
@@ -345,9 +341,9 @@ class HscGateway(BaseGateway):
 
     def _emit_account(self, raw_acct):
         acct = AccountData(
-            accountid=raw_acct.get("account_id", "Balance"),
+            accountid="AllAccounts",
             balance=raw_acct["currentValue"]["accountValue"],
-            frozen=raw_acct.get("frozen", 0),
+            frozen=0,
             gateway_name=self.gateway_name,
         )
         self.event_engine.put(Event(EVENT_ACCOUNT, acct))

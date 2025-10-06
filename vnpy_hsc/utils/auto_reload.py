@@ -1,4 +1,3 @@
-import os
 import sys
 import time
 import subprocess
@@ -24,8 +23,8 @@ class RestartHandler(FileSystemEventHandler):
             self.start_process()
 
 
-if __name__ == "__main__":
-    handler = RestartHandler(["cmd/hsc.py"])
+def auto_reload(file_path: str):
+    handler = RestartHandler([file_path])
     observer = Observer()
     observer.schedule(handler, ".", recursive=True)
     observer.start()
@@ -36,3 +35,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
+

@@ -1,27 +1,15 @@
-import asyncio
 import json
-import time
 from vnpy.event import EventEngine
 from vnpy.trader.engine import MainEngine
 from vnpy.trader.event import EVENT_TICK, EVENT_ORDER, EVENT_TRADE
 from vnpy.trader.object import (
     SubscribeRequest,
-    OrderRequest,
-    Direction,
-    Offset,
-    OrderType,
 )
 from vnpy.trader.constant import Exchange
 
-from vnpy.gateway.hsc.gateway import HscGateway
-from vnpy.gateway.hsc.settings import HscGatewaySettings
+from vnpy_hsc.gateway.gateway import HscGateway
 
 import os
-from dotenv import load_dotenv
-
-from vnpy.trader.utility import load_json
-
-load_dotenv()
 
 
 def print_tick(event):
@@ -64,8 +52,8 @@ def run():
     main_engine.connect(settings, GATEWAY_NAME)
 
     # 4. Subscribe to market data
-    sub = SubscribeRequest(symbol=SYMBOL, exchange=Exchange.VNEX)
-    main_engine.subscribe(sub, GATEWAY_NAME)
+    # sub = SubscribeRequest(symbol=SYMBOL, exchange=Exchange.VNEX)
+    # main_engine.subscribe(sub, GATEWAY_NAME)
 
     # # 5. Place a test order
     # order_req = OrderRequest(

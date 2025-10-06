@@ -1,26 +1,16 @@
 {
     "tick": {
-        "HPG.VNEX": {
-            "symbol": "HPG",
-            "exchange": "VNEX",
-            "gateway_name": "HscGateway"
-        },
-        "BTCUSDT_SPOT_BINANCE.GLOBAL": {
-            "symbol": "BTCUSDT_SPOT_BINANCE",
+        "BTCUSDT_SWAP_BINANCE.GLOBAL": {
+            "symbol": "BTCUSDT_SWAP_BINANCE",
             "exchange": "GLOBAL",
-            "gateway_name": "BINANCE_SPOT"
+            "gateway_name": "BINANCE_LINEAR"
         }
     },
     "bar": {
-        "HPG.VNEX": {
-            "symbol": "HPG",
-            "exchange": "VNEX",
-            "gateway_name": "HscGateway"
-        },
-        "BTCUSDT_SPOT_BINANCE.GLOBAL": {
-            "symbol": "BTCUSDT_SPOT_BINANCE",
+        "BTCUSDT_SWAP_BINANCE.GLOBAL": {
+            "symbol": "BTCUSDT_SWAP_BINANCE",
             "exchange": "GLOBAL",
-            "gateway_name": "BINANCE_SPOT"
+            "gateway_name": "BINANCE_LINEAR"
         }
     }
 }

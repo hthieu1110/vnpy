@@ -1,29 +1,43 @@
-# Simple REST wrapper (replace with aiohttp or FIX in prod)
-import requests
+import httpx
 
+from vnpy_hsc.gateway.ssl_ctx import get_ssl_ctx
 
 class HscRestClient:
     def __init__(self, bearer_token: str):
         self.base_url = ""
         self.bearer_token = bearer_token
-        self._session = requests.Session()
-        self._session.headers.update({"Authorization": f"Bearer {bearer_token}"})
+        self._headers = {"Authorization": f"Bearer {bearer_token}"}
 
-    def json_query(self, url: str):
-        r = self._session.get(url)
-        r.raise_for_status()
-        return r.json()
+    async def async_json_query(self, url: str, verify: bool | None = False):
+        if verify is None:
+            verify = get_ssl_ctx()
+
+        async with httpx.AsyncClient(verify=verify, headers=self._headers) as client:
+            res = await client.get(url)
+            res.raise_for_status()
+            return res.json()
+
+    def json_query(self, url: str, verify: bool | None = False):
+        if verify is None:
+            verify = get_ssl_ctx()
+
+        with httpx.Client(verify=verify, headers=self._headers) as client:
+            res = client.get(url)
+            res.raise_for_status()
+            return res.json()
+
+    def json_post(self, url: str, payload: dict, verify: bool = False):
+        with httpx.Client(verify=verify, headers=self._headers) as client:
+            res = client.post(url, json=payload, timeout=5)
+            res.raise_for_status()
+            return res.json()
 
     def send_order(self, payload):
         # payload: symbol, price, volume, side, type
-        r = self._session.post(self.base_url + "/orders", json=payload, timeout=5)
-        r.raise_for_status()
-        return r.json()
+        return self.json_post(self.base_url + "/orders", payload)
 
     def cancel_order(self, remote_order_id):
-        r = self._session.post(self.base_url + f"/orders/{remote_order_id}/cancel")
-        r.raise_for_status()
-        return r.json()
+        return self.json_post(self.base_url + f"/orders/{remote_order_id}/cancel")
 
     def close(self):
-        self._session.close()
+        pass

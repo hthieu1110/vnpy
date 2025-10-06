@@ -8,6 +8,7 @@ from enum import Enum
 from typing import cast, Any
 from copy import copy
 from PySide6.QtCore import QStringListModel
+from PySide6.QtWidgets import QRadioButton
 from tzlocal import get_localzone_name
 from datetime import datetime
 from importlib import metadata
@@ -17,6 +18,7 @@ from ..constant import Direction, Exchange, Offset, OrderType
 from ..engine import MainEngine, Event, EventEngine
 from ..event import (
     EVENT_ALL_CONTRACTS,
+    EVENT_CONTRACT,
     EVENT_QUOTE,
     EVENT_TICK,
     EVENT_TRADE,
@@ -85,7 +87,6 @@ class BaseCell(QtWidgets.QTableWidgetItem):
         result: bool = self._text < other._text
         return result
 
-
 class EnumCell(BaseCell):
     """
     Cell used for showing enum data.
@@ -102,6 +103,23 @@ class EnumCell(BaseCell):
         if content:
             super().set_content(content.value, data)
 
+
+class DirectionRadioGroupCell(QtWidgets.QButtonGroup):
+    """
+    Cell used for showing direction radio buttons group.
+    """
+
+    def __init__(self, content: Any, data: Any) -> None:
+        super().__init__(content, data)
+
+        radio1 = QRadioButton("Option 1")
+        radio2 = QRadioButton("Option 2")
+        radio3 = QRadioButton("Option 3")
+
+        self.setExclusive(True)
+        self.addButton(radio1)
+        self.addButton(radio2)
+        self.addButton(radio3)
 
 class DirectionCell(EnumCell):
     """
@@ -331,6 +349,11 @@ class BaseMonitor(QtWidgets.QTableWidget):
             setting: dict = self.headers[header]
 
             content = data.__getattribute__(header)
+            
+            # format number
+            if isinstance(content, int):
+                content = f"{content:_}".replace("_", " ")
+
             cell: QtWidgets.QTableWidgetItem = setting["cell"](content, data)
             self.setItem(0, column, cell)
 
@@ -763,13 +786,21 @@ class TradingWidget(QtWidgets.QWidget):
         completer.activated.connect(self.set_vt_symbol)
 
         self.symbol_line.setCompleter(completer)
-        # end of auto completion for symbol -----------------------------
+        # end of symbol with  -----------------------------
 
-        self.name_line: QtWidgets.QLineEdit = QtWidgets.QLineEdit()
-        self.name_line.setReadOnly(True)
+        self.name_line: QtWidgets.QLabel = QtWidgets.QLabel()
 
-        self.direction_combo: QtWidgets.QComboBox = QtWidgets.QComboBox()
-        self.direction_combo.addItems([Direction.LONG.value, Direction.SHORT.value])
+        # Create radio buttons for direction selection
+        self.direction_long_radio: QtWidgets.QRadioButton = QtWidgets.QRadioButton(Direction.LONG.value)
+        self.direction_short_radio: QtWidgets.QRadioButton = QtWidgets.QRadioButton(Direction.SHORT.value)
+        
+        # Create button group for exclusive selection
+        self.direction_group: QtWidgets.QButtonGroup = QtWidgets.QButtonGroup()
+        self.direction_group.addButton(self.direction_long_radio, 0)
+        self.direction_group.addButton(self.direction_short_radio, 1)
+        
+        # Set default selection to LONG
+        self.direction_long_radio.setChecked(True)
 
         self.offset_combo: QtWidgets.QComboBox = QtWidgets.QComboBox()
         self.offset_combo.addItems([offset.value for offset in Offset])
@@ -810,8 +841,19 @@ class TradingWidget(QtWidgets.QWidget):
         grid.addWidget(QtWidgets.QLabel(_("Gateway")), 8, 0)
         grid.addWidget(self.exchange_combo, 0, 1, 1, 2)
         grid.addWidget(self.symbol_line, 1, 1, 1, 2)
-        grid.addWidget(self.name_line, 2, 1, 1, 2)
-        grid.addWidget(self.direction_combo, 3, 1, 1, 2)
+        grid.addWidget(self.name_line, 2, 1, 1, 1)
+        
+        # Create horizontal layout for direction radio buttons
+        direction_layout: QtWidgets.QHBoxLayout = QtWidgets.QHBoxLayout()
+        direction_layout.addWidget(self.direction_long_radio)
+        direction_layout.addWidget(self.direction_short_radio)
+        direction_layout.addStretch()  # Add stretch to push buttons to the left
+        
+        # Create a widget to hold the direction layout
+        direction_widget: QtWidgets.QWidget = QtWidgets.QWidget()
+        direction_widget.setLayout(direction_layout)
+        grid.addWidget(direction_widget, 3, 1, 1, 2)
+        
         grid.addWidget(self.offset_combo, 4, 1, 1, 2)
         grid.addWidget(self.order_type_combo, 5, 1, 1, 2)
         grid.addWidget(self.price_line, 6, 1, 1, 1)
@@ -910,16 +952,14 @@ class TradingWidget(QtWidgets.QWidget):
         self.signal_tick.connect(self.process_tick_event)
         self.event_engine.register(EVENT_TICK, self.signal_tick.emit)
 
-        # update symbol list
-        self.event_engine.register(
-            EVENT_ALL_CONTRACTS, self.process_all_contracts_event
-        )
+        # update symbol list for autocompletion
+        self.event_engine.register(EVENT_CONTRACT, self.process_contract_event)
 
-    def process_all_contracts_event(self, event: Event) -> None:
+    def process_contract_event(self, event: Event) -> None:
         """"""
-        contracts: list[ContractData] = event.data
-        symbols: list[str] = [contract.symbol for contract in contracts]
-
+        contract: ContractData = event.data
+        symbols = self.symbol_line_completer_model.stringList()
+        symbols.append(contract.symbol)
         self.symbol_line_completer_model.setStringList(symbols)
 
     def process_tick_event(self, event: Event) -> None:
@@ -1063,10 +1103,17 @@ class TradingWidget(QtWidgets.QWidget):
         else:
             price = float(price_text)
 
+        # Get selected direction from radio buttons
+        selected_direction: Direction
+        if self.direction_long_radio.isChecked():
+            selected_direction = Direction.LONG
+        else:
+            selected_direction = Direction.SHORT
+
         req: OrderRequest = OrderRequest(
             symbol=symbol,
             exchange=Exchange(str(self.exchange_combo.currentText())),
-            direction=Direction(str(self.direction_combo.currentText())),
+            direction=selected_direction,
             type=OrderType(str(self.order_type_combo.currentText())),
             volume=volume,
             price=price,
@@ -1109,9 +1156,11 @@ class TradingWidget(QtWidgets.QWidget):
                 else:
                     direction = Direction.LONG
 
-            self.direction_combo.setCurrentIndex(
-                self.direction_combo.findText(direction.value)
-            )
+            # Set radio button selection based on direction
+            if direction == Direction.LONG:
+                self.direction_long_radio.setChecked(True)
+            else:
+                self.direction_short_radio.setChecked(True)
             self.offset_combo.setCurrentIndex(
                 self.offset_combo.findText(Offset.CLOSE.value)
             )
