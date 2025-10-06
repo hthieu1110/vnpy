@@ -6526,7 +6526,6 @@ dependencies = [
     { name = "tqdm" },
     { name = "tzlocal" },
     { name = "vnpy-binance" },
-    { name = "vnpy-ctabacktester" },
     { name = "vnpy-ctastrategy" },
     { name = "vnpy-evo" },
     { name = "vnpy-novastrategy" },
@@ -6586,7 +6585,6 @@ requires-dist = [
     { name = "tqdm", specifier = ">=4.67.1" },
     { name = "tzlocal", specifier = ">=5.3.1" },
     { name = "vnpy-binance", specifier = ">=2025.6.17" },
-    { name = "vnpy-ctabacktester", specifier = ">=1.2.0" },
     { name = "vnpy-ctastrategy", specifier = ">=1.3.3" },
     { name = "vnpy-evo", specifier = ">=0.2.2" },
     { name = "vnpy-novastrategy", specifier = ">=0.7.1" },
@@ -6607,19 +6605,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/51/46/b78cda9d1fe4d71f95025adb4a535b019393d23d8a2118c9707be05c11c0/vnpy_binance-2025.6.17.tar.gz", hash = "sha256:0c46d6398fad83f13a6acf86feea0a97ff77fc57457b461a31f5a8c961cff58a", size = 34800, upload-time = "2025-06-17T11:47:26.176Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a5/b0/404f73c234a5083c1e9edc813f84492a552e200bba02a0002de9cf9a1c78/vnpy_binance-2025.6.17-py3-none-any.whl", hash = "sha256:3af57de9395bfbb7a60288483d4f904e6f127f8c102ad11c049cc3ed958554b7", size = 37125, upload-time = "2025-06-17T11:47:24.696Z" },
-]
-
-[[package]]
-name = "vnpy-ctabacktester"
-version = "1.2.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "vnpy" },
-    { name = "vnpy-ctastrategy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/47/4a/50782999e3f124d60580b13218338c7b693f413b2f868f69b652a0f5f3f0/vnpy_ctabacktester-1.2.0.tar.gz", hash = "sha256:ab209d90dac6b7b915fa731e904192fff22b995a4fb5b394fc41d0e7438611c1", size = 24798, upload-time = "2025-06-13T08:15:25.79Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ef/ce/986c17940475302174a31d085181177bb43a94c34f71b8b8edc6bd2aa9b0/vnpy_ctabacktester-1.2.0-py3-none-any.whl", hash = "sha256:1cab865aced1b683574f61c654cd027ed64fe6ff429232cb67a8c58d584c6b94", size = 31704, upload-time = "2025-06-13T08:15:24.649Z" },
 ]
 
 [[package]]

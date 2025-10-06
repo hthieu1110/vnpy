@@ -12,6 +12,8 @@ from vnpy.trader.utility import BarGenerator, ZoneInfo
 from vnpy.trader.constant import Interval, Exchange
 from vnpy_spreadtrading.base import SpreadItem, EVENT_SPREAD_DATA
 
+from vnpy_hsc.widgets import SymbolLineWithAutoCompletion
+
 from ..engine import APP_NAME, EVENT_CHART_HISTORY, ChartWizardEngine
 
 
@@ -45,18 +47,7 @@ class ChartWizardWidget(QtWidgets.QWidget):
         self.tab.setTabsClosable(True)
         self.tab.tabCloseRequested.connect(self.close_tab)
 
-        self.symbol_line: QtWidgets.QLineEdit = QtWidgets.QLineEdit()
-
-        # auto completion for symbol ------------------------------------
-        contracts: list[ContractData] = self.main_engine.get_all_contracts()
-        symbols = [contract.vt_symbol for contract in contracts]
-
-        completer = QtWidgets.QCompleter(symbols)
-        completer.setFilterMode(QtCore.Qt.MatchFlag.MatchStartsWith)
-        completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
-
-        self.symbol_line.setCompleter(completer)
-        # end of auto completion for symbol -----------------------------
+        self.symbol_line = SymbolLineWithAutoCompletion(self.main_engine)
 
         self.button: QtWidgets.QPushButton = QtWidgets.QPushButton("New Chart")
         self.button.clicked.connect(self.new_chart)

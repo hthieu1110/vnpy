@@ -1,6 +1,6 @@
 {
     "class_name": "TestStrategy",
-    "vt_symbol": "IF88.CFFEX",
+    "vt_symbol": "BTCUSDT_SPOT_BINANCE.GLOBAL",
     "interval": "1m",
     "start": "2022-10-04",
     "rate": 2.5e-05,

@@ -13,6 +13,8 @@ from tzlocal import get_localzone_name
 from datetime import datetime
 from importlib import metadata
 
+from vnpy_hsc.widgets.symbol_line import SymbolLineWithAutoCompletion
+
 from .qt import QtCore, QtGui, QtWidgets, Qt
 from ..constant import Direction, Exchange, Offset, OrderType
 from ..engine import MainEngine, Event, EventEngine
@@ -773,20 +775,9 @@ class TradingWidget(QtWidgets.QWidget):
         self.exchange_combo: QtWidgets.QComboBox = QtWidgets.QComboBox()
         self.exchange_combo.addItems([exchange.value for exchange in exchanges])
 
-        self.symbol_line: QtWidgets.QLineEdit = QtWidgets.QLineEdit()
+        self.symbol_line = SymbolLineWithAutoCompletion(self.main_engine, lazy=True, is_vt_symbol=False)
         self.symbol_line.returnPressed.connect(self.set_vt_symbol)
-
-        # auto completion for symbol ------------------------------------
-        model = QStringListModel([])
-        self.symbol_line_completer_model = model
-
-        completer: QtWidgets.QCompleter = QtWidgets.QCompleter(model, self.symbol_line)
-        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        completer.setFilterMode(Qt.MatchFlag.MatchStartsWith)
-        completer.activated.connect(self.set_vt_symbol)
-
-        self.symbol_line.setCompleter(completer)
-        # end of symbol with  -----------------------------
+        self.symbol_line.completer_activated.connect(self.set_vt_symbol)
 
         self.name_line: QtWidgets.QLabel = QtWidgets.QLabel()
 
@@ -951,16 +942,6 @@ class TradingWidget(QtWidgets.QWidget):
         """"""
         self.signal_tick.connect(self.process_tick_event)
         self.event_engine.register(EVENT_TICK, self.signal_tick.emit)
-
-        # update symbol list for autocompletion
-        self.event_engine.register(EVENT_CONTRACT, self.process_contract_event)
-
-    def process_contract_event(self, event: Event) -> None:
-        """"""
-        contract: ContractData = event.data
-        symbols = self.symbol_line_completer_model.stringList()
-        symbols.append(contract.symbol)
-        self.symbol_line_completer_model.setStringList(symbols)
 
     def process_tick_event(self, event: Event) -> None:
         """"""
