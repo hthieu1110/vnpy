@@ -1,3 +1,4 @@
+import sys
 from vnpy_ctabacktester import CtaBacktesterApp
 from vnpy.event import EventEngine
 from vnpy.trader.engine import MainEngine
@@ -10,6 +11,7 @@ from vnpy_chartwizard import ChartWizardApp
 
 def main():
     qapp = create_qapp()
+    qapp.setQuitOnLastWindowClosed(True)
 
     event_engine = EventEngine()
     main_engine = MainEngine(event_engine)
@@ -21,7 +23,8 @@ def main():
 
     # main_engine.add_app(NovaStrategyApp)
 
-    main_window = MainWindow(main_engine, event_engine)
+    main_window = MainWindow(main_engine, event_engine, force_close=True)
+    main_window.auto_connect_gateway("Vision")
     main_window.showMaximized()
 
     qapp.exec()

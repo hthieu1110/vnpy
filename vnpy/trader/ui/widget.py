@@ -19,7 +19,6 @@ from .qt import QtCore, QtGui, QtWidgets, Qt
 from ..constant import Direction, Exchange, Offset, OrderType
 from ..engine import MainEngine, Event, EventEngine
 from ..event import (
-    EVENT_ALL_CONTRACTS,
     EVENT_CONTRACT,
     EVENT_QUOTE,
     EVENT_TICK,

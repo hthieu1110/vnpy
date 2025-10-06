@@ -41,12 +41,13 @@ class MainWindow(QtWidgets.QMainWindow):
     Main window of the trading platform.
     """
 
-    def __init__(self, main_engine: MainEngine, event_engine: EventEngine) -> None:
+    def __init__(self, main_engine: MainEngine, event_engine: EventEngine, force_close: bool = False) -> None:
         """"""
         super().__init__()
 
         self.main_engine: MainEngine = main_engine
         self.event_engine: EventEngine = event_engine
+        self.force_close = force_close
 
         self.window_title: str = _("VeighNa Trader Community Edition - {} [{}]").format(
             vnpy.__version__, TRADER_DIR
@@ -243,6 +244,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(area, dock)
         return widget, dock
 
+    def auto_connect_gateway(self, gateway_name: str) -> None:
+        """
+        Auto connect gateway.
+        """
+        dialog: ConnectDialog = ConnectDialog(self.main_engine, gateway_name)
+        dialog.connect_gateway()
+
     def connect_gateway(self, gateway_name: str) -> None:
         """
         Open connect dialog for gateway connection.
@@ -250,10 +258,31 @@ class MainWindow(QtWidgets.QMainWindow):
         dialog: ConnectDialog = ConnectDialog(self.main_engine, gateway_name)
         dialog.exec()
 
+    def close_app(self, event: QtGui.QCloseEvent) -> None:
+        """
+        Close window without confirm.
+        """
+        for widget in self.widgets.values():
+            widget.close()
+
+        for monitor in self.monitors.values():
+            monitor.save_setting()
+
+        self.save_window_setting("custom")
+
+        self.main_engine.close()
+
+        event.accept()
+
+
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         """
         Call main engine close function before exit.
         """
+        if self.force_close:
+            self.close_app(event)
+            return
+
         reply = QtWidgets.QMessageBox.question(
             self,
             _("Quit"),
@@ -264,17 +293,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         if reply == QtWidgets.QMessageBox.StandardButton.Yes:
-            for widget in self.widgets.values():
-                widget.close()
-
-            for monitor in self.monitors.values():
-                monitor.save_setting()
-
-            self.save_window_setting("custom")
-
-            self.main_engine.close()
-
-            event.accept()
+            self.close_app(event)
         else:
             event.ignore()
 

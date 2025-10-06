@@ -18,7 +18,6 @@ from vnpy.trader.constant import (
 )
 from vnpy.event import Event
 from vnpy.trader.event import (
-    EVENT_ALL_CONTRACTS,
     EVENT_ORDER,
     EVENT_TRADE,
     EVENT_ACCOUNT,
@@ -147,7 +146,6 @@ class HscGateway(BaseGateway):
             contracts.append(contract)
             self._contracts[contract.symbol] = contract
 
-        self.on_event(EVENT_ALL_CONTRACTS, contracts)
         self.write_log("Contracts received")
 
     def subscribe(self, sub_req: SubscribeRequest):
