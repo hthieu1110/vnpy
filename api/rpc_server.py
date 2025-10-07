@@ -1,3 +1,4 @@
+from enum import Enum
 import httpx
 import requests, json
 from vnpy_binance import BinanceSpotGateway
@@ -8,9 +9,18 @@ from vnpy_rpcservice import RpcServiceApp
 from api.config import CENTRI_HOST, CENTRI_PORT, RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
 from vnpy.event.engine import Event, EventEngine
 from vnpy.trader.engine import MainEngine
-from vnpy.trader.event import EVENT_LOG
+from vnpy.trader.event import (
+    EVENT_ACCOUNT, 
+    EVENT_CONTRACT, 
+    EVENT_LOG, 
+    EVENT_POSITION,
+    EVENT_QUOTE,
+    EVENT_TICK, 
+    EVENT_TRADE,
+    EVENT_ORDER,
+)
 from vnpy.trader.logger import logger
-
+from dataclasses import asdict, is_dataclass
 
 headers = {
     "Content-Type": "application/json",
@@ -23,25 +33,28 @@ http_client = httpx.Client(verify=False, headers=headers)
 def get_http_client():
     return http_client
 
+def to_json(data: any) -> dict:
+    d = asdict(data)
+    for key, value in d.items():
+        if is_dataclass(value):
+            d[key] = to_json(value)
+        elif isinstance(value, Enum):
+            d[key] = value.value
+    return d
+
 def publish_event(event: Event) -> None:
     # logger.info(f"Publish event: {event.type}")
 
     http_client = get_http_client()
 
-    data = {
-        "event_type": event.type, 
-        "event_data": {
-            "gateway_name": event.data.gateway_name,
-            "extra": event.data.extra,
-            "msg": event.data.msg,
-        }
-    }
-    channel = "event." + event.type
     payload = {
         "method": "publish",
         "params": {
-            "channel": channel,
-            "data": data,
+            "channel":  "event." + event.type,
+            "data": {
+                "event_type": event.type, 
+                "event_data": to_json(event.data)
+            },
         }
     }
 
@@ -79,6 +92,13 @@ def main():
     }
     
     event_engine.register(EVENT_LOG, publish_event)
+    event_engine.register(EVENT_CONTRACT, publish_event)
+    event_engine.register(EVENT_POSITION, publish_event)
+    event_engine.register(EVENT_ACCOUNT, publish_event)
+    event_engine.register(EVENT_QUOTE, publish_event)
+    event_engine.register(EVENT_TICK, publish_event)
+    event_engine.register(EVENT_TRADE, publish_event)
+    event_engine.register(EVENT_ORDER, publish_event)
 
     # connect to gateway -------------------------------------------------------------
     # settings = load_json("connect_vision.json")

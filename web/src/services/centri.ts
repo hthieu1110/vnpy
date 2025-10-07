@@ -61,10 +61,10 @@ class CentriService {
     }
 
     sub.on('subscribed', (ctx: SubscribedContext) => {
-      console.log('Subscribed to channel', ctx);
+      console.log('Subscribed to channel', ctx.channel);
     });
     sub.on('unsubscribed', (ctx: UnsubscribedContext) => {
-      console.log('Unsubscribed from channel', ctx);
+      console.log('Unsubscribed from channel', ctx.channel);
     });
     sub.on('publication', (ctx: PublicationContext) => {
       callback(ctx);
@@ -76,10 +76,18 @@ class CentriService {
     return sub;
   }
 
+  subscribeEvent(eventName: string, callback: (ctx: PublicationContext) => void) {
+    this.subscribe('event.' + eventName, callback);
+  }
+
+  unsubscribeEvent(eventName: string) {
+    this.unsubscribe('event.' + eventName);
+  }
+
   unsubscribe(channel: string) {
     const sub = this.centriClient.getSubscription(channel);
     if (!sub) {
-      throw new Error(`Subscription to channel ${channel} not found`);
+      return;
     }
 
     sub.unsubscribe();

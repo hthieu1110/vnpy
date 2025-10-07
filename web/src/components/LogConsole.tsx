@@ -1,8 +1,6 @@
-import { useState, useEffect } from 'react';
 import { Card, Button, Typography } from 'antd';
-import { ClearOutlined, CloseOutlined, FileTextOutlined } from '@ant-design/icons';
-import { centriService } from '@/services/centri';
-import { EVENT_LOG } from '@/consts/events';
+import { ClearOutlined, DownOutlined, FileTextOutlined } from '@ant-design/icons';
+import { useDataStore } from '@/store/useDataStore';
 
 const { Text } = Typography;
 
@@ -11,32 +9,9 @@ interface LogConsoleProps {
   onClose: () => void;
 }
 
-type Log = {
-  datetime: string;
-  event_type: string;
-  event_data: {
-    gateway_name: string;
-    extra: string;
-    msg: string;
-  };
-};
-
 export const LogConsole = ({ visible, onClose }: LogConsoleProps) => {
-  const [logs, setLogs] = useState<Log[]>([]);
-
-  useEffect(() => {
-    const channel = 'event.' + EVENT_LOG;
-
-    centriService.subscribe(channel, (ctx) => {
-      const log = ctx.data;
-      log.datetime = new Date().toLocaleString();
-      setLogs((prevLogs) => [...prevLogs, log]);
-    });
-
-    // return () => {
-    //   centriService.unsubscribe(channel);
-    // };
-  }, []);
+  const logs = useDataStore(state => state.logs);
+  const dataActions = useDataStore(state => state.actions);
 
   if (!visible) {
     return null;
@@ -76,8 +51,8 @@ export const LogConsole = ({ visible, onClose }: LogConsoleProps) => {
           </div>
 
           <div className='flex items-center gap-2'>
-            <Button type='text' icon={<ClearOutlined />} onClick={() => setLogs([])} />
-            <Button type='text' icon={<CloseOutlined />} onClick={onClose} />
+            <Button type='text' icon={<ClearOutlined />} onClick={() => dataActions.setLogs([])} />
+            <Button type='text' icon={<DownOutlined />} onClick={onClose} />
           </div>
         </div>
       }
@@ -85,7 +60,7 @@ export const LogConsole = ({ visible, onClose }: LogConsoleProps) => {
       <div className='flex flex-col gap-0.5'>
         {logs.map((log, index) => (
             <Text key={index}>
-              {log.datetime} | {log.event_data.gateway_name} | {log.event_type}: {log.event_data.msg}
+              {log.datetime} | {log.gateway_name} | {log.msg}
             </Text>
         ))}
       </div>

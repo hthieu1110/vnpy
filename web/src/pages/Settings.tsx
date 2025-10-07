@@ -4,7 +4,8 @@ import { useAppStore } from '../store/useAppStore'
 const { Option } = Select
 
 export const Settings = () => {
-  const { theme, setTheme, setConnected } = useAppStore()
+  const theme = useAppStore(state => state.theme)
+  const appActions = useAppStore(state => state.actions)
   const [form] = Form.useForm()
 
   const handleSave = (values: any) => {
@@ -13,9 +14,9 @@ export const Settings = () => {
   }
 
   const handleTestConnection = () => {
-    setConnected(true)
+    appActions.setGateway('Vision')
     message.success('Connection test successful')
-    setTimeout(() => setConnected(false), 3000)
+    setTimeout(() => appActions.setGateway(null), 3000)
   }
 
   return (
