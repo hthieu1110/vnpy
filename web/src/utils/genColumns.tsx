@@ -6,7 +6,7 @@ export const genColumns = (attrList: string[]) => {
     title: attr.charAt(0).toUpperCase() + attr.slice(1).replace(/_/g, ' '),
     dataIndex: attr,
     key: attr,
-    align: 'center',
+    align: 'center' as const,
     render: (value: unknown): React.ReactNode => {
       let val = value;
       if (typeof value === 'boolean') {
