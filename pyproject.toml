@@ -51,6 +51,13 @@ dependencies = [
     "scipy>=1.15.3",
     "httpx>=0.28.1",
     "importlib-metadata>=8.7.0",
+    "fastapi>=0.118.0",
+    "vnpy-rpcservice>=1.1.0",
+    "uvicorn>=0.37.0",
+    "cryptography>=46.0.2",
+    "pyjwt>=2.10.1",
+    "grpcio>=1.75.1",
+    "grpcio-tools>=1.75.1",
 ]
 keywords = ["quant", "quantitative", "investment", "trading", "algotrading"]
 

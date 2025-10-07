@@ -8,7 +8,12 @@ if __name__ == "__main__":
     args = sys.argv[1:]
 
     if len(args) != 1:
-        print("Usage: python cmd/_auto_reload.py <file>")
+        print("Usage: python cmd/_auto_reload.py <name>")
         sys.exit(1)
         
-    auto_reload(f"cmd/{args[0]}.py")
+    if ".py" in args[0]:
+        name = args[0]
+    else:
+        name = f"cmd/{args[0]}.py"
+
+    auto_reload(name)
