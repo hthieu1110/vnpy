@@ -63,6 +63,9 @@ export const LogConsole = ({ visible, onClose }: LogConsoleProps) => {
         body: {
           padding: 4,
           overflow: 'auto',
+          maxHeight: 'calc(100% - 44px)',
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#888 transparent',
         },
       }}
       title={

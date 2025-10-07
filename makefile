@@ -1,26 +1,30 @@
+# Virtual environment configuration
+VENV = .venv
+PYTHON = $(VENV)/bin/python
+
 PHONY: test
-test:	
-	python vnpy_hsc/gateway/test.py
+test:
+	$(PYTHON) vnpy_hsc/gateway/test.py
 
 PHONY: hsc
 hsc:
-	python cmd/hsc.py
+	$(PYTHON) cmd/hsc.py
 
 PHONY: hsc_dev
 hsc_dev:
-	python cmd/hsc_dev.py
+	$(PYTHON) cmd/hsc_dev.py
 
 PHONY: paper
 paper:
-	python cmd/paper.py
+	$(PYTHON) cmd/paper.py
 
 PHONY: binance
 binance:
-	python cmd/binance.py
+	$(PYTHON) cmd/binance.py
 
 PHONY: ib
 ib:
-	python cmd/ib.py
+	$(PYTHON) cmd/ib.py
 
 PHONY: patch_centrifuge
 patch_centrifuge:
@@ -29,11 +33,11 @@ patch_centrifuge:
 
 PHONY: rpc_server
 rpc_server:
-	./auto_reload.py api/rpc_server.py
+	$(PYTHON) auto_reload.py api/rpc_server.py
 
 PHONY: api_server
 api_server:
-	python api/api_server.py
+	$(PYTHON) api/api_server.py
 
 PHONY: centri
 centri:
@@ -41,7 +45,7 @@ centri:
 
 PHONY: gen_proto
 gen_proto:
-	python -m grpc_tools.protoc -Iproto --python_out=api --grpc_python_out=api proto/*.proto
+	$(PYTHON) -m grpc_tools.protoc -Iproto --python_out=api --grpc_python_out=api proto/*.proto
 
 PHONY: install_centri
 install_centri:
