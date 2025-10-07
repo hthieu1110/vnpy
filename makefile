@@ -42,3 +42,7 @@ centri:
 PHONY: gen_proto
 gen_proto:
 	python -m grpc_tools.protoc -Iproto --python_out=api --grpc_python_out=api proto/*.proto
+
+PHONY: install_centri
+install_centri:
+	curl -s https://centrifugal.dev/install.sh | bash
