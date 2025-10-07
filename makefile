@@ -37,7 +37,7 @@ api_server:
 
 PHONY: centri
 centri:
-	cd api && ./centrifugo --config=centrifugo.json
+	cd api && centrifugo --config=centrifugo.json
 
 PHONY: gen_proto
 gen_proto:
@@ -46,3 +46,7 @@ gen_proto:
 PHONY: install_centri
 install_centri:
 	curl -s https://centrifugal.dev/install.sh | bash
+
+PHONY: webapp
+webapp:
+	cd web && npm run dev
