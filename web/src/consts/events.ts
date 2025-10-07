@@ -1,0 +1,8 @@
+export const EVENT_TICK = "eTick."
+export const EVENT_TRADE = "eTrade."
+export const EVENT_ORDER = "eOrder."
+export const EVENT_POSITION = "ePosition."
+export const EVENT_ACCOUNT = "eAccount."
+export const EVENT_QUOTE = "eQuote."
+export const EVENT_CONTRACT = "eContract."
+export const EVENT_LOG = "eLog"
