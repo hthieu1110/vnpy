@@ -6,7 +6,8 @@ export const theme: ThemeConfig = {
   },
   components: {
     Card: {
-      bodyPaddingSM: 8
+      bodyPaddingSM: 8,
+      headerBg: "#f0f2f5",
     },
   },
 };

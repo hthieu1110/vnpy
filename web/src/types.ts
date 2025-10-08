@@ -115,3 +115,20 @@ export interface OrderData extends BaseTradingInfo {
   datetime: number;
   reference: string;
 }
+
+export interface QuoteData extends BaseTradingInfo {
+    quoteid: string
+    bid_price: number;
+    bid_volume: number;
+    ask_price: number;
+    ask_volume: number;
+    bid_offset: string;
+    ask_offset: string;
+    status: string;
+    datetime: number;
+    reference: string;
+}
+
+export interface CancelRequest extends BaseTradingInfo {
+  orderid: string;
+}

@@ -9,7 +9,7 @@ interface User {
 
 interface AppState {
   user: User | null;
-  gateway: string | null;
+  gateway: string;
   theme: 'light' | 'dark';
   isShowLogs: boolean;
 
@@ -18,7 +18,7 @@ interface AppState {
   // Actions
   actions: {
     setUser: (user: User | null) => void;
-    setGateway: (connectedGateway: string | null) => void;
+    setGateway: (connectedGateway: string) => void;
     setIsConnecting: (connecting: boolean) => void;
     setTheme: (theme: 'light' | 'dark') => void;
     setLogConsoleVisible: (visible: boolean) => void;
@@ -31,7 +31,7 @@ export const useAppStore = create<AppState>()(
     persist(
       (set) => ({
         user: null,
-        gateway: null,
+        gateway: '',
         theme: 'light',
         isShowLogs: false,
         isConnecting: false,
@@ -41,14 +41,13 @@ export const useAppStore = create<AppState>()(
           setIsConnecting: (connecting) => set({ isConnecting: connecting }),
           setTheme: (theme) => set({ theme }),
           setLogConsoleVisible: (visible) => set({ isShowLogs: visible }),
-          logout: () => set({ user: null, gateway: null, isConnecting: false }),
+          logout: () => set({ user: null, gateway: '', isConnecting: false }),
         },
       }),
       {
         name: 'app-storage',
         partialize: (state) => ({
           user: state.user,
-          gateway: state.gateway,
           theme: state.theme,
           isShowLogs: state.isShowLogs,
         }),

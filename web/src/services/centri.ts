@@ -13,6 +13,7 @@ export class CentriService {
   private centriClient: Centrifuge;
 
   private _isConnected: boolean = false;
+  private _subs: Record<string, Subscription> = {};
 
   constructor(centriUrl: string) {
     this.centriClient = new Centrifuge(centriUrl);
@@ -46,35 +47,32 @@ export class CentriService {
       this._isConnected = true;
     }
 
-    let sub = this.centriClient.getSubscription(channel);
-    if (sub) {
-      return sub;
+    const existingSub = this._subs[channel];
+    if (existingSub) {
+      return existingSub;
     }
 
-    const subscriptionToken = await this.getSubscriptionToken(channel);
-    try {
-      sub = this.centriClient.newSubscription(channel, {
-        token: subscriptionToken,
-        recoverable: true,
-      });
-    } catch (error) {
-      throw error;
-    }
+    const newSub = this.centriClient.newSubscription(channel, {
+      getToken: async () => {
+        return await this.getSubscriptionToken(channel);
+      },
+      recoverable: true,
+    });
 
-    sub.on('subscribed', (ctx: SubscribedContext) => {
+    this._subs[channel] = newSub;
+
+    newSub.on('subscribed', (ctx: SubscribedContext) => {
       console.log('Subscribed to channel', ctx.channel);
     });
-    sub.on('unsubscribed', (ctx: UnsubscribedContext) => {
+    newSub.on('unsubscribed', (ctx: UnsubscribedContext) => {
       console.log('Unsubscribed from channel', ctx.channel);
     });
-    sub.on('publication', (ctx: PublicationContext) => {
+    newSub.on('publication', (ctx: PublicationContext) => {
       callback(ctx);
     });
 
-    sub.subscribe();
-
-    console.log(`Subscribed to channel ${channel}`);
-    return sub;
+    newSub.subscribe();
+    return newSub;
   }
 
   subscribeEvent(eventName: string, callback: (ctx: PublicationContext) => void) {

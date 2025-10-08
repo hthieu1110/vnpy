@@ -1,4 +1,13 @@
-import { EVENT_ACCOUNT, EVENT_CONTRACT, EVENT_LOG, EVENT_ORDER, EVENT_POSITION, EVENT_QUOTE, EVENT_TICK, EVENT_TRADE } from '@/consts/events';
+import {
+  EVENT_ACCOUNT,
+  EVENT_CONTRACT,
+  EVENT_LOG,
+  EVENT_ORDER,
+  EVENT_POSITION,
+  EVENT_QUOTE,
+  EVENT_TICK,
+  EVENT_TRADE,
+} from '@/consts/events';
 import { useAppStore } from '@/store/useAppStore';
 import { useDataStore } from '@/store/useDataStore';
 import { Account, Contract, OrderData, Position, Quote, Tick, Trade } from '@/types';
@@ -11,31 +20,34 @@ export const useRegisterEvents = () => {
   const dataActions = useDataStore((state) => state.actions);
   const appActions = useAppStore((state) => state.actions);
 
-  const [debouncedAccounts, addAccount] = useDebouncedList<Account>(100);
-  const [debouncedContracts, addContract] = useDebouncedList<Contract>(100);
-  const [debouncedPositions, addPosition] = useDebouncedList<Position>(100);
-  const [debouncedTrades, addTrade] = useDebouncedList<Trade>(100);
-  const [debouncedOrders, addOrder] = useDebouncedList<OrderData>(100);
-  const [debouncedQuotes, addQuote] = useDebouncedList<Quote>(100);
-  const [debouncedTicks, addTick] = useDebouncedList<Tick>(100);
-  
-  const updateLogs = useCallback((ctx: PublicationContext) => {
-    const log = ctx.data;
-    if (log.event_data.msg === 'Account data received') {
-      appActions.setGateway('Vision');
-    }
-    dataActions.addLog(log.event_data);
-  }, [dataActions, appActions]);
+  const [debouncedOrderDatas, upsertOrder] = useDebouncedList<OrderData>(100);
+  const [debouncedAccounts, upsertAccount] = useDebouncedList<Account>(100);
+  const [debouncedContracts, upsertContract] = useDebouncedList<Contract>(100);
+  const [debouncedPositions, upsertPosition] = useDebouncedList<Position>(100);
+  const [debouncedTrades, upsertTrade] = useDebouncedList<Trade>(100);
+  const [debouncedQuotes, upsertQuote] = useDebouncedList<Quote>(100);
+  const [debouncedTicks, upsertTick] = useDebouncedList<Tick>(100);
+
+  const updateLogs = useCallback(
+    (ctx: PublicationContext) => {
+      const log = ctx.data;
+      if (log.event_data.msg === 'Account data received') {
+        appActions.setGateway('Vision');
+      }
+      dataActions.addLog(log.event_data);
+    },
+    [dataActions, appActions]
+  );
 
   useEffect(() => {
     dataActions.setContracts(debouncedContracts);
     console.log('Contracts received', debouncedContracts.length);
   }, [debouncedContracts, dataActions]);
 
-   useEffect(() => {
+  useEffect(() => {
     dataActions.setAccounts(debouncedAccounts);
     console.log('Accounts received', debouncedAccounts.length);
-   }, [debouncedAccounts, dataActions]);
+  }, [debouncedAccounts, dataActions]);
 
   useEffect(() => {
     dataActions.setPositions(debouncedPositions);
@@ -48,10 +60,9 @@ export const useRegisterEvents = () => {
   }, [debouncedTrades, dataActions]);
 
   useEffect(() => {
-    dataActions.setOrderDatas(debouncedOrders);
-    console.log('Orders received', debouncedOrders.length);
-  }, [debouncedOrders, dataActions]);
-
+    dataActions.setOrderDatas(debouncedOrderDatas);
+    console.log('Orders received', debouncedOrderDatas.length);
+  }, [debouncedOrderDatas, dataActions]);
 
   useEffect(() => {
     dataActions.setQuotes(debouncedQuotes);
@@ -66,13 +77,13 @@ export const useRegisterEvents = () => {
   useEffect(() => {
     eventEngine.on(EVENT_LOG, updateLogs);
 
-    eventEngine.on(EVENT_CONTRACT, (ctx) => addContract(ctx.data.event_data));
-    eventEngine.on(EVENT_ACCOUNT, (ctx) => addAccount(ctx.data.event_data));
-    eventEngine.on(EVENT_POSITION, (ctx) => addPosition(ctx.data.event_data));
-    eventEngine.on(EVENT_TRADE, (ctx) => addTrade(ctx.data.event_data));
-    eventEngine.on(EVENT_ORDER, (ctx) => addOrder(ctx.data.event_data));
-    eventEngine.on(EVENT_QUOTE, (ctx) => addQuote(ctx.data.event_data));
-    eventEngine.on(EVENT_TICK, (ctx) => addTick(ctx.data.event_data));
+    eventEngine.on(EVENT_CONTRACT, (ctx) => upsertContract(ctx.data.event_data));
+    eventEngine.on(EVENT_ACCOUNT, (ctx) => upsertAccount(ctx.data.event_data));
+    eventEngine.on(EVENT_POSITION, (ctx) => upsertPosition(ctx.data.event_data));
+    eventEngine.on(EVENT_TRADE, (ctx) => upsertTrade(ctx.data.event_data));
+    eventEngine.on(EVENT_ORDER, (ctx) => upsertOrder(ctx.data.event_data, 'orderid'));
+    eventEngine.on(EVENT_QUOTE, (ctx) => upsertQuote(ctx.data.event_data));
+    eventEngine.on(EVENT_TICK, (ctx) => upsertTick(ctx.data.event_data));
 
     return () => {
       eventEngine.off(EVENT_LOG);
@@ -85,5 +96,16 @@ export const useRegisterEvents = () => {
       eventEngine.off(EVENT_QUOTE);
       eventEngine.off(EVENT_TICK);
     };
-  }, [dataActions, appActions, addContract, addAccount, addPosition, addTrade, addOrder, updateLogs]);
+  }, [
+    dataActions,
+    appActions,
+    upsertContract,
+    upsertAccount,
+    upsertPosition,
+    upsertTrade,
+    updateLogs,
+    upsertTick,
+    upsertQuote,
+    upsertOrder,
+  ]);
 };

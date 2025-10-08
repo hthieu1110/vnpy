@@ -35,12 +35,16 @@ def main():
         pub_address=f"tcp://{RPC_HOST}:{RPC_PUB_PORT}",
     )
 
+    # register more rpcs 
     rpc_service.server.register(main_engine.connect)
+    rpc_service.server.register(main_engine.get_all_quotes)
+    rpc_service.server.register(main_engine.get_all_active_quotes)
 
     logger.info("RpcServer started")
 
     # register event to publish to centrifugo ----------------------------------------
     event_engine.register(EVENT_LOG, publish_event)
+    
     event_engine.register(EVENT_CONTRACT, publish_event)
     event_engine.register(EVENT_POSITION, publish_event)
     event_engine.register(EVENT_ACCOUNT, publish_event)

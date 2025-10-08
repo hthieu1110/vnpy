@@ -9,7 +9,7 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from vnpy.rpc.client import RemoteException, RpcClient
-from vnpy.trader.object import OrderRequest
+from vnpy.trader.object import OrderRequest, CancelRequest
 
 
 @asynccontextmanager
@@ -43,16 +43,22 @@ app.add_middleware(
 
 
 def func_args_convert(funcName: str, data: dict) -> dict:
-    if funcName == "send_order":
-        data["req"] = to_dataclass(data["req"], OrderRequest)
-    return data
+    match funcName:
+        case "send_order":
+            data["req"] = to_dataclass(data["req"], OrderRequest)
+        case "cancel_order":
+            data["req"] = to_dataclass(data["req"], CancelRequest)
+        case _:
+            pass
 
+    return data
 
 @app.post("/rpc/{action}")
 async def rpc(action: str, data: dict = Body(...)):
     try:
         func = getattr(app.state.rpc_client, action)
         converted_data = func_args_convert(action, data)
+        print(converted_data)
         result = func(**converted_data)
         return {"success": True, "data": result}
     except Exception as e:
