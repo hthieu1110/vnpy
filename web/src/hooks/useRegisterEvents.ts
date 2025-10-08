@@ -1,8 +1,7 @@
 import { EVENT_ACCOUNT, EVENT_CONTRACT, EVENT_LOG, EVENT_ORDER, EVENT_POSITION, EVENT_QUOTE, EVENT_TICK, EVENT_TRADE } from '@/consts/events';
-import { centriService } from '@/services/centri';
 import { useAppStore } from '@/store/useAppStore';
 import { useDataStore } from '@/store/useDataStore';
-import { Account, Contract, Order, Position, Quote, Tick, Trade } from '@/types';
+import { Account, Contract, OrderData, Position, Quote, Tick, Trade } from '@/types';
 import { PublicationContext } from 'centrifuge';
 import { useCallback, useEffect } from 'react';
 import { useDebouncedList } from './useDebouncedList';
@@ -16,7 +15,7 @@ export const useRegisterEvents = () => {
   const [debouncedContracts, addContract] = useDebouncedList<Contract>(100);
   const [debouncedPositions, addPosition] = useDebouncedList<Position>(100);
   const [debouncedTrades, addTrade] = useDebouncedList<Trade>(100);
-  const [debouncedOrders, addOrder] = useDebouncedList<Order>(100);
+  const [debouncedOrders, addOrder] = useDebouncedList<OrderData>(100);
   const [debouncedQuotes, addQuote] = useDebouncedList<Quote>(100);
   const [debouncedTicks, addTick] = useDebouncedList<Tick>(100);
   
@@ -49,7 +48,7 @@ export const useRegisterEvents = () => {
   }, [debouncedTrades, dataActions]);
 
   useEffect(() => {
-    dataActions.setOrders(debouncedOrders);
+    dataActions.setOrderDatas(debouncedOrders);
     console.log('Orders received', debouncedOrders.length);
   }, [debouncedOrders, dataActions]);
 

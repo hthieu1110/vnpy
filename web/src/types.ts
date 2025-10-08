@@ -30,15 +30,13 @@ export interface Contract extends BaseData {
 }
 
 export interface Log extends BaseData {
-  datetime: string;
+  datetime: number;
 
   extra: string;
   msg: string;
 }
 
-export interface Position extends BaseData {
-  symbol: string;
-  exchange: string;
+export interface Position extends BaseTradingInfo {
   direction: string;
   volume: number;
   frozen: number;
@@ -93,7 +91,7 @@ export interface TradeData extends BaseTradingInfo {
   offset: string;
   price: number;
   volume: number;
-  datetime: string;
+  datetime: number;
 }
 
 export interface OrderRequest extends BaseTradingInfo {
@@ -114,6 +112,6 @@ export interface OrderData extends BaseTradingInfo {
   volume: number;
   traded: number;
   status: string;
-  datetime: string;
+  datetime: number;
   reference: string;
 }

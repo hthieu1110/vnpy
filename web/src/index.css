@@ -42,3 +42,11 @@ a:hover {
 }
 
 
+/* override table header height */
+.ant-table-thead > tr > th {
+  padding: 4px 4px !important;
+}
+
+.ant-table-wrapper .ant-table-pagination.ant-pagination {
+  margin: 8px 0  0 !important;
+}

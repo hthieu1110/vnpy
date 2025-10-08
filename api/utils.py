@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass, is_dataclass
+import datetime
 from enum import Enum
 import json
 import time
@@ -28,6 +29,8 @@ def to_json(data: any) -> dict:
             d[key] = to_json(value)
         elif isinstance(value, Enum):
             d[key] = value.value
+        elif isinstance(value, datetime.datetime):
+            d[key] = value.timestamp()
     return d
 
 

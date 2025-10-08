@@ -19,7 +19,7 @@ export const HeaderToolbar = () => {
 
   return (
     <Header
-      className="flex justify-between items-center !px-5"
+      className="flex justify-between items-center !px-5 sticky top-0 z-10 shadow-sm"
       style={{ background: colorBgContainer, height: 48 }}
     >
       <div className="text-lg font-bold">{gateway && "Gateway " + gateway}</div>

@@ -1,13 +1,13 @@
 import { Card, Row, Col, Statistic } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { useAppStore } from '../store/useAppStore';
-import { useTradingStore } from '../store/useTradingStore';
 import { TickerSelect } from '@/components/TickerSelect';
+import { useDataStore } from '@/store/useDataStore';
 
 export const Dashboard2 = () => {
   const isConnected = useAppStore((state) => state.gateway);
-  const positions = useTradingStore((state) => state.positions);
-  const orders = useTradingStore((state) => state.orders);
+  const positions = useDataStore((state) => state.positions);
+  const orders = useDataStore((state) => state.orderDatas);
 
   return (
     <div>

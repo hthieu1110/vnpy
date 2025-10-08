@@ -60,7 +60,7 @@ export const LogConsole = ({ visible, onClose }: LogConsoleProps) => {
       <div className='flex flex-col gap-0.5'>
         {logs.map((log, index) => (
             <Text key={index}>
-              {log.datetime} | {log.gateway_name} | {log.msg}
+              {new Date(log.datetime).toLocaleString()} | {log.gateway_name} | {log.msg}
             </Text>
         ))}
       </div>

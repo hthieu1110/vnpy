@@ -1,9 +1,13 @@
 import { useDataStore } from '@/store/useDataStore';
 import { genColumns } from '@/utils/genColumns';
-import { Input, Table } from 'antd';
+import { Card, Input, Table } from 'antd';
 import { useState } from 'react';
 
-export const AccountsWidget = () => {
+type AccountsWidgetProps = {
+  pageSize?: number;
+}
+
+export const AccountsWidget = (props: AccountsWidgetProps) => {
   const accounts = useDataStore((state) => state.accounts);
   const columns = genColumns(['accountid', 'balance', 'frozen', 'available', 'gateway_name']);
   
@@ -11,13 +15,14 @@ export const AccountsWidget = () => {
   const filteredAccounts = accounts.filter((account) => account.accountid.startsWith(searchText.toUpperCase()));
   
   return (
-    <div>
+    <Card title="Accounts" extra={
       <Input.Search
         placeholder='Search...'
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value)}
-        style={{ marginBottom: 16, width: 300 }}
+        style={{ width: 240 }}
       />
-      <Table size='small' dataSource={filteredAccounts} columns={columns} />
-    </div>
+    }>
+      <Table size='small' dataSource={filteredAccounts} columns={columns} pagination={{ pageSize: props.pageSize }} />
+    </Card>
   );
 };

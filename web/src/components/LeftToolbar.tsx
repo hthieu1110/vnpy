@@ -52,6 +52,7 @@ export const LeftToolbar = () => {
       mode="inline"
       items={menuItems}
       onClick={({ key }) => navigate(key)}
+      className="sticky top-0"
     />
   );
 };
