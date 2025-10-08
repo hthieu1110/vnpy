@@ -29,12 +29,12 @@ export class CentriService {
   }
 
   async getConnectionToken() {
-    const resp = await axios.get(`${import.meta.env.VITE_API_URL}/centri/connection_token`);
+    const resp = await axios.get(`${import.meta.env.VITE_API_URL}/centri/jwt_token`);
     return resp.data;
   }
 
   async getSubscriptionToken(channel: string) {
-    const resp = await axios.get(`${import.meta.env.VITE_API_URL}/centri/subscription_token?channel=${channel}`);
+    const resp = await axios.get(`${import.meta.env.VITE_API_URL}/centri/jwt_token?channel=${channel}`);
     return resp.data;
   }
 

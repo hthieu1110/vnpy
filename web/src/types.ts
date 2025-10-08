@@ -2,6 +2,11 @@ interface BaseData {
   gateway_name: string;
 }
 
+interface BaseTradingInfo {
+  symbol: string;
+  exchange: string;
+}
+
 export interface Contract extends BaseData {
   exchange: string;
   symbol: string;
@@ -21,7 +26,7 @@ export interface Contract extends BaseData {
   option_underlying: string;
   pricetick: number;
   stop_supported: boolean;
-  extra: unknown
+  extra: unknown;
 }
 
 export interface Log extends BaseData {
@@ -79,4 +84,36 @@ export interface Order extends BaseData {
   orderid: string;
   price: number;
   volume: number;
+}
+
+export interface TradeData extends BaseTradingInfo {
+  orderid: string;
+  tradeid: string;
+  direction: string;
+  offset: string;
+  price: number;
+  volume: number;
+  datetime: string;
+}
+
+export interface OrderRequest extends BaseTradingInfo {
+  direction: string;
+  type: string;
+  volume: number;
+  price: number;
+  offset: string;
+  reference: string;
+}
+
+export interface OrderData extends BaseTradingInfo {
+  orderid: string;
+  type: string;
+  direction: string;
+  offset: string;
+  price: number;
+  volume: number;
+  traded: number;
+  status: string;
+  datetime: string;
+  reference: string;
 }

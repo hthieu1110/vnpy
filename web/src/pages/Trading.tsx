@@ -1,116 +1,132 @@
-import { useState } from 'react'
-import { Card, Table, Button, Form, Input, Select, InputNumber, Space, Tag } from 'antd'
-import { useTradingStore } from '../store/useTradingStore'
+import { useState } from "react";
+import {
+  Card,
+  Table,
+  Button,
+  Form,
+  Input,
+  Select,
+  InputNumber,
+  Space,
+  Tag,
+} from "antd";
+import { useTradingStore } from "../store/useTradingStore";
+import { rpcService } from "@/services/rpc";
+import { OrderRequest } from "@/types";
+import { TickerSelect } from "@/components/TickerSelect";
 
-const { Option } = Select
+const { Option } = Select;
 
 export const Trading = () => {
-  const { positions, orders, addOrder } = useTradingStore()
-  const [form] = Form.useForm()
+  const { positions, orders, addOrder } = useTradingStore();
+  const [form] = Form.useForm();
 
   const positionColumns = [
     {
-      title: 'Symbol',
-      dataIndex: 'symbol',
-      key: 'symbol',
+      title: "Symbol",
+      dataIndex: "symbol",
+      key: "symbol",
     },
     {
-      title: 'Direction',
-      dataIndex: 'direction',
-      key: 'direction',
+      title: "Direction",
+      dataIndex: "direction",
+      key: "direction",
       render: (direction: string) => (
-        <Tag color={direction === 'long' ? 'green' : 'red'}>
+        <Tag color={direction === "long" ? "green" : "red"}>
           {direction.toUpperCase()}
         </Tag>
       ),
     },
     {
-      title: 'Volume',
-      dataIndex: 'volume',
-      key: 'volume',
+      title: "Volume",
+      dataIndex: "volume",
+      key: "volume",
     },
     {
-      title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
       render: (price: number) => `$${price.toFixed(2)}`,
     },
     {
-      title: 'P&L',
-      key: 'pnl',
-      render: () => (
-        <span style={{ color: '#3f8600' }}>+$0.00</span>
-      ),
+      title: "P&L",
+      key: "pnl",
+      render: () => <span style={{ color: "#3f8600" }}>+$0.00</span>,
     },
-  ]
+  ];
 
   const orderColumns = [
     {
-      title: 'Order ID',
-      dataIndex: 'id',
-      key: 'id',
+      title: "Order ID",
+      dataIndex: "id",
+      key: "id",
     },
     {
-      title: 'Symbol',
-      dataIndex: 'symbol',
-      key: 'symbol',
+      title: "Symbol",
+      dataIndex: "symbol",
+      key: "symbol",
     },
     {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
       render: (type: string) => type.toUpperCase(),
     },
     {
-      title: 'Direction',
-      dataIndex: 'direction',
-      key: 'direction',
+      title: "Direction",
+      dataIndex: "direction",
+      key: "direction",
       render: (direction: string) => (
-        <Tag color={direction === 'buy' ? 'green' : 'red'}>
+        <Tag color={direction === "buy" ? "green" : "red"}>
           {direction.toUpperCase()}
         </Tag>
       ),
     },
     {
-      title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
       render: (price: number) => `$${price.toFixed(2)}`,
     },
     {
-      title: 'Volume',
-      dataIndex: 'volume',
-      key: 'volume',
+      title: "Volume",
+      dataIndex: "volume",
+      key: "volume",
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
       render: (status: string) => {
-        const color = status === 'filled' ? 'green' : status === 'cancelled' ? 'red' : 'blue'
-        return <Tag color={color}>{status.toUpperCase()}</Tag>
+        const color =
+          status === "filled"
+            ? "green"
+            : status === "cancelled"
+            ? "red"
+            : "blue";
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
       },
     },
     {
-      title: 'Action',
-      key: 'action',
+      title: "Action",
+      key: "action",
       render: (_: any, record: any) => (
-        <Button danger size="small" disabled={record.status !== 'pending'}>
+        <Button danger size="small" disabled={record.status !== "pending"}>
           Cancel
         </Button>
       ),
     },
-  ]
+  ];
 
   const handleSubmitOrder = (values: any) => {
     const newOrder = {
       id: `ORD${Date.now()}`,
       ...values,
-      status: 'pending' as const,
-    }
-    addOrder(newOrder)
-    form.resetFields()
-  }
+      status: "pending" as const,
+    };
+    addOrder(newOrder);
+    form.resetFields();
+  };
 
   return (
     <div>
@@ -122,16 +138,21 @@ export const Trading = () => {
           layout="inline"
           onFinish={handleSubmitOrder}
           initialValues={{
-            type: 'limit',
-            direction: 'buy',
+            symbol: "BTC",
+            exchange: "GLOBAL",
+            direction: "LONG",
+            type: "LIMIT",
             volume: 1,
+            price: 100,
+            offset: "NONE",
+            reference: "TEST",
           }}
         >
           <Form.Item
             name="symbol"
-            rules={[{ required: true, message: 'Please input symbol!' }]}
+            rules={[{ required: true, message: "Please input symbol!" }]}
           >
-            <Input placeholder="Symbol" style={{ width: 120 }} />
+            <TickerSelect />
           </Form.Item>
 
           <Form.Item name="type" rules={[{ required: true }]}>
@@ -150,7 +171,7 @@ export const Trading = () => {
 
           <Form.Item
             name="price"
-            rules={[{ required: true, message: 'Please input price!' }]}
+            rules={[{ required: true, message: "Please input price!" }]}
           >
             <InputNumber
               placeholder="Price"
@@ -162,7 +183,7 @@ export const Trading = () => {
 
           <Form.Item
             name="volume"
-            rules={[{ required: true, message: 'Please input volume!' }]}
+            rules={[{ required: true, message: "Please input volume!" }]}
           >
             <InputNumber placeholder="Volume" min={1} style={{ width: 120 }} />
           </Form.Item>
@@ -184,7 +205,7 @@ export const Trading = () => {
           dataSource={positions}
           rowKey="symbol"
           pagination={false}
-          locale={{ emptyText: 'No positions' }}
+          locale={{ emptyText: "No positions" }}
         />
       </Card>
 
@@ -194,12 +215,9 @@ export const Trading = () => {
           dataSource={orders}
           rowKey="id"
           pagination={{ pageSize: 10 }}
-          locale={{ emptyText: 'No orders' }}
+          locale={{ emptyText: "No orders" }}
         />
       </Card>
     </div>
-  )
-}
-
-
-
+  );
+};
