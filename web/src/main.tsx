@@ -9,6 +9,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <ConfigProvider
+        componentSize='small'
         theme={{
           token: {
             colorPrimary: '#1890ff',

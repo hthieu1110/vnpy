@@ -1,0 +1,53 @@
+import { Layout, Button, theme } from "antd";
+import { FileTextOutlined } from "@ant-design/icons";
+import { useAppStore } from "@/store/useAppStore";
+import { rpcService } from "@/services/rpc";
+import settings from '../../../.vntrader/connect_vision.json';
+
+const { Header } = Layout;
+
+export const HeaderToolbar = () => {
+  const { gateway, isShowLogs, isConnecting, actions: appActions } = useAppStore();
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+
+  const connectGateway = async () => {
+    appActions.setIsConnecting(true);
+    await rpcService.call('connect', { gateway_name: 'Vision', setting: settings });
+  };
+
+  return (
+    <Header
+      className="flex justify-between items-center !px-5"
+      style={{ background: colorBgContainer, height: 48 }}
+    >
+      <div className="text-lg font-bold">{gateway && "Gateway " + gateway}</div>
+
+      <div style={{ display: "flex", gap: 8 }}>
+        <Button
+          type={isShowLogs ? "primary" : "default"}
+          icon={<FileTextOutlined />}
+          onClick={() => appActions.setLogConsoleVisible(!isShowLogs)}
+        >
+          Logs
+        </Button>
+
+        {gateway ? (
+          <Button color="danger" variant="outlined" onClick={appActions.logout}>
+            Logout
+          </Button>
+        ) : (
+          <Button
+            loading={isConnecting}
+            color="primary"
+            variant="outlined"
+            onClick={connectGateway}
+          >
+            Connect Gateway
+          </Button>
+        )}
+      </div>
+    </Header>
+  );
+};
