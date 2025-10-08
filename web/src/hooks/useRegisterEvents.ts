@@ -6,6 +6,7 @@ import { Account, Contract, Order, Position, Quote, Tick, Trade } from '@/types'
 import { PublicationContext } from 'centrifuge';
 import { useCallback, useEffect } from 'react';
 import { useDebouncedList } from './useDebouncedList';
+import { eventEngine } from '@/services/eventEngine';
 
 export const useRegisterEvents = () => {
   const dataActions = useDataStore((state) => state.actions);
@@ -64,26 +65,26 @@ export const useRegisterEvents = () => {
   }, [debouncedTicks, dataActions]);
 
   useEffect(() => {
-    centriService.subscribeEvent(EVENT_LOG, updateLogs);
+    eventEngine.on(EVENT_LOG, updateLogs);
 
-    centriService.subscribeEvent(EVENT_CONTRACT, (ctx) => addContract(ctx.data.event_data));
-    centriService.subscribeEvent(EVENT_ACCOUNT, (ctx) => addAccount(ctx.data.event_data));
-    centriService.subscribeEvent(EVENT_POSITION, (ctx) => addPosition(ctx.data.event_data));
-    centriService.subscribeEvent(EVENT_TRADE, (ctx) => addTrade(ctx.data.event_data));
-    centriService.subscribeEvent(EVENT_ORDER, (ctx) => addOrder(ctx.data.event_data));
-    centriService.subscribeEvent(EVENT_QUOTE, (ctx) => addQuote(ctx.data.event_data));
-    centriService.subscribeEvent(EVENT_TICK, (ctx) => addTick(ctx.data.event_data));
+    eventEngine.on(EVENT_CONTRACT, (ctx) => addContract(ctx.data.event_data));
+    eventEngine.on(EVENT_ACCOUNT, (ctx) => addAccount(ctx.data.event_data));
+    eventEngine.on(EVENT_POSITION, (ctx) => addPosition(ctx.data.event_data));
+    eventEngine.on(EVENT_TRADE, (ctx) => addTrade(ctx.data.event_data));
+    eventEngine.on(EVENT_ORDER, (ctx) => addOrder(ctx.data.event_data));
+    eventEngine.on(EVENT_QUOTE, (ctx) => addQuote(ctx.data.event_data));
+    eventEngine.on(EVENT_TICK, (ctx) => addTick(ctx.data.event_data));
 
     return () => {
-      centriService.unsubscribeEvent(EVENT_LOG);
+      eventEngine.off(EVENT_LOG);
 
-      centriService.unsubscribeEvent(EVENT_CONTRACT);
-      centriService.unsubscribeEvent(EVENT_ACCOUNT);
-      centriService.unsubscribeEvent(EVENT_POSITION);
-      centriService.unsubscribeEvent(EVENT_TRADE);
-      centriService.unsubscribeEvent(EVENT_ORDER);
-      centriService.unsubscribeEvent(EVENT_QUOTE);
-      centriService.unsubscribeEvent(EVENT_TICK);
+      eventEngine.off(EVENT_CONTRACT);
+      eventEngine.off(EVENT_ACCOUNT);
+      eventEngine.off(EVENT_POSITION);
+      eventEngine.off(EVENT_TRADE);
+      eventEngine.off(EVENT_ORDER);
+      eventEngine.off(EVENT_QUOTE);
+      eventEngine.off(EVENT_TICK);
     };
   }, [dataActions, appActions, addContract, addAccount, addPosition, addTrade, addOrder, updateLogs]);
 };

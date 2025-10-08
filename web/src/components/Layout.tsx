@@ -1,14 +1,7 @@
-import { useEffect, useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Layout as AntLayout, Button, Menu, theme } from "antd";
-import {
-  DashboardOutlined,
-  StockOutlined,
-  LineChartOutlined,
-  SettingOutlined,
-  FileTextOutlined,
-  DollarOutlined,
-} from "@ant-design/icons";
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { Layout as AntLayout, theme } from "antd";
+
 import { useAppStore } from "../store/useAppStore";
 import LogConsole from "./LogConsole";
 import { HeaderToolbar } from "./HeaderToolbar";
@@ -43,9 +36,10 @@ export const Layout = () => {
       <AntLayout>
         <HeaderToolbar />
 
-        <Content style={{ margin: "16px 16px 0" }}>
+        <Content style={{ margin: "16px 16px 16px" }}>
           <div
             style={{
+              height: "100%",
               padding: 16,
               minHeight: 360,
               background: colorBgContainer,

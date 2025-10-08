@@ -5,10 +5,11 @@ import {
   ErrorContext,
   PublicationContext,
   SubscribedContext,
+  Subscription,
   UnsubscribedContext,
 } from 'centrifuge';
 
-class CentriService {
+export class CentriService {
   private centriClient: Centrifuge;
 
   private _isConnected: boolean = false;
@@ -37,7 +38,7 @@ class CentriService {
     return resp.data;
   }
 
-  async subscribe(channel: string, callback: (ctx: PublicationContext) => void) {
+  async subscribe(channel: string, callback: (ctx: PublicationContext) => void): Promise<Subscription> {
     if (!this._isConnected) {
       const token = await this.getConnectionToken();
       this.centriClient.setToken(token);
@@ -57,7 +58,7 @@ class CentriService {
         recoverable: true,
       });
     } catch (error) {
-      return sub;
+      throw error;
     }
 
     sub.on('subscribed', (ctx: SubscribedContext) => {
