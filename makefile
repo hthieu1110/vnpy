@@ -18,9 +18,9 @@ PHONY: paper
 paper:
 	$(PYTHON) cmd/paper.py
 
-PHONY: binance
-binance:
-	$(PYTHON) cmd/binance.py
+PHONY: vision
+vision:
+	$(PYTHON) cmd/vision.py
 
 PHONY: ib
 ib:

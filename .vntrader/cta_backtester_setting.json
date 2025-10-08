@@ -1,8 +1,8 @@
 {
-    "class_name": "TestStrategy",
+    "class_name": "DoubleMaStrategy",
     "vt_symbol": "BTCUSDT_SPOT_BINANCE.GLOBAL",
     "interval": "1m",
-    "start": "2022-10-04",
+    "start": "2024-10-01",
     "rate": 2.5e-05,
     "slippage": 0.2,
     "size": 300.0,
