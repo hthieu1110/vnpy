@@ -1,5 +1,5 @@
 import { Card, Form, Input, Button, Switch, Space, Select, message } from 'antd'
-import { useAppStore } from '../store/useAppStore'
+import { useAppStore } from '../stores/useAppStore'
 
 const { Option } = Select
 

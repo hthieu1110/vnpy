@@ -1,4 +1,4 @@
-import { useDataStore } from '@/store/useDataStore';
+import { useDataStore } from '@/stores/useDataStore';
 import { AutoComplete, AutoCompleteProps } from 'antd';
 import { useEffect, useState } from 'react';
 

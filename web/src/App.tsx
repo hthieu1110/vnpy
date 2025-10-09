@@ -5,12 +5,13 @@ import { Dashboard2 } from './pages/Dashboard2';
 import { Trading } from './pages/Trading';
 import { Market } from './pages/Market';
 import { Settings } from './pages/Settings';
-import { useRegisterEvents } from './hooks/useRegisterEvents';
+import { useRegisterMainEvents } from './hooks/useRegisterMainEvents';
 import { Accounts } from './pages/Accounts';
 import { Contracts } from './pages/Contracts';
-
+import { Backtester } from './pages/Backtester';
+  
 export const App = () => {
-  useRegisterEvents();
+  useRegisterMainEvents();
 
   return (
     <Routes>
@@ -18,6 +19,7 @@ export const App = () => {
         <Route index element={<Dashboard />} />
         <Route path='dashboard2' element={<Dashboard2 />} />
         <Route path='trading' element={<Trading />} />
+        <Route path='backtester' element={<Backtester />} />
         <Route path='accounts' element={<Accounts />} />
         <Route path='contracts' element={<Contracts />} />
         <Route path='market' element={<Market />} />

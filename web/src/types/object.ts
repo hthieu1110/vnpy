@@ -33,6 +33,7 @@ export interface Contract extends BaseData {
 
 export interface Log extends BaseData {
   datetime: number;
+  engine: string;
 
   extra: string;
   msg: string;

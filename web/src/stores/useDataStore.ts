@@ -13,7 +13,7 @@ interface DataState {
   ticks: Tick[];
   // Actions
   actions: {
-    addLog: (log: Log) => void;
+    addLog: (engine: string, log: Log) => void;
     setLogs: (logs: Log[]) => void;
     addContract: (contract: Contract) => void;
     setContracts: (contracts: Contract[]) => void;
@@ -38,9 +38,10 @@ export const useDataStore = create<DataState>()(
     quotes: [],
     ticks: [],
     actions: {
-      addLog: (log: Log) =>
+      addLog: (engine: string, log: Log) =>
         set((state) => {
           log.datetime = Date.now();
+          log.engine = engine;
           return { logs: [...state.logs, log] };
         }),
       setLogs: (logs: Log[]) => set({ logs }),

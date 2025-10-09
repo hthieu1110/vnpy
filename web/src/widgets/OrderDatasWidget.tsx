@@ -1,4 +1,4 @@
-import { useDataStore } from '@/store/useDataStore';
+import { useDataStore } from '@/stores/useDataStore';
 import { OrderData } from '@/types/object';
 import { genColumns } from '@/utils/genColumns';
 import { Button, Card, Table } from 'antd';

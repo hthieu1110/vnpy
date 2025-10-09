@@ -9,18 +9,11 @@ import {
   Tick,
   TradeData,
 } from "@/types/object";
-import axios from "axios";
+import { BaseEngineRPC } from "./BaseEngineRPC";
 
-class RpcAPIService {
-  private apiUrl: string;
-
-  constructor(apiUrl: string) {
-    this.apiUrl = apiUrl;
-  }
-
-  async call(action: string, data: unknown): Promise<unknown> {
-    const response = await axios.post(`${this.apiUrl}/rpc/${action}`, data);
-    return response.data;
+class MainEngineRPC extends BaseEngineRPC {
+  async connect(setting: unknown, gateway_name: string): Promise<unknown> {
+    return this.call("connect", { gateway_name, setting });
   }
 
   async sendOrder(req: OrderRequest, gateway_name: string): Promise<unknown> {
@@ -96,4 +89,6 @@ class RpcAPIService {
   }
 }
 
-export const rpcService = new RpcAPIService(import.meta.env.VITE_API_URL);
+export const mainEngineRPC = new MainEngineRPC(
+  import.meta.env.VITE_API_URL
+);

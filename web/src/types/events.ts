@@ -6,3 +6,7 @@ export const EVENT_ACCOUNT = "eAccount."
 export const EVENT_QUOTE = "eQuote."
 export const EVENT_CONTRACT = "eContract."
 export const EVENT_LOG = "eLog"
+
+export const EVENT_BACKTESTER_LOG = "eBacktesterLog"
+export const EVENT_BACKTESTER_BACKTESTING_FINISHED = "eBacktesterBacktestingFinished"
+export const EVENT_BACKTESTER_OPTIMIZATION_FINISHED = "eBacktesterOptimizationFinished"

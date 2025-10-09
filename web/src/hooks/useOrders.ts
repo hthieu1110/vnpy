@@ -1,7 +1,7 @@
-import { rpcService } from "@/services/rpcAPIService";
+import { mainEngineRPC } from "@/engineRPCs/mainEngineRPC";
 import { Status } from "@/types/constants";
-import { useDataStore } from "@/store/useDataStore";
-import { useAppStore } from "@/store/useAppStore";
+import { useDataStore } from "@/stores/useDataStore";
+import { useAppStore } from "@/stores/useAppStore";
 import { CancelRequest } from "@/types/object";
 import { notification } from "antd";
 
@@ -45,7 +45,7 @@ export const useOrders = () => {
         exchange: orderData.exchange,
       };
 
-      const res = await rpcService.cancelOrder(req, gateway);
+      const res = await mainEngineRPC.cancelOrder(req, gateway);
       return res;
     } catch (error) {
       api.error({

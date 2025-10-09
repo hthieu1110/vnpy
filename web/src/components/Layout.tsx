@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Layout as AntLayout, theme } from "antd";
 
-import { useAppStore } from "../store/useAppStore";
+import { useAppStore } from "../stores/useAppStore";
 import LogConsole from "./LogConsole";
 import { HeaderToolbar } from "./HeaderToolbar";
 import { LeftToolbar } from "./LeftToolbar";

@@ -7,16 +7,16 @@ import {
   EVENT_QUOTE,
   EVENT_TICK,
   EVENT_TRADE,
-} from '@/consts/events';
-import { useAppStore } from '@/store/useAppStore';
-import { useDataStore } from '@/store/useDataStore';
+} from '@/types/events';
+import { useAppStore } from '@/stores/useAppStore';
+import { useDataStore } from '@/stores/useDataStore';
 import { Account, Contract, OrderData, Position, Quote, Tick, Trade } from '@/types/object';
 import { PublicationContext } from 'centrifuge';
 import { useCallback, useEffect } from 'react';
 import { useDebouncedList } from './useDebouncedList';
-import { eventEngine } from '@/services/eventEngine';
+import { eventService } from '@/services/eventService';
 
-export const useRegisterEvents = () => {
+export const useRegisterMainEvents = () => {
   const dataActions = useDataStore((state) => state.actions);
   const appActions = useAppStore((state) => state.actions);
 
@@ -34,7 +34,7 @@ export const useRegisterEvents = () => {
       if (log.event_data.msg === 'Account data received') {
         appActions.setGateway('Vision');
       }
-      dataActions.addLog(log.event_data);
+      dataActions.addLog("Main", log.event_data);
     },
     [dataActions, appActions]
   );
@@ -75,26 +75,26 @@ export const useRegisterEvents = () => {
   }, [debouncedTicks, dataActions]);
 
   useEffect(() => {
-    eventEngine.on(EVENT_LOG, updateLogs);
+    eventService.on(EVENT_LOG, updateLogs);
 
-    eventEngine.on(EVENT_CONTRACT, (ctx) => upsertContract(ctx.data.event_data));
-    eventEngine.on(EVENT_ACCOUNT, (ctx) => upsertAccount(ctx.data.event_data));
-    eventEngine.on(EVENT_POSITION, (ctx) => upsertPosition(ctx.data.event_data));
-    eventEngine.on(EVENT_TRADE, (ctx) => upsertTrade(ctx.data.event_data));
-    eventEngine.on(EVENT_ORDER, (ctx) => upsertOrder(ctx.data.event_data, 'orderid'));
-    eventEngine.on(EVENT_QUOTE, (ctx) => upsertQuote(ctx.data.event_data));
-    eventEngine.on(EVENT_TICK, (ctx) => upsertTick(ctx.data.event_data));
+    eventService.on(EVENT_CONTRACT, (ctx) => upsertContract(ctx.data.event_data));
+    eventService.on(EVENT_ACCOUNT, (ctx) => upsertAccount(ctx.data.event_data));
+    eventService.on(EVENT_POSITION, (ctx) => upsertPosition(ctx.data.event_data));
+    eventService.on(EVENT_TRADE, (ctx) => upsertTrade(ctx.data.event_data));
+    eventService.on(EVENT_ORDER, (ctx) => upsertOrder(ctx.data.event_data, 'orderid'));
+    eventService.on(EVENT_QUOTE, (ctx) => upsertQuote(ctx.data.event_data));
+    eventService.on(EVENT_TICK, (ctx) => upsertTick(ctx.data.event_data));
 
     return () => {
-      eventEngine.off(EVENT_LOG);
+      eventService.off(EVENT_LOG);
 
-      eventEngine.off(EVENT_CONTRACT);
-      eventEngine.off(EVENT_ACCOUNT);
-      eventEngine.off(EVENT_POSITION);
-      eventEngine.off(EVENT_TRADE);
-      eventEngine.off(EVENT_ORDER);
-      eventEngine.off(EVENT_QUOTE);
-      eventEngine.off(EVENT_TICK);
+      eventService.off(EVENT_CONTRACT);
+      eventService.off(EVENT_ACCOUNT);
+      eventService.off(EVENT_POSITION);
+      eventService.off(EVENT_TRADE);
+      eventService.off(EVENT_ORDER);
+      eventService.off(EVENT_QUOTE);
+      eventService.off(EVENT_TICK);
     };
   }, [
     dataActions,

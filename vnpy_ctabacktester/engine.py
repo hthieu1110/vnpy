@@ -21,7 +21,7 @@ from vnpy_ctastrategy import CtaTemplate, TargetPosTemplate
 from vnpy_ctastrategy.backtesting import (
     BacktestingEngine,
     OptimizationSetting,
-    BacktestingMode
+    BacktestingMode,
 )
 from .locale import _
 
@@ -93,7 +93,9 @@ class BacktesterEngine(BaseEngine):
         path2: Path = Path.cwd().joinpath("strategies")
         self.load_strategy_class_from_folder(path2, "strategies")
 
-    def load_strategy_class_from_folder(self, path: Path, module_name: str = "") -> None:
+    def load_strategy_class_from_folder(
+        self, path: Path, module_name: str = ""
+    ) -> None:
         """
         Load strategy class from certain folder.
         """
@@ -123,9 +125,9 @@ class BacktesterEngine(BaseEngine):
                 ):
                     self.classes[value.__name__] = value
         except:  # noqa
-            msg: str = _("Strategy file {} failed to load, exception occurred:\n{}").format(
-                module_name, traceback.format_exc()
-            )
+            msg: str = _(
+                "Strategy file {} failed to load, exception occurred:\n{}"
+            ).format(module_name, traceback.format_exc())
             self.write_log(msg)
 
     def reload_strategy_class(self) -> None:
@@ -150,7 +152,7 @@ class BacktesterEngine(BaseEngine):
         size: int,
         pricetick: float,
         capital: int,
-        setting: dict
+        setting: dict,
     ) -> None:
         """"""
         self.result_df = None
@@ -174,14 +176,11 @@ class BacktesterEngine(BaseEngine):
             size=size,
             pricetick=pricetick,
             capital=capital,
-            mode=mode
+            mode=mode,
         )
 
         strategy_class: type[CtaTemplate] = self.classes[class_name]
-        engine.add_strategy(
-            strategy_class,
-            setting
-        )
+        engine.add_strategy(strategy_class, setting)
 
         engine.load_data()
         if not engine.history_data:
@@ -192,7 +191,9 @@ class BacktesterEngine(BaseEngine):
         try:
             engine.run_backtesting()
         except Exception:
-            msg: str = _("Strategy backtesting failed, exception occurred:\n{}").format(traceback.format_exc())
+            msg: str = _("Strategy backtesting failed, exception occurred:\n{}").format(
+                traceback.format_exc()
+            )
             self.write_log(msg)
 
             self.thread = None
@@ -220,7 +221,7 @@ class BacktesterEngine(BaseEngine):
         size: int,
         pricetick: float,
         capital: int,
-        setting: dict
+        setting: dict,
     ) -> bool:
         if self.thread:
             self.write_log(_("Task already running, please wait for completion"))
@@ -240,8 +241,8 @@ class BacktesterEngine(BaseEngine):
                 size,
                 pricetick,
                 capital,
-                setting
-            )
+                setting,
+            ),
         )
         self.thread.start()
 
@@ -279,7 +280,7 @@ class BacktesterEngine(BaseEngine):
         capital: int,
         optimization_setting: OptimizationSetting,
         use_ga: bool,
-        max_workers: int | None = None
+        max_workers: int | None = None,
     ) -> None:
         """"""
         self.result_values = None
@@ -302,14 +303,11 @@ class BacktesterEngine(BaseEngine):
             size=size,
             pricetick=pricetick,
             capital=capital,
-            mode=mode
+            mode=mode,
         )
 
         strategy_class: type[CtaTemplate] = self.classes[class_name]
-        engine.add_strategy(
-            strategy_class,
-            {}
-        )
+        engine.add_strategy(strategy_class, {})
 
         # 0 means no limit
         if max_workers == 0:
@@ -317,15 +315,11 @@ class BacktesterEngine(BaseEngine):
 
         if use_ga:
             self.result_values = engine.run_ga_optimization(
-                optimization_setting,
-                output=False,
-                max_workers=max_workers
+                optimization_setting, output=False, max_workers=max_workers
             )
         else:
             self.result_values = engine.run_bf_optimization(
-                optimization_setting,
-                output=False,
-                max_workers=max_workers
+                optimization_setting, output=False, max_workers=max_workers
             )
 
         # Clear thread object handler.
@@ -350,7 +344,7 @@ class BacktesterEngine(BaseEngine):
         capital: int,
         optimization_setting: OptimizationSetting,
         use_ga: bool,
-        max_workers: int
+        max_workers: int,
     ) -> bool:
         if self.thread:
             self.write_log(_("Task already running, please wait for completion"))
@@ -372,29 +366,29 @@ class BacktesterEngine(BaseEngine):
                 capital,
                 optimization_setting,
                 use_ga,
-                max_workers
-            )
+                max_workers,
+            ),
         )
         self.thread.start()
 
         return True
 
     def run_downloading(
-        self,
-        vt_symbol: str,
-        interval: str,
-        start: datetime,
-        end: datetime
+        self, vt_symbol: str, interval: str, start: datetime, end: datetime
     ) -> None:
         """
         Execute download task
         """
-        self.write_log(_("{}-{} started downloading historical data").format(vt_symbol, interval))
+        self.write_log(
+            _("{}-{} started downloading historical data").format(vt_symbol, interval)
+        )
 
         try:
             symbol, exchange = extract_vt_symbol(vt_symbol)
         except ValueError:
-            self.write_log(_("{} parsing failed, please check exchange suffix").format(vt_symbol))
+            self.write_log(
+                _("{} parsing failed, please check exchange suffix").format(vt_symbol)
+            )
             self.thread = None
             return
 
@@ -403,20 +397,20 @@ class BacktesterEngine(BaseEngine):
             exchange=exchange,
             interval=Interval(interval),
             start=start,
-            end=end
+            end=end,
         )
 
         try:
             if interval == "tick":
-                data: list[TickData] = self.datafeed.query_tick_history(req, self.write_log)
+                data: list[TickData] = self.datafeed.query_tick_history(
+                    req, self.write_log
+                )
             else:
                 contract: ContractData | None = self.main_engine.get_contract(vt_symbol)
 
                 # If history data provided in gateway, then query
                 if contract and contract.history_data:
-                    data = self.main_engine.query_history(
-                        req, contract.gateway_name
-                    )
+                    data = self.main_engine.query_history(req, contract.gateway_name)
                 # Otherwise use RQData to query data
                 else:
                     data = self.datafeed.query_bar_history(req, self.write_log)
@@ -427,22 +421,28 @@ class BacktesterEngine(BaseEngine):
                 else:
                     self.database.save_bar_data(data)
 
-                self.write_log(_("{}-{} historical data download completed").format(vt_symbol, interval))
+                self.write_log(
+                    _("{}-{} historical data download completed").format(
+                        vt_symbol, interval
+                    )
+                )
             else:
-                self.write_log(_("Data download failed, unable to get historical data for {}").format(vt_symbol))
+                self.write_log(
+                    _(
+                        "Data download failed, unable to get historical data for {}"
+                    ).format(vt_symbol)
+                )
         except Exception:
-            msg: str = _("Data download failed, exception occurred:\n{}").format(traceback.format_exc())
+            msg: str = _("Data download failed, exception occurred:\n{}").format(
+                traceback.format_exc()
+            )
             self.write_log(msg)
 
         # Clear thread object handler.
         self.thread = None
 
     def start_downloading(
-        self,
-        vt_symbol: str,
-        interval: str,
-        start: datetime,
-        end: datetime
+        self, vt_symbol: str, interval: str, start: datetime, end: datetime
     ) -> bool:
         if self.thread:
             self.write_log(_("Task already running, please wait for completion"))
@@ -450,13 +450,7 @@ class BacktesterEngine(BaseEngine):
 
         self.write_log("-" * 40)
         self.thread = Thread(
-            target=self.run_downloading,
-            args=(
-                vt_symbol,
-                interval,
-                start,
-                end
-            )
+            target=self.run_downloading, args=(vt_symbol, interval, start, end)
         )
         self.thread.start()
 

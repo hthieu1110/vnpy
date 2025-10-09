@@ -34,6 +34,11 @@ export const LeftToolbar = () => {
       label: "Trading",
     },
     {
+      key: "/backtester",
+      icon: <LineChartOutlined />,
+      label: "Backtester",
+    },
+    {
       key: "/market",
       icon: <LineChartOutlined />,
       label: "Market",

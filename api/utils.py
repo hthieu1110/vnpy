@@ -23,6 +23,9 @@ def get_http_client():
 
 
 def to_json(data: any) -> dict:
+    if not is_dataclass(data):
+        return data
+
     d = asdict(data)
     for key, value in d.items():
         if is_dataclass(value):

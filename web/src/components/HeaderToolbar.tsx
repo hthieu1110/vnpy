@@ -1,7 +1,7 @@
 import { Layout, Button, theme } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
-import { useAppStore } from "@/store/useAppStore";
-import { rpcService } from "@/services/rpcAPIService";
+import { useAppStore } from "@/stores/useAppStore";
+import { mainEngineRPC } from "@/engineRPCs/mainEngineRPC";
 import settings from '../../../.vntrader/connect_vision.json';
 
 const { Header } = Layout;
@@ -14,7 +14,7 @@ export const HeaderToolbar = () => {
 
   const connectGateway = async () => {
     appActions.setIsConnecting(true);
-    await rpcService.call('connect', { gateway_name: 'Vision', setting: settings });
+    await mainEngineRPC.connect(settings, 'Vision');
   };
 
   return (

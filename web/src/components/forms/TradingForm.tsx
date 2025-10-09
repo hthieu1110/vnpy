@@ -1,10 +1,10 @@
 import { Card, Button, Form, Select, InputNumber, Space, Divider } from "antd";
 import { TickerSelect } from "@/components/TickerSelect";
-import { rpcService } from "@/services/rpcAPIService";
+import { mainEngineRPC } from "@/engineRPCs/mainEngineRPC";
 import { OrderRequest } from "@/types/object";
 import { FormLayout } from "antd/es/form/Form";
 import { useState } from "react";
-import { useAppStore } from "@/store/useAppStore";
+import { useAppStore } from "@/stores/useAppStore";
 import { useOrders } from "@/hooks/useOrders";
 
 type TradingFormProps = {
@@ -31,7 +31,7 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
       ...defaultValues,
     };
 
-    const resp = await rpcService.sendOrder(order, gateway);
+    const resp = await mainEngineRPC.sendOrder(order, gateway);
     console.log(resp);
   };
 

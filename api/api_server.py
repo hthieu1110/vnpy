@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
 from api.utils import gen_jwt_token, to_dataclass
@@ -42,23 +43,26 @@ app.add_middleware(
 )
 
 
-def func_args_convert(funcName: str, data: dict) -> dict:
+def args_convert(funcName: str, data: dict) -> dict:
     match funcName:
         case "send_order":
             data["req"] = to_dataclass(data["req"], OrderRequest)
         case "cancel_order":
             data["req"] = to_dataclass(data["req"], CancelRequest)
+        case "start_downloading":
+            data["start"] = datetime.fromtimestamp(data["start"])
+            data["end"] = datetime.fromtimestamp(data["end"])
         case _:
             pass
 
     return data
 
+
 @app.post("/rpc/{action}")
 async def rpc(action: str, data: dict = Body(...)):
     try:
         func = getattr(app.state.rpc_client, action)
-        converted_data = func_args_convert(action, data)
-        print(converted_data)
+        converted_data = args_convert(action, data)
         result = func(**converted_data)
         return {"success": True, "data": result}
     except Exception as e:

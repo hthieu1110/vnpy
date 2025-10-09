@@ -6,3 +6,11 @@ export enum  Status {
   CANCELLED = "Cancelled",
   REJECTED = "Rejected",
 }
+
+export enum Interval {
+    MINUTE = "1m",
+    HOUR = "1h",
+    DAILY = "d",
+    WEEKLY = "w",
+    TICK = "tick",
+}

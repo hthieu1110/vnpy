@@ -1,7 +1,7 @@
 import { CentriService, centriService } from './centriService';
 import { Subscription } from 'centrifuge';
 
-class EventEngine {
+class EventService {
   private centriService: CentriService;
 
   constructor() {
@@ -17,4 +17,4 @@ class EventEngine {
   }
 }
 
-export const eventEngine = new EventEngine();
+export const eventService = new EventService();

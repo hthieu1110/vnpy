@@ -1,6 +1,6 @@
 import { Card, Button, Typography } from 'antd';
 import { ClearOutlined, DownOutlined, FileTextOutlined } from '@ant-design/icons';
-import { useDataStore } from '@/store/useDataStore';
+import { useDataStore } from '@/stores/useDataStore';
 
 const { Text } = Typography;
 
@@ -24,7 +24,7 @@ export const LogConsole = ({ visible, onClose }: LogConsoleProps) => {
         position: 'fixed',
         bottom: 20,
         right: 20,
-        width: 640,
+        width: 1024,
         height: 360,
         zIndex: 1000,
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
@@ -60,7 +60,7 @@ export const LogConsole = ({ visible, onClose }: LogConsoleProps) => {
       <div className='flex flex-col gap-0.5'>
         {logs.map((log, index) => (
             <Text key={index}>
-              {new Date(log.datetime).toLocaleString()} | {log.gateway_name} | {log.msg}
+              {new Date(log.datetime).toLocaleString()} | {log.engine} | {log.msg}
             </Text>
         ))}
       </div>

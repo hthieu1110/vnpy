@@ -1,4 +1,4 @@
-import { useDataStore } from '@/store/useDataStore';
+import { useDataStore } from '@/stores/useDataStore';
 import { genColumns } from '@/utils/genColumns';
 import { Card, Input, Table } from 'antd';
 import { useState } from 'react';

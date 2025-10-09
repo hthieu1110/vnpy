@@ -1,8 +1,8 @@
 import { Card, Row, Col, Statistic } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
-import { useAppStore } from '../store/useAppStore';
+import { useAppStore } from '../stores/useAppStore';
 import { TickerSelect } from '@/components/TickerSelect';
-import { useDataStore } from '@/store/useDataStore';
+import { useDataStore } from '@/stores/useDataStore';
 
 export const Dashboard2 = () => {
   const isConnected = useAppStore((state) => state.gateway);
