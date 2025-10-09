@@ -1,7 +1,7 @@
 import { Card, Row, Col, Statistic } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { useAppStore } from '../stores/useAppStore';
-import { TickerSelect } from '@/components/TickerSelect';
+import { TickerSelect } from '@/components/TickerAutoComplete';
 import { useDataStore } from '@/stores/useDataStore';
 
 export const Dashboard2 = () => {

@@ -6,18 +6,21 @@ import { FormLayout } from "antd/es/form/Form";
 import { useState } from "react";
 import { useAppStore } from "@/stores/useAppStore";
 import { useOrders } from "@/hooks/useOrders";
+import { useBacktesterStore } from "@/stores/useBacktesterStore";
 
-type TradingFormProps = {
+type BacktestFormProps = {
   layout?: FormLayout;
 };
 
-export const TradingForm: React.FC<TradingFormProps> = (props) => {
+export const BacktestForm: React.FC<BacktestFormProps> = (props) => {
+  const backtestParams = useBacktesterStore((state) => state.params);
+
   const [form] = Form.useForm();
   const [estimated, setEstimated] = useState(0);
   const { gateway } = useAppStore();
-  const { cancelAllOrders, isOrderCancelling } = useOrders();  
+  const { cancelAllOrders, isOrderCancelling } = useOrders();
 
-  const handleSubmitOrder = async (values: any) => {
+  const handleStartBacktest = async (values: any) => {
     form.resetFields();
 
     const defaultValues = {
@@ -46,47 +49,61 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
     cancelAllOrders();
   };
 
+  // strategy: string;
+  // symbol: string;
+  // exchange: string;
+  // interval: string;
+  // startDate: number;
+  // endDate: number;
+  // commissionRate: number;
+  // slippage: number;
+  // contractMultipler: number;
+  // pricetick: number;
+  // initialCapital: number;
+
   return (
-    <Card title="New Order" style={{ marginBottom: 24 }}>
+    <Card title="New Backtest" style={{ marginBottom: 24 }}>
       <Form
         form={form}
         layout={props.layout || "inline"}
-        onFinish={handleSubmitOrder}
-        initialValues={{
-          symbol: "BTCUSDT_SPOT_BINANCE",
-          exchange: "GLOBAL",
-          direction: "LONG",
-          type: "LIMIT",
-          volume: 0.0001,
-          price: 120_000,
-          offset: "NONE",
-          reference: "TEST",
-        }}
+        onFinish={handleStartBacktest}
+        initialValues={backtestParams}
         onValuesChange={handleValuesChange}
       >
+        <Form.Item name="strategy" rules={[{ required: true }]}>
+          <Select style={{ width: 200 }}>
+            <Select.Option value="DoubleMaStrategy">
+              Double Ma Strategy
+            </Select.Option>
+            <Select.Option value="AtrRsiStrategy">
+              Atr Rsi Strategy
+            </Select.Option>
+          </Select>
+        </Form.Item>
+
         <Form.Item
           name="symbol"
           rules={[{ required: true, message: "Please input symbol!" }]}
         >
-          <TickerAutoComplete style={{ width: 200 }} />
+          <TickerAutoComplete style={{ width: 180 }} />
         </Form.Item>
 
-        <Form.Item name="type" rules={[{ required: true }]}>
+        <Form.Item name="exchange" rules={[{ required: true }]}>
           <Select
             style={{ width: 100 }}
             options={[
-              { label: "Limit", value: "LIMIT" },
-              { label: "Market", value: "MARKET" },
+              { label: "exchange1", value: "exchange1" },
+              { label: "exchange2", value: "exchange2" },
             ]}
           />
         </Form.Item>
 
-        <Form.Item name="direction" rules={[{ required: true }]}>
+        <Form.Item name="interval" rules={[{ required: true }]}>
           <Select
             style={{ width: 100 }}
             options={[
-              { label: "Long", value: "LONG" },
-              { label: "Short", value: "SHORT" },
+              { label: "interval1", value: "interval1" },
+              { label: "interval2", value: "interval2" },
             ]}
           />
         </Form.Item>
@@ -95,7 +112,7 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
           name="price"
           rules={[{ required: true, message: "Please input price!" }]}
         >
-          <InputNumber placeholder="Price" min={0} style={{ width: 120 }} />
+          <InputDa
         </Form.Item>
 
         <Form.Item

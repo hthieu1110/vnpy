@@ -2,14 +2,14 @@ import { useDataStore } from '@/stores/useDataStore';
 import { AutoComplete, AutoCompleteProps } from 'antd';
 import { useEffect, useState } from 'react';
 
-interface TickerSelectProps {
+interface TickerAutoCompleteProps {
   onSelect?: (symbol: string) => void;
   onChange?: (symbol: string) => void;
   value?: string;
   style?: React.CSSProperties;
 }
 
-export const TickerSelect = (props: TickerSelectProps) => {
+export const TickerAutoComplete = (props: TickerAutoCompleteProps) => {
   const contracts = useDataStore((state) => state.contracts);
 
   const [options, setOptions] = useState<AutoCompleteProps['options']>([]);

@@ -43,6 +43,8 @@ def main():
 
     # main engine management -------------------------------------------------------------
     register_rpc(rpc_service, main_engine.connect, "main")
+    register_rpc(rpc_service, main_engine.send_order, "main")
+    register_rpc(rpc_service, main_engine.cancel_order, "main")
     register_rpc(rpc_service, main_engine.get_all_quotes, "main")
     register_rpc(rpc_service, main_engine.get_all_active_quotes, "main")
 
