@@ -1,10 +1,21 @@
 import { BaseEngineRpc } from "@/engineRpcs/BaseEngineRpc";
+import { OrderData, TradeData } from "@/types/object";
 
 export class BacktesterEngineRpc extends BaseEngineRpc {
   async initEngine() {
     const res = await this.call("init_engine", {});
     console.log("initEngine", res);
     return res as boolean;
+  }
+
+  async getAllOrders(): Promise<OrderData[]> {
+    const res = await this.call("get_all_orders", {});
+    return res as OrderData[];
+  }
+
+  async getAllTrades(): Promise<TradeData[]> {
+    const res = await this.call("get_all_trades", {});
+    return res as TradeData[];
   }
 
   async startDownloading(
@@ -17,7 +28,12 @@ export class BacktesterEngineRpc extends BaseEngineRpc {
     const start = Math.floor(startTimestamp / 1000);
     const end = Math.floor(endTimestamp / 1000);
 
-    const res = await this.call("start_downloading", { vt_symbol, interval, start, end });
+    const res = await this.call("start_downloading", {
+      vt_symbol,
+      interval,
+      start,
+      end,
+    });
     console.log("startDownloading", res);
     return res as boolean;
   }
@@ -35,9 +51,9 @@ export class BacktesterEngineRpc extends BaseEngineRpc {
     capital: number,
     setting: Record<string, unknown>
   ): Promise<boolean> {
-   // convert to python timestamp
-   const start = Math.floor(startTimestamp / 1000);
-   const end = Math.floor(endTimestamp / 1000);
+    // convert to python timestamp
+    const start = Math.floor(startTimestamp / 1000);
+    const end = Math.floor(endTimestamp / 1000);
 
     const res = await this.call("start_backtesting", {
       class_name,
@@ -58,5 +74,6 @@ export class BacktesterEngineRpc extends BaseEngineRpc {
 }
 
 export const backtesterEngineRpc = new BacktesterEngineRpc(
-  import.meta.env.VITE_API_URL
+  import.meta.env.VITE_API_URL,
+  "backtester"
 );

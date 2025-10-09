@@ -58,13 +58,13 @@ def args_convert(funcName: str, data: dict) -> dict:
     return data
 
 
-@app.post("/rpc/{action}")
-async def rpc(action: str, data: dict = Body(...)):
+@app.post("/rpc/{engineName}/{action}")
+async def rpc(engineName: str, action: str, data: dict = Body(...)):
     try:
-        func = getattr(app.state.rpc_client, action)
+        func = getattr(app.state.rpc_client, f"{engineName}:{action}")
         converted_data = args_convert(action, data)
         result = func(**converted_data)
-        return {"success": True, "data": result}
+        return result
     except Exception as e:
         if isinstance(e, RemoteException) and "KeyError" in str(e):
             raise HTTPException(status_code=404, detail=f"Action {action} not found")

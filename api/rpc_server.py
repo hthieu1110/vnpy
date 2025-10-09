@@ -4,7 +4,7 @@ from vnpy_rpcservice import RpcServiceApp
 from vnpy_ctabacktester import CtaBacktesterApp
 
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
-from api.utils import event_to_centri
+from api.utils import event_to_centri, register_rpc
 from vnpy.event.engine import EventEngine
 from vnpy.trader.engine import MainEngine
 from vnpy.trader.event import (
@@ -42,9 +42,9 @@ def main():
     )
 
     # main engine management -------------------------------------------------------------
-    rpc_service.server.register(main_engine.connect)
-    rpc_service.server.register(main_engine.get_all_quotes)
-    rpc_service.server.register(main_engine.get_all_active_quotes)
+    register_rpc(rpc_service, main_engine.connect, "main")
+    register_rpc(rpc_service, main_engine.get_all_quotes, "main")
+    register_rpc(rpc_service, main_engine.get_all_active_quotes, "main")
 
     event_to_centri(event_engine, EVENT_LOG)
     event_to_centri(event_engine, EVENT_CONTRACT)
@@ -56,10 +56,12 @@ def main():
     event_to_centri(event_engine, EVENT_ORDER)
 
     # backtester engine management -------------------------------------------------------------
-    rpc_service.server.register(backtester.init_engine)
-    rpc_service.server.register(backtester.start_downloading)
-    rpc_service.server.register(backtester.start_backtesting)
-    rpc_service.server.register(backtester.start_optimization)
+    register_rpc(rpc_service, backtester.init_engine, "backtester")
+    register_rpc(rpc_service, backtester.start_downloading, "backtester")
+    register_rpc(rpc_service, backtester.start_backtesting, "backtester")
+    register_rpc(rpc_service, backtester.start_optimization, "backtester")
+    register_rpc(rpc_service, backtester.get_all_orders, "backtester")
+    register_rpc(rpc_service, backtester.get_all_trades, "backtester")
 
     event_to_centri(event_engine, EVENT_BACKTESTER_LOG)
     event_to_centri(event_engine, EVENT_BACKTESTER_BACKTESTING_FINISHED)

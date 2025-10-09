@@ -38,6 +38,15 @@ def to_json(data: any) -> dict:
     return d
 
 
+def register_rpc(rpc_service: RpcEngine, func: Callable, engine_name: str):
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+
+    wrapper.__name__ = f"{engine_name}:{func.__name__}"
+
+    rpc_service.server.register(wrapper)
+
+
 def event_to_centri(event_engine: EventEngine, event: str):
     """
     Register an event and publish to the centri server.

@@ -20,6 +20,11 @@ export const Backtester = () => {
       <Button loading={isBacktesting} onClick={startBacktesting}>
         Start Backtesting
       </Button>
+
+      <Button onClick={async () => {
+        const orders = await backtesterEngineRpc.getAllOrders();
+        console.log(orders);
+      }}>Get All Orders</Button>
     </div>
   );
 };
