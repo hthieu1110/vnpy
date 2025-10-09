@@ -1,28 +1,24 @@
-import { getVtSymbol } from "@/utils/getVtSymbol";
-import { backtesterEngineRpc } from "../engineRPCs/backtesterEngineRpc";
-import { useBacktesterStore } from "../stores/useBacktesterStore";
+import { getVtSymbol } from '@/utils/getVtSymbol';
+import { backtesterEngineRpc } from '../engineRPCs/backtesterEngineRpc';
+import { useBacktesterStore } from '../stores/useBacktesterStore';
+import { useCallback } from 'react';
 
 export const useBacktester = () => {
-  const {
-    params,
-    isDownloading,
-    isBacktesting,
-    actions: backtesterActions,
-  } = useBacktesterStore();
+  const { params, isDownloading, isBacktesting, actions: backtesterActions } = useBacktesterStore();
 
-  const startDownloadData = async () => {
+  const startDownloadData = useCallback(async () => {
     backtesterActions.setIsDownloading(true);
 
     const vtSymbol = getVtSymbol(params.symbol, params.exchange);
     await backtesterEngineRpc.startDownloading(
       vtSymbol,
       params.interval,
-      params.startDate,
-      params.endDate
+      params.startDate.valueOf(),
+      params.endDate.valueOf()
     );
-  };
+  }, [params, backtesterActions]);
 
-  const startBacktesting = async () => {
+  const startBacktesting = useCallback(async () => {
     backtesterActions.setIsBacktesting(true);
 
     const vtSymbol = getVtSymbol(params.symbol, params.exchange);
@@ -35,8 +31,8 @@ export const useBacktester = () => {
       params.strategy,
       vtSymbol,
       params.interval,
-      params.startDate,
-      params.endDate,
+      params.startDate.valueOf(),
+      params.endDate.valueOf(),
       params.rate,
       params.slippage,
       params.size,
@@ -44,7 +40,7 @@ export const useBacktester = () => {
       params.initialCapital,
       strategySettings
     );
-  };
+  }, [params, backtesterActions]);
 
   return {
     startDownloadData,

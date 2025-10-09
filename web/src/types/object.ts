@@ -135,3 +135,20 @@ export interface QuoteData extends BaseTradingInfo {
 export interface CancelRequest extends BaseTradingInfo {
   orderid: string;
 }
+
+export interface DailyResult {
+  date: string;
+  close_price: number;
+  pre_close: number;
+  trade_count: number;
+  start_pos: number;
+  end_pos: number;
+  turnover: number;
+  commission: number;
+  slippage: number;
+  trading_pnl: number;
+  holding_pnl: number;
+  total_pnl: number;
+  net_pnl: number;
+  trades: TradeData[];
+}

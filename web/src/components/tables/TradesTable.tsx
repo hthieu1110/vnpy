@@ -8,7 +8,7 @@ type TradesTableProps = {
 };
 
 export const TradesTable = (props: TradesTableProps) => {
-  const columns = genColumns(['orderid', 'tradeid', 'direction', 'offset', 'price', 'volume', 'datetime']);
+  const columns = genColumns(['datetime', 'orderid', 'tradeid', 'direction', 'offset', 'price', 'volume']);
 
   return (
     <Table dataSource={props.trades} columns={columns} pagination={{ pageSize: props.pageSize }} rowKey='tradeid' />

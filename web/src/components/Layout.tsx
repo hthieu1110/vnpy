@@ -44,7 +44,7 @@ export const Layout = () => {
       <AntLayout>
         <HeaderToolbar />
 
-        <Content style={{ margin: "8px 8px 8px" }}>
+        <Content style={{ margin: 0 }}>
           <div
             style={{
               height: "100%",

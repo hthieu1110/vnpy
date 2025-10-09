@@ -1,6 +1,6 @@
 import { OrderData } from '@/types/object';
 import { genColumns } from '@/utils/genColumns';
-import { Card, Table } from 'antd';
+import { Table } from 'antd';
 
 type OrdersTableProps = {
   pageSize?: number;
@@ -9,6 +9,7 @@ type OrdersTableProps = {
 
 export const OrdersTable = (props: OrdersTableProps) => {
   const columns = genColumns([
+    'datetime',
     'orderid',
     'symbol',
     // 'exchange',
@@ -19,7 +20,6 @@ export const OrdersTable = (props: OrdersTableProps) => {
     'volume',
     'traded',
     'status',
-    'datetime',
     // "reference",
   ]);
 

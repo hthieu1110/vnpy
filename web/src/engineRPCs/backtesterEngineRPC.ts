@@ -1,40 +1,41 @@
-import { BaseEngineRpc } from "@/engineRpcs/BaseEngineRpc";
-import { OrderData, TradeData } from "@/types/object";
+import { BaseEngineRpc } from '@/engineRpcs/BaseEngineRpc';
+import { DailyResult, OrderData, TradeData } from '@/types/object';
 
 export class BacktesterEngineRpc extends BaseEngineRpc {
   async initEngine() {
-    const res = await this.call("init_engine", {});
-    console.log("initEngine", res);
+    const res = await this.call('init_engine', {});
+    console.log('initEngine', res);
     return res as boolean;
   }
 
+  async getAllDailyResults(): Promise<DailyResult[]> {
+    const res = await this.call('get_all_daily_results', {});
+    console.log('getAllDailyResults', res);
+    return res as DailyResult[];
+  }
+
   async getAllOrders(): Promise<OrderData[]> {
-    const res = await this.call("get_all_orders", {});
+    const res = await this.call('get_all_orders', {});
     return res as OrderData[];
   }
 
   async getAllTrades(): Promise<TradeData[]> {
-    const res = await this.call("get_all_trades", {});
+    const res = await this.call('get_all_trades', {});
     return res as TradeData[];
   }
 
-  async startDownloading(
-    vt_symbol: string,
-    interval: string,
-    startTimestamp: number,
-    endTimestamp: number
-  ) {
+  async startDownloading(vt_symbol: string, interval: string, startTimestamp: number, endTimestamp: number) {
     // convert to python timestamp
     const start = Math.floor(startTimestamp / 1000);
     const end = Math.floor(endTimestamp / 1000);
 
-    const res = await this.call("start_downloading", {
+    const res = await this.call('start_downloading', {
       vt_symbol,
       interval,
       start,
       end,
     });
-    console.log("startDownloading", res);
+    console.log('startDownloading', res);
     return res as boolean;
   }
 
@@ -55,7 +56,7 @@ export class BacktesterEngineRpc extends BaseEngineRpc {
     const start = Math.floor(startTimestamp / 1000);
     const end = Math.floor(endTimestamp / 1000);
 
-    const res = await this.call("start_backtesting", {
+    const res = await this.call('start_backtesting', {
       class_name,
       vt_symbol,
       interval,
@@ -68,12 +69,9 @@ export class BacktesterEngineRpc extends BaseEngineRpc {
       capital,
       setting,
     });
-    console.log("startBacktesting", res);
+    console.log('startBacktesting', res);
     return res as boolean;
   }
 }
 
-export const backtesterEngineRpc = new BacktesterEngineRpc(
-  import.meta.env.VITE_API_URL,
-  "CtaBacktesterApp"
-);
+export const backtesterEngineRpc = new BacktesterEngineRpc(import.meta.env.VITE_API_URL, 'CtaBacktesterApp');

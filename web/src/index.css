@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -41,9 +41,8 @@ a:hover {
   color: #1890ff;
 }
 
-
 /* override table header height */
-.ant-table-thead>tr>th {
+.ant-table-thead > tr > th {
   padding: 0 !important;
 }
 
@@ -53,4 +52,15 @@ a:hover {
 
 .ant-card-small > .ant-card-head {
   min-height: 24px;
+}
+
+.ant-table-wrapper .ant-table.ant-table-small thead > tr > td,
+.ant-table-wrapper .ant-table.ant-table-small tbody > tr > td,
+.ant-table-wrapper .ant-table.ant-table-small tfoot > tr > td,
+.ant-table-wrapper .ant-table.ant-table-small th > tr > td {
+  padding: 2px 4px !important;
+}
+
+.ant-modal .ant-modal-content {
+  padding: 8px !important;
 }

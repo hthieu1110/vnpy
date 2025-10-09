@@ -1,19 +1,19 @@
-import { Button, Tabs, TabsProps, Divider, Card } from 'antd';
+import { Button, Tabs, TabsProps, Card } from 'antd';
 import { useBacktester } from '../hooks/useBacktester';
 import { useEffect, useState } from 'react';
 import { backtesterEngineRpc } from '@/engineRPCs/backtesterEngineRpc';
-import { OrderData, TradeData } from '@/types/object';
+import { DailyResult, OrderData, TradeData } from '@/types/object';
 import { OrdersTable } from '@/components/tables/OrdersTable';
 import { TradesTable } from '@/components/tables/TradesTable';
 import { BacktestForm } from '@/components/forms/BacktestForm';
-// import { useBacktesterStore } from '@/stores/useBacktesterStore';
 import { usePrevious } from '@uidotdev/usehooks';
+import { DailyResultsTable } from '@/components/tables/DailyResultsTable';
 
 export const Backtester = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [trades, setTrades] = useState<TradeData[]>([]);
+  const [dailyResults, setDailyResults] = useState<DailyResult[]>([]);
 
-  // const { params, actions: backtesterActions } = useBacktesterStore();
   const { startDownloadData, startBacktesting, isDownloading, isBacktesting } = useBacktester();
   const prevIsBacktesting = usePrevious(isBacktesting);
 
@@ -25,12 +25,17 @@ export const Backtester = () => {
     {
       key: 'orders',
       label: 'Orders',
-      children: <OrdersTable orders={orders} pageSize={10} />,
+      children: <OrdersTable orders={orders} pageSize={16} />,
     },
     {
       key: 'trades',
       label: 'Trades',
-      children: <TradesTable trades={trades} pageSize={10} />,
+      children: <TradesTable trades={trades} pageSize={16} />,
+    },
+    {
+      key: 'daily_results',
+      label: 'Daily Results',
+      children: <DailyResultsTable dailyResults={dailyResults} pageSize={16} />,
     },
   ];
 
@@ -41,9 +46,11 @@ export const Backtester = () => {
   const fetchOrdersAndTrades = async () => {
     const ordersPromise = backtesterEngineRpc.getAllOrders();
     const tradesPromise = backtesterEngineRpc.getAllTrades();
-    const [orders, trades] = await Promise.all([ordersPromise, tradesPromise]);
+    const dailyResultsPromise = backtesterEngineRpc.getAllDailyResults();
+    const [orders, trades, dailyResults] = await Promise.all([ordersPromise, tradesPromise, dailyResultsPromise]);
     setTrades(trades);
     setOrders(orders);
+    setDailyResults(dailyResults);
   };
 
   useEffect(() => {
@@ -57,7 +64,7 @@ export const Backtester = () => {
       <Card>
         <BacktestForm />
 
-        <div className='flex gap-4 items-center justify-center'>
+        <div className='flex gap-4 items-center'>
           <Button size='middle' color='orange' variant='solid' loading={isDownloading} onClick={startDownloadData}>
             Download Data
           </Button>

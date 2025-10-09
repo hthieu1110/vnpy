@@ -9,5 +9,9 @@ export const theme: ThemeConfig = {
       bodyPaddingSM: 8,
       headerBg: "#f0f2f5",
     },
+    Modal: {
+      paddingContentVerticalSM: 2,
+      paddingContentHorizontalSM: 2,
+    },
   },
 };
