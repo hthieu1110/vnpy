@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import {
   Centrifuge,
   ConnectedContext,
@@ -7,7 +7,7 @@ import {
   SubscribedContext,
   Subscription,
   UnsubscribedContext,
-} from 'centrifuge';
+} from "centrifuge";
 
 export class CentriService {
   private centriClient: Centrifuge;
@@ -18,29 +18,37 @@ export class CentriService {
   constructor(centriUrl: string) {
     this.centriClient = new Centrifuge(centriUrl);
 
-    this.centriClient.on('connected', (ctx: ConnectedContext) => {
-      console.log('Connected to Centri', ctx);
+    this.centriClient.on("connected", (ctx: ConnectedContext) => {
+      console.log("Connected to Centri", ctx);
     });
-    this.centriClient.on('disconnected', () => {
-      console.log('Disconnected from Centri');
+    this.centriClient.on("disconnected", () => {
+      console.log("Disconnected from Centri");
     });
-    this.centriClient.on('error', (ctx: ErrorContext) => {
-      console.error('Error from Centri', ctx);
+    this.centriClient.on("error", (ctx: ErrorContext) => {
+      console.error("Error from Centri", ctx);
     });
   }
 
   async getConnectionToken() {
-    const resp = await axios.get(`${import.meta.env.VITE_API_URL}/centri/jwt_token`);
+    const resp = await axios.get(
+      `${import.meta.env.VITE_API_URL}/centri/jwt_token`
+    );
     return resp.data;
   }
 
   async getSubscriptionToken(channel: string) {
-    const resp = await axios.get(`${import.meta.env.VITE_API_URL}/centri/jwt_token?channel=${channel}`);
+    const resp = await axios.get(
+      `${import.meta.env.VITE_API_URL}/centri/jwt_token?channel=${channel}`
+    );
     return resp.data;
   }
 
-  async subscribe(channel: string, callback: (ctx: PublicationContext) => void): Promise<Subscription> {
+  async subscribe(
+    channel: string,
+    callback: (ctx: PublicationContext) => void
+  ): Promise<Subscription> {
     if (!this._isConnected) {
+      // TODO: enable this when in production and need secured connection
       const token = await this.getConnectionToken();
       this.centriClient.setToken(token);
       this.centriClient.connect();
@@ -53,34 +61,39 @@ export class CentriService {
     }
 
     const newSub = this.centriClient.newSubscription(channel, {
-      getToken: async () => {
-        return await this.getSubscriptionToken(channel);
-      },
+      // TODO: enable this when in production and need secured connection
+      getToken: async () => this.getSubscriptionToken(channel),
       recoverable: true,
     });
 
     this._subs[channel] = newSub;
 
-    newSub.on('subscribed', (ctx: SubscribedContext) => {
-      console.log('Subscribed to channel', ctx.channel);
+    newSub.on("subscribed", (ctx: SubscribedContext) => {
+      console.log("Subscribed to channel", ctx.channel);
     });
-    newSub.on('unsubscribed', (ctx: UnsubscribedContext) => {
-      console.log('Unsubscribed from channel', ctx.channel);
+    newSub.on("unsubscribed", (ctx: UnsubscribedContext) => {
+      console.log("Unsubscribed from channel", ctx.channel);
     });
-    newSub.on('publication', (ctx: PublicationContext) => {
+    newSub.on("publication", (ctx: PublicationContext) => {
       callback(ctx);
+    });
+    newSub.on("error", (ctx: ErrorContext) => {
+      console.error("Error from Centri", ctx);
     });
 
     newSub.subscribe();
     return newSub;
   }
 
-  subscribeEvent(eventName: string, callback: (ctx: PublicationContext) => void) {
-    this.subscribe('event.' + eventName, callback);
+  subscribeEvent(
+    eventName: string,
+    callback: (ctx: PublicationContext) => void
+  ) {
+    this.subscribe("public:event." + eventName, callback);
   }
 
   unsubscribeEvent(eventName: string) {
-    this.unsubscribe('event.' + eventName);
+    this.unsubscribe("public:event." + eventName);
   }
 
   unsubscribe(channel: string) {
@@ -94,14 +107,14 @@ export class CentriService {
   }
 
   connect() {
-    this.centriClient.on('connected', () => {
-      console.log('Connected to Centri');
+    this.centriClient.on("connected", () => {
+      console.log("Connected to Centri");
     });
-    this.centriClient.on('disconnected', () => {
-      console.log('Disconnected from Centri');
+    this.centriClient.on("disconnected", () => {
+      console.log("Disconnected from Centri");
     });
-    this.centriClient.on('error', (ctx: ErrorContext) => {
-      console.error('Error from Centri', ctx);
+    this.centriClient.on("error", (ctx: ErrorContext) => {
+      console.error("Error from Centri", ctx);
     });
     this.centriClient.connect();
   }
@@ -109,7 +122,9 @@ export class CentriService {
   disconnect() {
     const subs = this.centriClient.subscriptions();
     Object.values(subs).forEach((sub) => sub.unsubscribe());
-    Object.values(subs).forEach((sub) => this.centriClient.removeSubscription(sub));
+    Object.values(subs).forEach((sub) =>
+      this.centriClient.removeSubscription(sub)
+    );
     this.centriClient.disconnect();
     this._isConnected = false;
   }

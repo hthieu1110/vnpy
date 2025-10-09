@@ -6,24 +6,30 @@ import {
 } from "@/types/events";
 import { useEffect } from "react";
 import { useDataStore } from "../stores/useDataStore";
+import { useBacktesterStore } from "@/stores/useBacktesterStore";
 
-export const useRegisterEvents = () => {
+export const useRegisterBacktesterEvents = () => {
   const dataActions = useDataStore((state) => state.actions);
+  const backtesterActions = useBacktesterStore((state) => state.actions);
 
   useEffect(() => {
     eventService.on(EVENT_BACKTESTER_LOG, (ctx) => {
       const log: any = {
         msg: ctx.data.event_data,
       };
+
+      if (log.msg.includes("download completed")) {
+        backtesterActions.setIsDownloading(false);
+      }
       dataActions.addLog("Backtester", log);
     });
 
-    eventService.on(EVENT_BACKTESTER_BACKTESTING_FINISHED, (ctx) => {
-      console.log(ctx);
+    eventService.on(EVENT_BACKTESTER_BACKTESTING_FINISHED, (_ctx) => {
+      backtesterActions.setIsBacktesting(false);
     });
 
-    eventService.on(EVENT_BACKTESTER_OPTIMIZATION_FINISHED, (ctx) => {
-      console.log(ctx);
+    eventService.on(EVENT_BACKTESTER_OPTIMIZATION_FINISHED, (_ctx) => {
+      backtesterActions.setIsOptimizing(false);
     });
 
     return () => {

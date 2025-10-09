@@ -1,14 +1,20 @@
 import { getVtSymbol } from "@/utils/getVtSymbol";
-import { backtesterEngineRPC } from "../engineRPCs/backtesterEngineRPC";
+import { backtesterEngineRpc } from "../engineRpcs/backtesterEngineRpc";
 import { useBacktesterStore } from "../stores/useBacktesterStore";
 
 export const useBacktester = () => {
-  const { params } = useBacktesterStore();
+  const {
+    params,
+    isDownloading,
+    isBacktesting,
+    actions: backtesterActions,
+  } = useBacktesterStore();
 
-  const downloadData = async () => {
-    console.log("Downloading data for backtesting");
+  const startDownloadData = async () => {
+    backtesterActions.setIsDownloading(true);
+
     const vtSymbol = getVtSymbol(params.symbol, params.exchange);
-    await backtesterEngineRPC.startDownloading(
+    await backtesterEngineRpc.startDownloading(
       vtSymbol,
       params.interval,
       params.startDate,
@@ -16,7 +22,34 @@ export const useBacktester = () => {
     );
   };
 
+  const startBacktesting = async () => {
+    backtesterActions.setIsBacktesting(true);
+
+    const vtSymbol = getVtSymbol(params.symbol, params.exchange);
+    const strategySettings = {
+      fast_window: 10,
+      slow_window: 20,
+    };
+
+    await backtesterEngineRpc.startBacktesting(
+      params.strategy,
+      vtSymbol,
+      params.interval,
+      params.startDate,
+      params.endDate,
+      params.commissionRate,
+      params.slippage,
+      params.contractMultipler,
+      params.pricetick,
+      params.initialCapital,
+      strategySettings
+    );
+  };
+
   return {
-    downloadData,
+    startDownloadData,
+    startBacktesting,
+    isDownloading,
+    isBacktesting,
   };
 };

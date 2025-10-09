@@ -9,11 +9,11 @@ class EventService {
   }
 
   on(event: string, callback: (data: any) => void): Promise<Subscription> {
-    return this.centriService.subscribe("event." + event, callback);
+    return this.centriService.subscribe("public:event." + event, callback);
   }
 
   off(event: string) {
-    this.centriService.unsubscribe("event." + event);
+    this.centriService.unsubscribe("public:event." + event);
   }
 }
 

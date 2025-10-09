@@ -4,7 +4,7 @@ from vnpy_rpcservice import RpcServiceApp
 from vnpy_ctabacktester import CtaBacktesterApp
 
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
-from api.utils import publish_event
+from api.utils import event_to_centri
 from vnpy.event.engine import EventEngine
 from vnpy.trader.engine import MainEngine
 from vnpy.trader.event import (
@@ -46,21 +46,24 @@ def main():
     rpc_service.server.register(main_engine.get_all_quotes)
     rpc_service.server.register(main_engine.get_all_active_quotes)
 
-    event_engine.register(EVENT_LOG, publish_event)
-    event_engine.register(EVENT_CONTRACT, publish_event)
-    event_engine.register(EVENT_POSITION, publish_event)
-    event_engine.register(EVENT_ACCOUNT, publish_event)
-    event_engine.register(EVENT_QUOTE, publish_event)
-    event_engine.register(EVENT_TICK, publish_event)
-    event_engine.register(EVENT_TRADE, publish_event)
-    event_engine.register(EVENT_ORDER, publish_event)
+    event_to_centri(event_engine, EVENT_LOG)
+    event_to_centri(event_engine, EVENT_CONTRACT)
+    event_to_centri(event_engine, EVENT_POSITION)
+    event_to_centri(event_engine, EVENT_ACCOUNT)
+    event_to_centri(event_engine, EVENT_QUOTE)
+    event_to_centri(event_engine, EVENT_TICK)
+    event_to_centri(event_engine, EVENT_TRADE)
+    event_to_centri(event_engine, EVENT_ORDER)
 
     # backtester engine management -------------------------------------------------------------
+    rpc_service.server.register(backtester.init_engine)
     rpc_service.server.register(backtester.start_downloading)
+    rpc_service.server.register(backtester.start_backtesting)
+    rpc_service.server.register(backtester.start_optimization)
 
-    event_engine.register(EVENT_BACKTESTER_LOG, publish_event)
-    event_engine.register(EVENT_BACKTESTER_BACKTESTING_FINISHED, publish_event)
-    event_engine.register(EVENT_BACKTESTER_OPTIMIZATION_FINISHED, publish_event)
+    event_to_centri(event_engine, EVENT_BACKTESTER_LOG)
+    event_to_centri(event_engine, EVENT_BACKTESTER_BACKTESTING_FINISHED)
+    event_to_centri(event_engine, EVENT_BACKTESTER_OPTIMIZATION_FINISHED)
 
     logger.info("RpcServer started")
 

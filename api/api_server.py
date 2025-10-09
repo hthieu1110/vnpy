@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
 from api.utils import gen_jwt_token, to_dataclass
@@ -49,9 +49,9 @@ def args_convert(funcName: str, data: dict) -> dict:
             data["req"] = to_dataclass(data["req"], OrderRequest)
         case "cancel_order":
             data["req"] = to_dataclass(data["req"], CancelRequest)
-        case "start_downloading":
-            data["start"] = datetime.fromtimestamp(data["start"])
-            data["end"] = datetime.fromtimestamp(data["end"])
+        case "start_downloading" | "start_backtesting":
+            data["start"] = datetime.fromtimestamp(data["start"], timezone.utc)
+            data["end"] = datetime.fromtimestamp(data["end"], timezone.utc)
         case _:
             pass
 

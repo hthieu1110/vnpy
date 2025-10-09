@@ -1,4 +1,4 @@
-import { mainEngineRPC } from "@/engineRPCs/mainEngineRPC";
+import { mainEngineRpc } from "@/engineRpcs/mainEngineRpc";
 import { Status } from "@/types/constants";
 import { useDataStore } from "@/stores/useDataStore";
 import { useAppStore } from "@/stores/useAppStore";
@@ -45,7 +45,7 @@ export const useOrders = () => {
         exchange: orderData.exchange,
       };
 
-      const res = await mainEngineRPC.cancelOrder(req, gateway);
+      const res = await mainEngineRpc.cancelOrder(req, gateway);
       return res;
     } catch (error) {
       api.error({

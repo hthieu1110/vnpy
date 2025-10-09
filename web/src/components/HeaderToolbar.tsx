@@ -1,12 +1,15 @@
 import { Layout, Button, theme } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 import { useAppStore } from "@/stores/useAppStore";
-import { mainEngineRPC } from "@/engineRPCs/mainEngineRPC";
+import { mainEngineRpc } from "@/engineRpcs/mainEngineRpc";
+import { useNavigate } from "react-router-dom";
+
 import settings from '../../../.vntrader/connect_vision.json';
 
 const { Header } = Layout;
 
 export const HeaderToolbar = () => {
+  const navigate = useNavigate();
   const { gateway, isShowLogs, isConnecting, actions: appActions } = useAppStore();
   const {
     token: { colorBgContainer },
@@ -14,7 +17,13 @@ export const HeaderToolbar = () => {
 
   const connectGateway = async () => {
     appActions.setIsConnecting(true);
-    await mainEngineRPC.connect(settings, 'Vision');
+    await mainEngineRpc.connect(settings, 'Vision');
+  };
+
+
+  const handleLogout = () => {
+    appActions.logout();
+    navigate("/");
   };
 
   return (
@@ -34,7 +43,7 @@ export const HeaderToolbar = () => {
         </Button>
 
         {gateway ? (
-          <Button color="danger" variant="outlined" onClick={appActions.logout}>
+          <Button color="danger" variant="outlined" onClick={handleLogout}>
             Logout
           </Button>
         ) : (

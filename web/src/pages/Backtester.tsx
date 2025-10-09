@@ -1,16 +1,25 @@
 import { Button } from "antd";
-import { useRegisterEvents } from "../hooks/useRegisterBacktesterEvents";
 import { useBacktester } from "../hooks/useBacktester";
+import { useEffect } from "react";
+import { backtesterEngineRpc } from "@/engineRpcs/backtesterEngineRpc";
 
 export const Backtester = () => {
-  useRegisterEvents();    
+  const { startDownloadData, startBacktesting, isDownloading, isBacktesting } =
+    useBacktester();
 
-  const { downloadData } = useBacktester();
+  useEffect(() => {
+    backtesterEngineRpc.initEngine();
+  }, []);
 
   return (
     <div>
       <div className="text-lg !mb-4">Backtester</div>
-      <Button onClick={downloadData}>Download Data for Backtesting</Button>
+      <Button loading={isDownloading} onClick={startDownloadData}>
+        Download Data for Backtesting
+      </Button>
+      <Button loading={isBacktesting} onClick={startBacktesting}>
+        Start Backtesting
+      </Button>
     </div>
   );
 };

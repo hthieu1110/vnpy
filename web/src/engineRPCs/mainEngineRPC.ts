@@ -9,9 +9,9 @@ import {
   Tick,
   TradeData,
 } from "@/types/object";
-import { BaseEngineRPC } from "./BaseEngineRPC";
+import { BaseEngineRpc } from "./BaseEngineRpc";
 
-class MainEngineRPC extends BaseEngineRPC {
+class MainEngineRpc extends BaseEngineRpc {
   async connect(setting: unknown, gateway_name: string): Promise<unknown> {
     return this.call("connect", { gateway_name, setting });
   }
@@ -89,6 +89,6 @@ class MainEngineRPC extends BaseEngineRPC {
   }
 }
 
-export const mainEngineRPC = new MainEngineRPC(
+export const mainEngineRpc = new MainEngineRpc(
   import.meta.env.VITE_API_URL
 );

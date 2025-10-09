@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export class BaseEngineRPC {
+export class BaseEngineRpc {
   private apiUrl: string;
 
   constructor(apiUrl: string) {

@@ -1,6 +1,6 @@
 import { Card, Button, Form, Select, InputNumber, Space, Divider } from "antd";
 import { TickerSelect } from "@/components/TickerSelect";
-import { mainEngineRPC } from "@/engineRPCs/mainEngineRPC";
+import { mainEngineRpc } from "@/engineRpcs/mainEngineRpc";
 import { OrderRequest } from "@/types/object";
 import { FormLayout } from "antd/es/form/Form";
 import { useState } from "react";
@@ -31,7 +31,7 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
       ...defaultValues,
     };
 
-    const resp = await mainEngineRPC.sendOrder(order, gateway);
+    const resp = await mainEngineRpc.sendOrder(order, gateway);
     console.log(resp);
   };
 

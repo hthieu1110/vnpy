@@ -3,13 +3,14 @@ import datetime
 from enum import Enum
 import json
 import time
-from typing import get_type_hints
+from typing import Callable, get_type_hints
 import httpx
 import jwt
+from vnpy_rpcservice.rpc_service import RpcEngine
 from api.config import CENTRI_HOST, CENTRI_PORT
-from vnpy.event.engine import Event
-from vnpy.trader.constant import Direction
+from vnpy.event.engine import Event, EventEngine
 from vnpy.trader.logger import logger
+from datetime import datetime
 
 
 headers = {"Content-Type": "application/json", "Authorization": f"apikey http_api_key"}
@@ -32,21 +33,27 @@ def to_json(data: any) -> dict:
             d[key] = to_json(value)
         elif isinstance(value, Enum):
             d[key] = value.value
-        elif isinstance(value, datetime.datetime):
+        elif isinstance(value, datetime):
             d[key] = value.timestamp()
     return d
 
 
-def publish_event(event: Event) -> None:
-    # logger.info(f"Publish event: {event.type}")
+def event_to_centri(event_engine: EventEngine, event: str):
+    """
+    Register an event and publish to the centri server.
+    """
+    event_engine.register(event, publish_event_to_centri)
 
+
+def publish_event_to_centri(event: Event) -> None:
     http_client = get_http_client()
+    data = to_json(event.data) if is_dataclass(event.data) else event.data
 
     payload = {
         "method": "publish",
         "params": {
-            "channel": "event." + event.type,
-            "data": {"event_type": event.type, "event_data": to_json(event.data)},
+            "channel": "public:event." + event.type,
+            "data": {"event_type": event.type, "event_data": data},
         },
     }
 
