@@ -1,4 +1,4 @@
-import { Status } from "./constants";
+import { Direction, Status } from "./constants";
 
 interface BaseData {
   gateway_name: string;
@@ -90,7 +90,7 @@ export interface Order extends BaseData {
 export interface TradeData extends BaseTradingInfo {
   orderid: string;
   tradeid: string;
-  direction: string;
+  direction: Direction;
   offset: string;
   price: number;
   volume: number;
@@ -98,7 +98,7 @@ export interface TradeData extends BaseTradingInfo {
 }
 
 export interface OrderRequest extends BaseTradingInfo {
-  direction: string;
+  direction: Direction;
   type: string;
   volume: number;
   price: number;
@@ -109,7 +109,7 @@ export interface OrderRequest extends BaseTradingInfo {
 export interface OrderData extends BaseTradingInfo {
   orderid: string;
   type: string;
-  direction: string;
+  direction: Direction;
   offset: string;
   price: number;
   volume: number;

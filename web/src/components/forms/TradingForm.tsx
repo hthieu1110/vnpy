@@ -6,6 +6,7 @@ import { FormLayout } from 'antd/es/form/Form';
 import { useState } from 'react';
 import { useAppStore } from '@/stores/useAppStore';
 import { useOrders } from '@/hooks/useOrders';
+import { Direction, Offset, Type } from '@/types/constants';
 
 type TradingFormProps = {
   layout?: FormLayout;
@@ -22,7 +23,7 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
 
     const defaultValues = {
       exchange: 'GLOBAL',
-      offset: 'NONE',
+      offset: Offset.NONE,
       reference: 'TEST',
     };
 
@@ -55,11 +56,11 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
         initialValues={{
           symbol: 'BTCUSDT_SPOT_BINANCE',
           exchange: 'GLOBAL',
-          direction: 'LONG',
-          type: 'LIMIT',
+          direction: Direction.LONG,
+          type: Type.LIMIT,
           volume: 0.0001,
           price: 120_000,
-          offset: 'NONE',
+          offset: Offset.NONE,
           reference: 'TEST',
         }}
         onValuesChange={handleValuesChange}
@@ -71,20 +72,20 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
         <Form.Item label='Type' name='type' rules={[{ required: true }]}>
           <Select
             style={{ width: 100 }}
-            options={[
-              { label: 'Limit', value: 'LIMIT' },
-              { label: 'Market', value: 'MARKET' },
-            ]}
+            options={Object.values(Type).map((value) => ({
+              label: value,
+              value,
+            }))}
           />
         </Form.Item>
 
         <Form.Item label='Direction' name='direction' rules={[{ required: true }]}>
           <Select
             style={{ width: 100 }}
-            options={[
-              { label: 'Long', value: 'LONG' },
-              { label: 'Short', value: 'SHORT' },
-            ]}
+            options={Object.values(Direction).map((value) => ({
+              label: value,
+              value,
+            }))}
           />
         </Form.Item>
 

@@ -98,7 +98,7 @@ def to_dataclass(data: dict, dtClass: dataclass):
     for key, typeCls in hints.items():
         if issubclass(typeCls, Enum):
             try:
-                new_data[key] = typeCls[data[key]]
+                new_data[key] = typeCls(data[key])
             except KeyError:
                 raise KeyError(f"{typeCls} has no name {data[key]}")
         else:
