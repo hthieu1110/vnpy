@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Layout as AntLayout, theme } from "antd";
 
@@ -6,6 +6,7 @@ import { useAppStore } from "../stores/useAppStore";
 import LogConsole from "./LogConsole";
 import { HeaderToolbar } from "./HeaderToolbar";
 import { LeftToolbar } from "./LeftToolbar";
+import { useDataStore } from "@/stores/useDataStore";
 
 const { Content, Sider } = AntLayout;
 
@@ -15,8 +16,15 @@ export const Layout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const { isShowLogs } = useAppStore();
+  const { isShowLogs, isAutoShowLogs } = useAppStore();
   const appActions = useAppStore((state) => state.actions);
+  const logs = useDataStore((state) => state.logs);
+
+  useEffect(() => {
+    if (isAutoShowLogs) {
+      appActions.setLogConsoleVisible(true);
+    }
+  }, [logs]);
 
   return (
     <AntLayout style={{ minHeight: "100vh" }}>

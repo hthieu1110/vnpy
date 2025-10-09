@@ -1,4 +1,4 @@
-import { Layout, Button, theme } from "antd";
+import { Layout, Button, theme, Checkbox } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 import { useAppStore } from "@/stores/useAppStore";
 import { mainEngineRpc } from "@/engineRpcs/mainEngineRpc";
@@ -10,7 +10,7 @@ const { Header } = Layout;
 
 export const HeaderToolbar = () => {
   const navigate = useNavigate();
-  const { gateway, isShowLogs, isConnecting, actions: appActions } = useAppStore();
+  const { gateway, isShowLogs, isConnecting, isAutoShowLogs, actions: appActions } = useAppStore();
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -34,6 +34,13 @@ export const HeaderToolbar = () => {
       <div className="text-lg font-bold">{gateway && "Gateway " + gateway}</div>
 
       <div style={{ display: "flex", gap: 8 }}>
+        <Checkbox
+          checked={isAutoShowLogs}
+          onChange={(e) => appActions.setIsAutoShowLogs(e.target.checked)}
+        >
+          Auto Show Logs
+        </Checkbox> 
+
         <Button
           type={isShowLogs ? "primary" : "default"}
           icon={<FileTextOutlined />}

@@ -16,7 +16,7 @@ export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
   const columns = genColumns([
     'orderid',
     'symbol',
-    'exchange',
+    // 'exchange',
     'type',
     'direction',
     // "offset",
@@ -35,7 +35,7 @@ export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
     align: 'center',
     render: (_: unknown, _item: unknown) => {
       const orderData = _item as OrderData;
-      if (orderData.status === 'All Traded' || orderData.status === 'Cancelled') {
+      if (orderData.status === 'All Traded' || orderData.status === 'Cancelled' || orderData.status === 'Rejected') {
         return null;
       }
 

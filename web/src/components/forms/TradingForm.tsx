@@ -39,6 +39,13 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
     setEstimated(Math.round(1000 * allFields.price * allFields.volume) / 1000);
   };
 
+  const handleCancelAllOrders = () => {
+    if (!confirm("Are you sure you want to cancel all orders?")) {
+      return;
+    }
+    cancelAllOrders();
+  };
+
   return (
     <Card title="New Order" style={{ marginBottom: 24 }}>
       <Form
@@ -50,8 +57,8 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
           exchange: "GLOBAL",
           direction: "LONG",
           type: "LIMIT",
-          volume: 1,
-          price: 100,
+          volume: 0.0001,
+          price: 120_000,
           offset: "NONE",
           reference: "TEST",
         }}
@@ -122,7 +129,7 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
         variant="filled"
         color="danger"
         className="w-full"
-        onClick={() => cancelAllOrders()}
+        onClick={handleCancelAllOrders}
         loading={isOrderCancelling}
       >
         Cancel All

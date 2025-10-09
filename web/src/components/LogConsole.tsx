@@ -15,8 +15,10 @@ interface LogConsoleProps {
 }
 
 export const LogConsole = ({ visible, onClose }: LogConsoleProps) => {
-  const logs = useDataStore((state) => state.logs);
+  const logs = useDataStore((state) => state.logs); 
+
   const dataActions = useDataStore((state) => state.actions);
+
   const logConsoleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
