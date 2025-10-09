@@ -43,7 +43,7 @@ export const DailyResultsTable = (props: DailyResultsTableProps) => {
             Daily Result: {selectedDailyResult?.date}
         </div>
         
-        <TradesTable trades={selectedDailyResult?.trades || []} />
+        <TradesTable trades={selectedDailyResult?.trades || []} pageSize={16} />
       </Modal>
 
       <Table
