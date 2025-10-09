@@ -1,5 +1,5 @@
 import { getVtSymbol } from "@/utils/getVtSymbol";
-import { backtesterEngineRpc } from "../engineRpcs/backtesterEngineRpc";
+import { backtesterEngineRpc } from "../engineRPCs/backtesterEngineRpc";
 import { useBacktesterStore } from "../stores/useBacktesterStore";
 
 export const useBacktester = () => {

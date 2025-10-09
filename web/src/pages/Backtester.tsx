@@ -1,7 +1,7 @@
 import { Button, Tabs, TabsProps } from "antd";
 import { useBacktester } from "../hooks/useBacktester";
 import { useEffect, useState } from "react";
-import { backtesterEngineRpc } from "@/engineRpcs/backtesterEngineRpc";
+import { backtesterEngineRpc } from "@/engineRPCs/backtesterEngineRpc";
 import { OrderData, TradeData } from "@/types/object";
 import { OrdersTable } from "@/components/tables/OrdersTable";
 import { TradesTable } from "@/components/tables/TradesTable";

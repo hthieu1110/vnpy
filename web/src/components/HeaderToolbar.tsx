@@ -1,7 +1,7 @@
 import { Layout, Button, theme, Checkbox } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 import { useAppStore } from "@/stores/useAppStore";
-import { mainEngineRpc } from "@/engineRpcs/mainEngineRpc";
+import { mainEngineRpc } from "@/engineRPCs/mainEngineRpc";
 import { useNavigate } from "react-router-dom";
 
 import settings from '../../../.vntrader/connect_vision.json';

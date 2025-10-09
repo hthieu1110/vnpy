@@ -1,10 +1,12 @@
+from typing import Callable
 from vnpy_binance import BinanceSpotGateway
 from vnpy_ctastrategy import CtaStrategyApp
 from vnpy_rpcservice import RpcServiceApp
+from vnpy_rpcservice.rpc_service import RpcEngine
 from vnpy_ctabacktester import CtaBacktesterApp
 
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
-from api.utils import event_to_centri, register_rpc
+from api.utils import publish_event_to_centri, register_event, register_rpc
 from vnpy.event.engine import EventEngine
 from vnpy.trader.engine import MainEngine
 from vnpy.trader.event import (
@@ -24,6 +26,8 @@ from vnpy_ctabacktester.engine import (
 )
 from vnpy.trader.logger import logger
 
+from api.utils import EventRegistry, RpcRegistry
+
 
 def main():
     event_engine = EventEngine()
@@ -41,33 +45,44 @@ def main():
         pub_address=f"tcp://{RPC_HOST}:{RPC_PUB_PORT}",
     )
 
-    # main engine management -------------------------------------------------------------
-    register_rpc(rpc_service, main_engine.connect, "main")
-    register_rpc(rpc_service, main_engine.send_order, "main")
-    register_rpc(rpc_service, main_engine.cancel_order, "main")
-    register_rpc(rpc_service, main_engine.get_all_quotes, "main")
-    register_rpc(rpc_service, main_engine.get_all_active_quotes, "main")
+    event_registry = EventRegistry(event_engine)
+    rpc_registry = RpcRegistry(rpc_service)
 
-    event_to_centri(event_engine, EVENT_LOG)
-    event_to_centri(event_engine, EVENT_CONTRACT)
-    event_to_centri(event_engine, EVENT_POSITION)
-    event_to_centri(event_engine, EVENT_ACCOUNT)
-    event_to_centri(event_engine, EVENT_QUOTE)
-    event_to_centri(event_engine, EVENT_TICK)
-    event_to_centri(event_engine, EVENT_TRADE)
-    event_to_centri(event_engine, EVENT_ORDER)
+    # main engine management -------------------------------------------------------------
+    rpc_registry.add_multi("MainEngine", [
+        main_engine.connect,
+        main_engine.send_order,
+        main_engine.cancel_order,
+        main_engine.get_all_quotes,
+        main_engine.get_all_active_quotes,
+    ])
+
+    event_registry.add_multi([
+        EVENT_LOG,
+        EVENT_CONTRACT,
+        EVENT_POSITION,
+        EVENT_ACCOUNT,
+        EVENT_QUOTE,
+        EVENT_TICK,
+        EVENT_TRADE,
+        EVENT_ORDER,
+    ])
 
     # backtester engine management -------------------------------------------------------------
-    register_rpc(rpc_service, backtester.init_engine, "backtester")
-    register_rpc(rpc_service, backtester.start_downloading, "backtester")
-    register_rpc(rpc_service, backtester.start_backtesting, "backtester")
-    register_rpc(rpc_service, backtester.start_optimization, "backtester")
-    register_rpc(rpc_service, backtester.get_all_orders, "backtester")
-    register_rpc(rpc_service, backtester.get_all_trades, "backtester")
+    rpc_registry.add_multi("CtaBacktesterApp", [
+        backtester.init_engine,
+        backtester.start_downloading,
+        backtester.start_backtesting,
+        backtester.start_optimization,
+        backtester.get_all_orders,
+        backtester.get_all_trades,
+    ])
 
-    event_to_centri(event_engine, EVENT_BACKTESTER_LOG)
-    event_to_centri(event_engine, EVENT_BACKTESTER_BACKTESTING_FINISHED)
-    event_to_centri(event_engine, EVENT_BACKTESTER_OPTIMIZATION_FINISHED)
+    event_registry.add_multi([
+        EVENT_BACKTESTER_LOG,
+        EVENT_BACKTESTER_BACKTESTING_FINISHED,
+        EVENT_BACKTESTER_OPTIMIZATION_FINISHED,
+    ])
 
     logger.info("RpcServer started")
 

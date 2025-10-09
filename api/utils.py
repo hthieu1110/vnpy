@@ -38,7 +38,7 @@ def to_json(data: any) -> dict:
     return d
 
 
-def register_rpc(rpc_service: RpcEngine, func: Callable, engine_name: str):
+def register_rpc(rpc_service: RpcEngine, engine_name: str, func: Callable):
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)
 
@@ -47,7 +47,7 @@ def register_rpc(rpc_service: RpcEngine, func: Callable, engine_name: str):
     rpc_service.server.register(wrapper)
 
 
-def event_to_centri(event_engine: EventEngine, event: str):
+def register_event(event_engine: EventEngine, event: str):
     """
     Register an event and publish to the centri server.
     """
@@ -105,3 +105,26 @@ def to_dataclass(data: dict, dtClass: dataclass):
             new_data[key] = data[key]
 
     return dtClass(**new_data)
+
+
+class EventRegistry:
+    def __init__(self, event_engine: EventEngine):
+        self.event_engine = event_engine
+    
+    def add(self, event: str):
+        self.event_engine.register(event, publish_event_to_centri)
+
+    def add_multi(self, events: list[str]):
+        for event in events:
+            self.add(event)
+
+class RpcRegistry:
+    def __init__(self, rpc_service: RpcEngine):
+        self.rpc_service = rpc_service
+    
+    def add(self, engine_name: str, func: Callable):
+        register_rpc(self.rpc_service, engine_name, func)
+
+    def add_multi(self, engine_name: str, funcs: list[Callable]):
+        for func in funcs:
+            self.add(engine_name, func)
