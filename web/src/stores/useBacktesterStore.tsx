@@ -1,16 +1,16 @@
-import { Interval } from "@/types/constants";
-import { create } from "zustand";
+import { Interval } from '@/types/constants';
+import { create } from 'zustand';
 
-interface BacktesterParams {
+export interface BacktesterParams {
   strategy: string;
   symbol: string;
   exchange: string;
-  interval: string;
+  interval: string; 
+  rate: number;
   startDate: number;
   endDate: number;
-  commissionRate: number;
   slippage: number;
-  contractMultipler: number;
+  size: number;
   pricetick: number;
   initialCapital: number;
 }
@@ -34,15 +34,15 @@ export const useBacktesterStore = create<BacktesterState>((set) => ({
   isBacktesting: false,
   isOptimizing: false,
   params: {
-    strategy: "DoubleMaStrategy",
-    symbol: "BTCUSDT_SPOT_BINANCE",
-    exchange: "GLOBAL",
+    strategy: 'DoubleMaStrategy',
+    symbol: 'BTCUSDT_SPOT_BINANCE',
+    exchange: 'GLOBAL',
     interval: Interval.MINUTE,
     startDate: Date.now() - 24 * 60 * 60 * 5 * 1000,
     endDate: Date.now(),
-    commissionRate: 0.000025,
+    rate: 0.000025,
     slippage: 0.2,
-    contractMultipler: 300,
+    size: 300,
     pricetick: 0.2,
     initialCapital: 1_000_000,
   },
@@ -51,7 +51,6 @@ export const useBacktesterStore = create<BacktesterState>((set) => ({
     setIsDownloading: (isDownloading) => set({ isDownloading }),
     setIsBacktesting: (isBacktesting) => set({ isBacktesting }),
     setIsOptimizing: (isOptimizing) => set({ isOptimizing }),
-    updateParams: (changes) =>
-      set((prev) => ({ params: { ...prev.params, ...changes } })),
+    updateParams: (changes) => set((prev) => ({ params: { ...prev.params, ...changes } })),
   },
 }));

@@ -37,9 +37,9 @@ export const useBacktester = () => {
       params.interval,
       params.startDate,
       params.endDate,
-      params.commissionRate,
+      params.rate,
       params.slippage,
-      params.contractMultipler,
+      params.size,
       params.pricetick,
       params.initialCapital,
       strategySettings

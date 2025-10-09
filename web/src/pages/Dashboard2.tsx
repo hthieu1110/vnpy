@@ -1,7 +1,6 @@
 import { Card, Row, Col, Statistic } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { useAppStore } from '../stores/useAppStore';
-import { TickerSelect } from '@/components/TickerAutoComplete';
 import { useDataStore } from '@/stores/useDataStore';
 
 export const Dashboard2 = () => {
@@ -12,8 +11,6 @@ export const Dashboard2 = () => {
   return (
     <div>
       <h1 style={{ marginBottom: 24 }}>Dashboard</h1>
-
-      <TickerSelect onSelect={console.log} />
 
       <Row gutter={16}>
         <Col span={6}>

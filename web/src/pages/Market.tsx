@@ -76,8 +76,6 @@ export const Market = () => {
 
   return (
     <div>
-      <h1 style={{ marginBottom: 24 }}>Market Data</h1>
-
       <Card>
         <Space direction="vertical" style={{ width: '100%' }} size="large">
           <Input

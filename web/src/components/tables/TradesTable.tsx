@@ -1,6 +1,6 @@
-import { TradeData } from "@/types/object";
-import { genColumns } from "@/utils/genColumns";
-import { Card, Table } from "antd";
+import { TradeData } from '@/types/object';
+import { genColumns } from '@/utils/genColumns';
+import { Table } from 'antd';
 
 type TradesTableProps = {
   pageSize?: number;
@@ -8,24 +8,9 @@ type TradesTableProps = {
 };
 
 export const TradesTable = (props: TradesTableProps) => {
-  const columns = genColumns([
-    "orderid",
-    "tradeid",
-    "direction",
-    "offset",
-    "price",
-    "volume",
-    "datetime",
-  ]);
+  const columns = genColumns(['orderid', 'tradeid', 'direction', 'offset', 'price', 'volume', 'datetime']);
 
   return (
-    <Card title="Orders">
-      <Table
-        dataSource={props.trades}
-        columns={columns}
-        pagination={{ pageSize: props.pageSize }}
-        rowKey="tradeid"
-      />
-    </Card>
+    <Table dataSource={props.trades} columns={columns} pagination={{ pageSize: props.pageSize }} rowKey='tradeid' />
   );
 };
