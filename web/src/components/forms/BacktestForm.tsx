@@ -30,8 +30,14 @@ export const BacktestForm = (_props: BacktestFormProps) => {
 
         <Form.Item label='Strategy' name='strategy' rules={[{ required: true }]}>
           <Select style={{ width: 180 }}>
-            <Select.Option value='DoubleMaStrategy'>Double Ma Strategy</Select.Option>
-            <Select.Option value='AtrRsiStrategy'>Atr Rsi Strategy</Select.Option>
+            <Select.Option value='AtrRsiStrategy'>AtrRsiStrategy</Select.Option>
+            <Select.Option value='BollChannelStrategy'>BollChannelStrategy</Select.Option>
+            <Select.Option value='DoubleMaStrategy'>DoubleMaStrategy</Select.Option>
+            <Select.Option value='KingKeltnerStrategy'>KingKeltnerStrategy</Select.Option>
+            <Select.Option value='MultiSignalStrategy'>MultiSignalStrategy</Select.Option>
+            <Select.Option value='MultiTimeframeStrategy'>MultiTimeframeStrategy</Select.Option>
+            <Select.Option value='TestStrategy'>TestStrategy</Select.Option>
+            <Select.Option value='TurtleStrategy'>TurtleStrategy</Select.Option>
           </Select>
         </Form.Item>
 

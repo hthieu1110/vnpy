@@ -6,7 +6,6 @@ from vnpy_rpcservice.rpc_service import RpcEngine
 from vnpy_ctabacktester import CtaBacktesterApp
 
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
-from api.utils import publish_event_to_centri, register_event, register_rpc
 from vnpy.event.engine import EventEngine
 from vnpy.trader.engine import MainEngine
 from vnpy.trader.event import (
