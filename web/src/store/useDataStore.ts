@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { Account, Contract, Log, OrderData, Position, Quote, Tick, Trade } from '@/types';
+import { Account, Contract, Log, OrderData, Position, Quote, Tick, Trade } from '@/types/object';
 
 interface DataState {
   contracts: Contract[];

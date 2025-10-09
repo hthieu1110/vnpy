@@ -1,7 +1,7 @@
 import { Layout, Button, theme } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 import { useAppStore } from "@/store/useAppStore";
-import { rpcService } from "@/services/rpc";
+import { rpcService } from "@/services/rpcAPIService";
 import settings from '../../../.vntrader/connect_vision.json';
 
 const { Header } = Layout;

@@ -10,7 +10,7 @@ import {
 } from '@/consts/events';
 import { useAppStore } from '@/store/useAppStore';
 import { useDataStore } from '@/store/useDataStore';
-import { Account, Contract, OrderData, Position, Quote, Tick, Trade } from '@/types';
+import { Account, Contract, OrderData, Position, Quote, Tick, Trade } from '@/types/object';
 import { PublicationContext } from 'centrifuge';
 import { useCallback, useEffect } from 'react';
 import { useDebouncedList } from './useDebouncedList';

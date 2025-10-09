@@ -1,22 +1,18 @@
-import { rpcService } from '@/services/rpc';
-import { useAppStore } from '@/store/useAppStore';
 import { useDataStore } from '@/store/useDataStore';
-import { CancelRequest, OrderData } from '@/types';
+import { OrderData } from '@/types/object';
 import { genColumns } from '@/utils/genColumns';
 import { Button, Card, Table } from 'antd';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useOrders } from '@/hooks/useOrders';
 
 type OrderDatasWidgetProps = {
   pageSize?: number;
 };
 
 export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
-  const gateway = useAppStore((state) => state.gateway);
   const orderDatas = useDataStore((state) => state.orderDatas);
-  const dataActions = useDataStore((state) => state.actions);
-  const sortedOrderDatas = useMemo(() => orderDatas.sort((a, b) => b.datetime - a.datetime), [orderDatas]);
-  const [isCancelling, setIsCancelling] = useState(false);
-
+  const sortedOrderDatas = useMemo(() => orderDatas.sort((a, b) => +b.orderid - +a.orderid), [orderDatas]);
+  const { cancelOrderById, isOrderCancelling } = useOrders();
   const columns = genColumns([
     'orderid',
     'symbol',
@@ -32,31 +28,12 @@ export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
     // "reference",
   ]);
 
-  const handleCancelOrder = async (orderData: OrderData) => {
-    setIsCancelling(true);
-    try {
-      const req: CancelRequest = {
-        orderid: orderData.orderid,
-        symbol: orderData.symbol,
-        exchange: orderData.exchange,
-      };
-
-      await rpcService.cancelOrder(req, gateway);
-      dataActions.removeOrderData(orderData.orderid);
-    } catch (error) {
-      console.error(error);
-      alert(error);
-    } finally {
-      setIsCancelling(false);
-    }
-  };
-
   columns.push({
     title: 'Action',
     dataIndex: 'action',
     key: 'action',
     align: 'center',
-    render: (_: string, _item: unknown) => {
+    render: (_: unknown, _item: unknown) => {
       const orderData = _item as OrderData;
       if (orderData.status === 'All Traded' || orderData.status === 'Cancelled') {
         return null;
@@ -66,8 +43,8 @@ export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
         <Button
           variant='outlined'
           color='danger'
-          onClick={() => handleCancelOrder(orderData)}
-          loading={isCancelling}
+          onClick={() => cancelOrderById(orderData.orderid)}
+          loading={isOrderCancelling}
         >
           Cancel
         </Button>

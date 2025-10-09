@@ -1,4 +1,4 @@
-import { CentriService, centriService } from './centri';
+import { CentriService, centriService } from './centriService';
 import { Subscription } from 'centrifuge';
 
 class EventEngine {

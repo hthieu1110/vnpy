@@ -12,8 +12,8 @@ interface AppState {
   gateway: string;
   theme: 'light' | 'dark';
   isShowLogs: boolean;
-
   isConnecting: boolean;
+  isOrderCancelling: boolean;
 
   // Actions
   actions: {
@@ -23,6 +23,7 @@ interface AppState {
     setTheme: (theme: 'light' | 'dark') => void;
     setLogConsoleVisible: (visible: boolean) => void;
     logout: () => void;
+    setIsOrderCancelling: (isOrderCancelling: boolean) => void;
   };
 }
 
@@ -35,6 +36,7 @@ export const useAppStore = create<AppState>()(
         theme: 'light',
         isShowLogs: false,
         isConnecting: false,
+        isOrderCancelling: false,
         actions: {
           setUser: (user) => set({ user }),
           setGateway: (connectedGateway) => set({ gateway: connectedGateway, isConnecting: false }),
@@ -42,6 +44,7 @@ export const useAppStore = create<AppState>()(
           setTheme: (theme) => set({ theme }),
           setLogConsoleVisible: (visible) => set({ isShowLogs: visible }),
           logout: () => set({ user: null, gateway: '', isConnecting: false }),
+          setIsOrderCancelling: (isOrderCancelling) => set({ isOrderCancelling }),
         },
       }),
       {

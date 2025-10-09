@@ -2,13 +2,28 @@ import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { Tag } from "antd";
 import React from "react";
 
+const STATUS_COLOR_MAP: Record<string, string> = {
+  "All Traded": "green",
+  "Cancelled": "red",
+  "Rejected": "red",
+  "Submitting": "orange",
+  "Not Traded": "orange",
+  "Part Traded": "orange",
+  "Completed": "green",
+}
+
+const DIRECTION_COLOR_MAP: Record<string, string> = {
+  "Long": "green",
+  "Short": "red",
+}
+
 export const genColumns = (attrList: string[]) => {
   return attrList.map((attr) => ({
     title: attr.charAt(0).toUpperCase() + attr.slice(1).replace(/_/g, " "),
     dataIndex: attr,
     key: attr,
     align: "center" as const,
-    render: (value: unknown): React.ReactNode => {
+    render: (value: unknown, item: unknown): React.ReactNode => {
       let val = value;
       // boolean
       if (typeof value === "boolean") {
@@ -18,32 +33,30 @@ export const genColumns = (attrList: string[]) => {
           <CloseOutlined color="red" />
         );
       }
-      // datetime
-      else if (typeof value === "number" && attr === "datetime") {
-        val = new Date(value * 1000).toLocaleString();
-      } 
       // number
       else if (typeof value === "number") {
-        val = value.toLocaleString();
-      } 
-      // direction
-      else if (typeof value === "string" && attr === "direction") {
-        val = (
-          <Tag color={value === "Long" ? "green" : "red"}>
-            {value.toString()}
-          </Tag>
-        );
-      } 
-      // status
-      else if (typeof value === "string" && attr === "status") {
-        let color = "#666";
-        if (value === "Rejected") {
-          color = "red";
-        } else if (value === "All Traded") {
-          color = "green";
+        if (attr === "datetime") {
+          val = new Date(value * 1000).toLocaleString();
+        } else {
+          val = value.toLocaleString();
         }
-        val = <Tag color={color}>{value.toString()}</Tag>;
-      }
+      } 
+      // string
+      else if (typeof value === "string") { 
+        if (attr === "direction") {
+          val = (
+            <Tag color={DIRECTION_COLOR_MAP[value]}>
+              {value.toString()}
+            </Tag>
+          );
+        } else if (attr === "status") {
+          val = (
+            <Tag color={STATUS_COLOR_MAP[value]}>
+              {value.toString()}
+            </Tag>
+          );
+        }
+      } 
 
       return val as React.ReactNode;
     },
