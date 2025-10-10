@@ -3,6 +3,7 @@ import { Modal, Table } from 'antd';
 import { genColumns } from '@/utils/genColumns';
 import { useState } from 'react';
 import { TradesTable } from './TradesTable';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 type DailyResultsTableProps = {
   pageSize?: number;
@@ -39,12 +40,15 @@ export const DailyResultsTable = (props: DailyResultsTableProps) => {
   return (
     <div>
       <Modal open={!!selectedDailyResult} onCancel={handleCloseDailyTrades} width={680}>
-        <div className='text-md font-bold !mb-4 text-center'>
-            Daily Result: {selectedDailyResult?.date}
-        </div>
-        
+        <div className='text-md font-bold !mb-4 text-center'>Daily Result: {selectedDailyResult?.date}</div>
+
         <TradesTable trades={selectedDailyResult?.trades || []} pageSize={16} />
       </Modal>
+
+      <div className='text-sm text-gray-500 !mb-4 italic'>
+        <InfoCircleOutlined color='blue' className='!mr-1' />
+        Click on a row to see daily trades !
+      </div>
 
       <Table
         dataSource={props.dailyResults}
