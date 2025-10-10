@@ -1,4 +1,4 @@
-import { Direction, Status } from "./constants";
+import { Direction, Interval, Status } from "./constants";
 
 interface BaseData {
   gateway_name: string;
@@ -151,4 +151,16 @@ export interface DailyResult {
   total_pnl: number;
   net_pnl: number;
   trades: TradeData[];
+}
+
+export interface BarData extends BaseTradingInfo {
+  datetime: number;
+  interval: Interval;
+  open_price: number;
+  high_price: number;
+  low_price: number;
+  close_price: number;
+  volume: number;
+  turnover: number;
+  open_interest: number;
 }

@@ -2,17 +2,20 @@ import { Button, Tabs, TabsProps, Card } from 'antd';
 import { useBacktester } from '../hooks/useBacktester';
 import { useEffect, useState } from 'react';
 import { backtesterEngineRpc } from '@/engineRPCs/backtesterEngineRpc';
-import { DailyResult, OrderData, TradeData } from '@/types/object';
+import { BarData, DailyResult, OrderData, TradeData } from '@/types/object';
 import { OrdersTable } from '@/components/tables/OrdersTable';
 import { TradesTable } from '@/components/tables/TradesTable';
 import { BacktestForm } from '@/components/forms/BacktestForm';
 import { usePrevious } from '@uidotdev/usehooks';
 import { DailyResultsTable } from '@/components/tables/DailyResultsTable';
+import { BacktestEchart } from '@/components/charts/BacktestEchart';
+import { BacktestLightweightChart } from '@/components/charts/BacktestLightweightChart';
 
 export const Backtester = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [trades, setTrades] = useState<TradeData[]>([]);
   const [dailyResults, setDailyResults] = useState<DailyResult[]>([]);
+  const [barDatas, setBarDatas] = useState<BarData[]>([]);
 
   const { startDownloadData, startBacktesting, isDownloading, isBacktesting } = useBacktester();
   const prevIsBacktesting = usePrevious(isBacktesting);
@@ -37,6 +40,16 @@ export const Backtester = () => {
       label: 'Daily Results',
       children: <DailyResultsTable dailyResults={dailyResults} pageSize={16} />,
     },
+    {
+      key: 'backtest_echart',
+      label: 'Backtest EChart',
+      children: <BacktestEchart barDatas={barDatas} trades={trades} />,
+    },
+    {
+      key: 'backtest_lightweight_chart',
+      label: 'Backtest Lightweight Chart',
+      children: <BacktestLightweightChart barDatas={barDatas} trades={trades} />,
+    },
   ];
 
   const handleOnChange = (key: string) => {
@@ -47,10 +60,20 @@ export const Backtester = () => {
     const ordersPromise = backtesterEngineRpc.getAllOrders();
     const tradesPromise = backtesterEngineRpc.getAllTrades();
     const dailyResultsPromise = backtesterEngineRpc.getAllDailyResults();
-    const [orders, trades, dailyResults] = await Promise.all([ordersPromise, tradesPromise, dailyResultsPromise]);
+    const historyDataPromise = backtesterEngineRpc.getHistoryData();
+    const [orders, trades, dailyResults, historyData] = await Promise.all([
+      ordersPromise,
+      tradesPromise,
+      dailyResultsPromise,
+      historyDataPromise,
+    ]);
+
+    const filteredHistory = historyData.filter((c) => !(c.low_price < 115_000 || c.high_price > 125_000));
+
     setTrades(trades);
     setOrders(orders);
     setDailyResults(dailyResults);
+    setBarDatas(filteredHistory);
   };
 
   useEffect(() => {
@@ -75,7 +98,11 @@ export const Backtester = () => {
         </div>
       </Card>
 
-      <Tabs defaultActiveKey='1' items={tabItems} onChange={handleOnChange} />
+      {orders.length === 0 ? (
+        <div className='text-lg text-center !mt-4'>Please un backtest first</div>
+      ) : (
+        <Tabs defaultActiveKey='1' items={tabItems} onChange={handleOnChange} />
+      )}
     </div>
   );
 };

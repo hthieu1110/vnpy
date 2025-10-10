@@ -76,6 +76,7 @@ def main():
         backtester.get_all_orders,
         backtester.get_all_trades,
         backtester.get_all_daily_results,
+        backtester.get_history_data,
     ])
 
     event_registry.add_multi([

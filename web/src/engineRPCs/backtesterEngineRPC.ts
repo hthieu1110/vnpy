@@ -1,16 +1,19 @@
 import { BaseEngineRpc } from '@/engineRpcs/BaseEngineRpc';
-import { DailyResult, OrderData, TradeData } from '@/types/object';
+import { BarData, DailyResult, OrderData, TradeData } from '@/types/object';
 
 export class BacktesterEngineRpc extends BaseEngineRpc {
   async initEngine() {
     const res = await this.call('init_engine', {});
-    console.log('initEngine', res);
     return res as boolean;
+  }
+
+  async getHistoryData(): Promise<BarData[]> {
+    const res = await this.call('get_history_data', {});
+    return res as BarData[];
   }
 
   async getAllDailyResults(): Promise<DailyResult[]> {
     const res = await this.call('get_all_daily_results', {});
-    console.log('getAllDailyResults', res);
     return res as DailyResult[];
   }
 
