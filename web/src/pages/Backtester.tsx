@@ -10,18 +10,26 @@ import { usePrevious } from '@uidotdev/usehooks';
 import { DailyResultsTable } from '@/components/tables/DailyResultsTable';
 import { BacktestEchart } from '@/components/charts/BacktestEchart';
 import { BacktestLightweightChart } from '@/components/charts/BacktestLightweightChart';
+import { Strategy } from '@/types/object';
 
 export const Backtester = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [trades, setTrades] = useState<TradeData[]>([]);
   const [dailyResults, setDailyResults] = useState<DailyResult[]>([]);
   const [barDatas, setBarDatas] = useState<BarData[]>([]);
+  const [strategies, setStrategies] = useState<Strategy[]>([]);
 
   const { startDownloadData, startBacktesting, isDownloading, isBacktesting } = useBacktester();
   const prevIsBacktesting = usePrevious(isBacktesting);
 
+  const initEngineAndLoadStrategies = async () => {
+    await backtesterEngineRpc.initEngine();
+    const strategies = await backtesterEngineRpc.customGetAllStrategies();
+    setStrategies(strategies);
+  };
+
   useEffect(() => {
-    backtesterEngineRpc.initEngine();
+    initEngineAndLoadStrategies();
   }, []);
 
   const tabItems: TabsProps['items'] = [
@@ -85,9 +93,9 @@ export const Backtester = () => {
   return (
     <div>
       <Card>
-        <BacktestForm />
+        <BacktestForm strategies={strategies} />
 
-        <div className='flex gap-4 items-center'>
+        <div className='flex gap-4 items-center !mt-2'>
           <Button size='middle' color='orange' variant='solid' loading={isDownloading} onClick={startDownloadData}>
             Download Data
           </Button>
@@ -98,8 +106,8 @@ export const Backtester = () => {
         </div>
       </Card>
 
-      {orders.length === 0 ? (
-        <div className='text-lg text-center !mt-4'>Please un backtest first</div>
+      {!isBacktesting && orders.length === 0 ? (
+        <div className='text-lg text-center !mt-4'>No backtest results</div>
       ) : (
         <Tabs defaultActiveKey='1' items={tabItems} onChange={handleOnChange} />
       )}

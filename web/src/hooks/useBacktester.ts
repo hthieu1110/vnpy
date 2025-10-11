@@ -16,16 +16,13 @@ export const useBacktester = () => {
       params.startDate.valueOf(),
       params.endDate.valueOf()
     );
+    console.log(params.strategySettings);
   }, [params, backtesterActions]);
 
   const startBacktesting = useCallback(async () => {
     backtesterActions.setIsBacktesting(true);
 
     const vtSymbol = getVtSymbol(params.symbol, params.exchange);
-    const strategySettings = {
-      fast_window: 10,
-      slow_window: 20,
-    };
 
     await backtesterEngineRpc.startBacktesting(
       params.strategy,
@@ -38,7 +35,7 @@ export const useBacktester = () => {
       params.size,
       params.pricetick,
       params.initialCapital,
-      strategySettings
+      JSON.parse(params.strategySettings)
     );
   }, [params, backtesterActions]);
 

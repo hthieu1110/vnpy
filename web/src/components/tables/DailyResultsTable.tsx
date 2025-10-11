@@ -46,7 +46,7 @@ export const DailyResultsTable = (props: DailyResultsTableProps) => {
       </Modal>
 
       <div className='text-sm text-gray-500 !mb-4 italic'>
-        <InfoCircleOutlined color='blue' className='!mr-1' />
+        <InfoCircleOutlined className='!mr-1' />
         Click on a row to see daily trades !
       </div>
 

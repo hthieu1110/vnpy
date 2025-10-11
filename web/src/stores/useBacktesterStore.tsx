@@ -14,6 +14,7 @@ export interface BacktesterParams {
   size: number;
   pricetick: number;
   initialCapital: number;
+  strategySettings: string;
 }
 
 interface BacktesterState {
@@ -26,7 +27,7 @@ interface BacktesterState {
     setIsDownloading: (isDownloading: boolean) => void;
     setIsBacktesting: (isBacktesting: boolean) => void;
     setIsOptimizing: (isOptimizing: boolean) => void;
-    updateParams: (params: Partial<BacktesterState>) => void;
+    updateParams: (params: Partial<BacktesterParams>) => void;
   };
 }
 
@@ -35,7 +36,7 @@ export const useBacktesterStore = create<BacktesterState>((set) => ({
   isBacktesting: false,
   isOptimizing: false,
   params: {
-    strategy: 'DoubleMaStrategy',
+    strategy: 'MySimpleMaStrategy',
     symbol: 'BTCUSDT_SPOT_BINANCE',
     exchange: 'GLOBAL',
     interval: Interval.MINUTE,
@@ -46,6 +47,7 @@ export const useBacktesterStore = create<BacktesterState>((set) => ({
     size: 300,
     pricetick: 0.2,
     initialCapital: 1_000_000,
+    strategySettings: '{}',
   },
 
   actions: {

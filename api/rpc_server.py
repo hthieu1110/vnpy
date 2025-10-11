@@ -3,6 +3,7 @@ from vnpy_binance import BinanceSpotGateway
 from vnpy_ctastrategy import CtaStrategyApp
 from vnpy_rpcservice import RpcServiceApp
 from vnpy_rpcservice.rpc_service import RpcEngine
+from api.rpc_server_extra import BacktesterEngineExtra
 from vnpy_ctabacktester import CtaBacktesterApp
 
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
@@ -34,7 +35,7 @@ def main():
 
     main_engine.add_gateway(BinanceSpotGateway, gateway_name="Vision")
 
-    # main_engine.add_app(CtaStrategyApp)
+    main_engine.add_app(CtaStrategyApp)
     rpc_service = main_engine.add_app(RpcServiceApp)
     backtester = main_engine.add_app(CtaBacktesterApp)
 
@@ -68,6 +69,7 @@ def main():
     ])
 
     # backtester engine management -------------------------------------------------------------
+    backtester_extra = BacktesterEngineExtra(backtester)
     rpc_registry.add_multi("CtaBacktesterApp", [
         backtester.init_engine,
         backtester.start_downloading,
@@ -77,6 +79,7 @@ def main():
         backtester.get_all_trades,
         backtester.get_all_daily_results,
         backtester.get_history_data,
+        backtester_extra.get_all_strategies
     ])
 
     event_registry.add_multi([

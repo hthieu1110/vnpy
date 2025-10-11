@@ -41,7 +41,12 @@ a:hover {
   color: #1890ff;
 }
 
-/* override table header height */
+/* card overrides --------------------------------------------------- */
+.ant-card-small > .ant-card-head {
+  min-height: 24px;
+}
+
+/* table overrides --------------------------------------------------- */
 .ant-table-thead > tr > th {
   padding: 0 !important;
 }
@@ -50,8 +55,8 @@ a:hover {
   margin: 8px 0 0 !important;
 }
 
-.ant-card-small > .ant-card-head {
-  min-height: 24px;
+.ant-table-wrapper .ant-table.ant-table-small thead > tr > th {
+  font-size: 0.875em !important;
 }
 
 .ant-table-wrapper .ant-table.ant-table-small thead > tr > td,
@@ -59,8 +64,23 @@ a:hover {
 .ant-table-wrapper .ant-table.ant-table-small tfoot > tr > td,
 .ant-table-wrapper .ant-table.ant-table-small th > tr > td {
   padding: 2px 4px !important;
+  font-size: 0.9em !important;
 }
 
+/* modal overrides --------------------------------------------------- */
 .ant-modal .ant-modal-content {
   padding: 8px !important;
+}
+
+/* form compact overrides --------------------------------------------------- */
+.form-compact .ant-form-item {
+  margin-bottom: 4px !important;
+}
+
+.form-compact .ant-form-item-label {
+  padding-bottom: 0px !important;
+}
+
+.form-compact .ant-form-item-label > label {
+  font-size: 0.9em !important;
 }

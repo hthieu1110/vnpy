@@ -164,3 +164,9 @@ export interface BarData extends BaseTradingInfo {
   turnover: number;
   open_interest: number;
 }
+
+
+export interface Strategy {
+  strategy_name: string;
+  strategy_params: Record<string, number | string | boolean>;
+}

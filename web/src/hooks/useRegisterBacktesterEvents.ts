@@ -24,11 +24,11 @@ export const useRegisterBacktesterEvents = () => {
       dataActions.addLog("Backtester", log);
     });
 
-    eventService.on(EVENT_BACKTESTER_BACKTESTING_FINISHED, (_ctx) => {
+    eventService.on(EVENT_BACKTESTER_BACKTESTING_FINISHED, () => {
       backtesterActions.setIsBacktesting(false);
     });
 
-    eventService.on(EVENT_BACKTESTER_OPTIMIZATION_FINISHED, (_ctx) => {
+    eventService.on(EVENT_BACKTESTER_OPTIMIZATION_FINISHED, () => {
       backtesterActions.setIsOptimizing(false);
     });
 
