@@ -14,14 +14,14 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
 
   useEffect(() => {
     // Initialize only once
-    if (!chartInstance.current) {
+    if (!chartInstance.current && chartRef.current) {
       chartInstance.current = echarts.init(chartRef.current);
     }
 
     // Calculate vertical offset for trades on the same bar
     const getTradesWithOffset = (filteredTrades: TradeData[], isLong: boolean) => {
       const tradesByDatetime = new Map<number, TradeData[]>();
-      
+
       // Group trades by datetime
       filteredTrades.forEach((trade) => {
         const existing = tradesByDatetime.get(trade.datetime) || [];
@@ -39,7 +39,7 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
       const allPrices = barDatas.flatMap((b) => [b.high_price, b.low_price]);
       const priceRange = Math.max(...allPrices) - Math.min(...allPrices);
       const offsetMultiplier = priceRange * 0.008; // 0.8% of price range per marker (reduced spacing)
-      const gapFromBar = priceRange * 0.01; // 1% gap between marker and bar
+      const gapFromBar = priceRange * 0.003; // 0.3% gap between marker and bar (reduced from 1%)
 
       // Apply vertical offset for multiple trades on same bar
       const result: Array<{ value: [number, number]; label: any }> = [];
@@ -47,7 +47,7 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
         const bar = barDataMap.get(tradesAtTime[0].datetime);
         const basePrice = bar ? (isLong ? bar.low_price : bar.high_price) : tradesAtTime[0].price;
         const basePriceWithGap = basePrice + (isLong ? -gapFromBar : gapFromBar);
-        
+
         tradesAtTime.forEach((trade, index) => {
           const offset = offsetMultiplier * index * (isLong ? -1 : 1);
           result.push({
@@ -58,12 +58,12 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
               formatter: isLong ? 'Buy' : 'Sell',
               fontSize: 10,
               color: isLong ? '#26a69a' : '#ef5350',
-              distance: 5,
+              distance: 0,
             },
           });
         });
       });
-      
+
       return result;
     };
 
@@ -72,19 +72,19 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
       const totalBars = barDatas.length;
       const startIndex = Math.floor((startPercent / 100) * totalBars);
       const endIndex = Math.ceil((endPercent / 100) * totalBars);
-      
+
       const visibleBars = barDatas.slice(startIndex, endIndex);
-      
+
       if (visibleBars.length === 0) {
         return { min: 'dataMin', max: 'dataMax' };
       }
-      
+
       const visiblePrices = visibleBars.flatMap((b) => [b.high_price, b.low_price]);
       const minPrice = Math.min(...visiblePrices);
       const maxPrice = Math.max(...visiblePrices);
-      
+
       const margin = (maxPrice - minPrice) * 0.1;
-      
+
       return {
         min: minPrice - margin,
         max: maxPrice + margin,
@@ -103,12 +103,44 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
       xAxis: {
         type: 'category',
         data: barDatas.map((c) => c.datetime),
+        axisLabel: {
+          formatter: (value: string) => {
+            // Format datetime to shorter format (e.g., "MM-DD HH:mm" or "MM-DD")
+            const date = new Date(value);
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            
+            // Show time if not midnight, otherwise just show date
+            if (hours === '00' && minutes === '00') {
+              return `${month}-${day}`;
+            }
+            return `${month}-${day} ${hours}:${minutes}`;
+          },
+          rotate: 0,
+          fontSize: 10,
+          interval: 'auto',
+          showMaxLabel: true,
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            type: 'dashed',
+          },
+        },
       },
-      yAxis: { 
+      yAxis: {
         scale: true,
         splitNumber: 5,
         min: initialYRange.min,
         max: initialYRange.max,
+        splitLine: {
+          show: true,
+          lineStyle: {
+            type: 'dashed',
+          },
+        },
       },
       dataZoom: [
         {
@@ -140,7 +172,7 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
           name: 'Buy',
           type: 'scatter',
           symbol: 'triangle',
-          symbolSize: 12,
+          symbolSize: 10,
           symbolRotate: 0,
           data: getTradesWithOffset(buyTrades, true),
           itemStyle: {
@@ -151,7 +183,7 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
           name: 'Sell',
           type: 'scatter',
           symbol: 'triangle',
-          symbolSize: 12,
+          symbolSize: 10,
           symbolRotate: 180,
           data: getTradesWithOffset(sellTrades, false),
           itemStyle: {
@@ -161,8 +193,6 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
       ],
       tooltip: { trigger: 'axis' },
     };
-
-    chartInstance.current.setOption(option);
 
     // Handle dataZoom events to update y-axis dynamically
     const handleDataZoom = (params: any) => {
@@ -178,14 +208,30 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
       }
     };
 
-    chartInstance.current.on('dataZoom', handleDataZoom);
+    if (chartInstance.current) {
+      chartInstance.current.setOption(option);
+      chartInstance.current.on('dataZoom', handleDataZoom);
+    }
 
     // Auto resize on window resize
     const handleResize = () => chartInstance.current?.resize();
     window.addEventListener('resize', handleResize);
 
+    // Observe container size changes (for tab switches)
+    const resizeObserver = new ResizeObserver(() => {
+      // Add small delay to ensure tab transition is complete
+      setTimeout(() => {
+        chartInstance.current?.resize();
+      }, 0);
+    });
+
+    if (chartRef.current) {
+      resizeObserver.observe(chartRef.current);
+    }
+
     return () => {
       window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       chartInstance.current?.off('dataZoom', handleDataZoom);
       chartInstance.current?.dispose();
       chartInstance.current = null;

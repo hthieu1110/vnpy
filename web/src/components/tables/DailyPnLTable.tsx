@@ -5,12 +5,12 @@ import { useState } from 'react';
 import { TradesTable } from './TradesTable';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-type DailyResultsTableProps = {
+type DailyPnLTableProps = {
   pageSize?: number;
   dailyResults: DailyResult[];
 };
 
-export const DailyResultsTable = (props: DailyResultsTableProps) => {
+export const DailyPnLTable = (props: DailyPnLTableProps) => {
   const [selectedDailyResult, setSelectedDailyResult] = useState<DailyResult | null>(null);
 
   const handleShowDailyTrades = (dailyResult: DailyResult) => {
