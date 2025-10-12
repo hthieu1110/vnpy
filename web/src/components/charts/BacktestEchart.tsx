@@ -8,6 +8,19 @@ interface BacktestEChartProps {
   trades: TradeData[];
 }
 
+const dtToLabel = (dt: Date) => {
+  const month = String(dt.getMonth() + 1).padStart(2, '0');
+  const day = String(dt.getDate()).padStart(2, '0');
+  const hours = String(dt.getHours()).padStart(2, '0');
+  const minutes = String(dt.getMinutes()).padStart(2, '0');
+  
+  // Show time if not midnight, otherwise just show date
+  if (hours === '00' && minutes === '00') {
+    return `${month}-${day}`;
+  }
+  return `${month}-${day}\n${hours}:${minutes}`;
+};
+
 export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
   const chartRef = useRef(null);
   const chartInstance = useRef<echarts.EChartsType | null>(null);
@@ -99,24 +112,13 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
 
     const option = {
       animation: false,
-      grid: { left: 60, right: 20, top: 20, bottom: 60 },
+      grid: { left: 0, right: 60, top: 20, bottom: 60 },
       xAxis: {
         type: 'category',
         data: barDatas.map((c) => c.datetime),
         axisLabel: {
           formatter: (value: string) => {
-            // Format datetime to shorter format (e.g., "MM-DD HH:mm" or "MM-DD")
-            const date = new Date(value);
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            
-            // Show time if not midnight, otherwise just show date
-            if (hours === '00' && minutes === '00') {
-              return `${month}-${day}`;
-            }
-            return `${month}-${day} ${hours}:${minutes}`;
+            return dtToLabel(new Date(value));
           },
           rotate: 0,
           fontSize: 10,
@@ -132,9 +134,15 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
       },
       yAxis: {
         scale: true,
+        position: 'right',
         splitNumber: 5,
         min: initialYRange.min,
         max: initialYRange.max,
+        axisLabel: {
+          formatter: (value: number) => {
+            return value.toFixed(4).replace(/\.?0+$/, '');
+          },
+        },
         splitLine: {
           show: true,
           lineStyle: {
@@ -160,6 +168,9 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
           bottom: 10,
           height: 20,
           brushSelect: false,
+          labelFormatter: (value: number) => {
+            return dtToLabel(new Date(barDatas[value]?.datetime));
+          },
         },
       ],
       series: [

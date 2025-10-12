@@ -80,6 +80,12 @@ export class BacktesterEngineRpc extends BaseEngineRpc {
     console.log('startBacktesting', res);
     return res as boolean;
   }
+
+  async reloadStrategyClass(): Promise<boolean> {
+    const res = await this.call('reload_strategy_class', {});
+    console.log('reloadStrategyClass', res);
+    return res as boolean;
+  }
 }
 
 export const backtesterEngineRpc = new BacktesterEngineRpc(import.meta.env.VITE_API_URL, 'CtaBacktesterApp');

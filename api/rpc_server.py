@@ -79,6 +79,7 @@ def main():
         backtester.get_all_trades,
         backtester.get_all_daily_results,
         backtester.get_history_data,
+        backtester.reload_strategy_class,
         backtester_extra.get_all_strategies
     ])
 

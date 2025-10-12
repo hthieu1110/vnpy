@@ -19,6 +19,10 @@ export const useRegisterBacktesterEvents = () => {
       };
 
       if (log.msg.includes("download completed")) {
+        console.log("download completed");
+        backtesterActions.setIsDownloading(false);
+      } else if (log.msg.includes("unable to get historical data")) {
+        console.error("unable to get historical data");
         backtesterActions.setIsDownloading(false);
       }
       dataActions.addLog("Backtester", log);

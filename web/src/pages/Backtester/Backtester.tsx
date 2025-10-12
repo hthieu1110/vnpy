@@ -1,5 +1,5 @@
 import { Button, Tabs, TabsProps, Card, Switch } from 'antd';
-import { useBacktester } from '../hooks/useBacktester';
+import { useBacktester } from '../../hooks/useBacktester';
 import { useEffect, useState } from 'react';
 import { backtesterEngineRpc } from '@/engineRPCs/backtesterEngineRpc';
 import { BarData, DailyResult, OrderData, TradeData } from '@/types/object';
@@ -9,10 +9,10 @@ import { BacktestForm } from '@/components/forms/BacktestForm';
 import { usePrevious } from '@uidotdev/usehooks';
 import { DailyPnLTable } from '@/components/tables/DailyPnLTable';
 import { BacktestEchart } from '@/components/charts/BacktestEchart';
-import { BacktestLightweightChart } from '@/components/charts/BacktestLightweightChart';
 import { Strategy } from '@/types/object';
 import { DailyPnLChart } from '@/components/charts/DailyPnLChart';
 import { PnLDistributionChart } from '@/components/charts/PnLDistributionChart';
+import { BacktesterOptimization } from './Optimization';
 
 export const Backtester = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
@@ -63,13 +63,13 @@ export const Backtester = () => {
     },
     {
       key: 'backtest_echart',
-      label: 'Backtest EChart',
+      label: 'Backtest Chart',
       children: <BacktestEchart barDatas={barDatas} trades={trades} />,
     },
     {
-      key: 'backtest_lightweight_chart',
-      label: 'Backtest Lightweight Chart',
-      children: <BacktestLightweightChart barDatas={barDatas} trades={trades} />,
+      key: 'backtest_optimization',
+      label: 'Backtest Optimization',
+      children: <BacktesterOptimization />,
     },
   ];
 
