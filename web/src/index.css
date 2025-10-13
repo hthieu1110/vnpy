@@ -67,6 +67,7 @@ a:hover {
   font-size: 0.9em !important;
 }
 
+/* tabs overrides --------------------------------------------------- */
 .ant-tabs-left >.ant-tabs-nav .ant-tabs-tab+.ant-tabs-tab {
   margin: 4px 0 0 0 !important;
 }

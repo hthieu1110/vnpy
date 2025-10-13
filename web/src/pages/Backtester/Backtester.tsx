@@ -11,8 +11,7 @@ export const Backtester = () => {
   const [strategies, setStrategies] = useState<Strategy[]>([]);
   const [isShowConfig, setIsShowConfig] = useState(true);
 
-  const { startDownloadData, isDownloading } =
-    useBacktester();
+  const { startDownloadData, isDownloading } = useBacktester();
 
   const initEngineAndLoadStrategies = async () => {
     await backtesterEngineRpc.initEngine();

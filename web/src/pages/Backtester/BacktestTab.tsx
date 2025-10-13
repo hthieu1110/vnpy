@@ -3,10 +3,17 @@ import { DailyPnLChart } from "@/components/charts/DailyPnLChart";
 import { PnLDistributionChart } from "@/components/charts/PnLDistributionChart";
 import { DailyPnLTable } from "@/components/tables/DailyPnLTable";
 import { OrdersTable } from "@/components/tables/OrdersTable";
+import { StatisticsTable } from "@/components/tables/StatisticsTable";
 import { TradesTable } from "@/components/tables/TradesTable";
 import { backtesterEngineRpc } from "@/engineRpcs/backtesterEngineRpc";
 import { useBacktester } from "@/hooks/useBacktester";
-import { OrderData, TradeData, DailyResult, BarData } from "@/types";
+import {
+  OrderData,
+  TradeData,
+  DailyResult,
+  BarData,
+  BacktestStatistics,
+} from "@/types";
 import { usePrevious } from "@uidotdev/usehooks";
 import { Button, Tabs, TabsProps } from "antd";
 import { useEffect, useState } from "react";
@@ -14,12 +21,20 @@ import { useEffect, useState } from "react";
 export const BacktestTab = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [trades, setTrades] = useState<TradeData[]>([]);
+  const [statistics, setStatistics] = useState<BacktestStatistics>(
+    {} as BacktestStatistics
+  );
   const [dailyResults, setDailyResults] = useState<DailyResult[]>([]);
   const [barDatas, setBarDatas] = useState<BarData[]>([]);
   const { isBacktesting, isDownloading, startBacktesting } = useBacktester();
   const prevIsBacktesting = usePrevious(isBacktesting);
 
   const tabItems: TabsProps["items"] = [
+    {
+      key: "statistics",
+      label: "Statistics",
+      children: <StatisticsTable statistics={statistics} />,
+    },
     {
       key: "orders",
       label: "Orders",
@@ -57,13 +72,16 @@ export const BacktestTab = () => {
     const tradesPromise = backtesterEngineRpc.getAllTrades();
     const dailyResultsPromise = backtesterEngineRpc.getAllDailyResults();
     const historyDataPromise = backtesterEngineRpc.getHistoryData();
-    
-    const [orders, trades, dailyResults, historyData] = await Promise.all([
-      ordersPromise,
-      tradesPromise,
-      dailyResultsPromise,
-      historyDataPromise,
-    ]);
+    const statisticsPromise = backtesterEngineRpc.getResultStatistics();
+
+    const [orders, trades, dailyResults, historyData, statistics] =
+      await Promise.all([
+        ordersPromise,
+        tradesPromise,
+        dailyResultsPromise,
+        historyDataPromise,
+        statisticsPromise,
+      ]);
 
     // const filteredHistory = historyData.filter(
     //   (c) => !(c.low_price < 115_000 || c.high_price > 125_000)
@@ -73,6 +91,7 @@ export const BacktestTab = () => {
     setOrders(orders);
     setDailyResults(dailyResults);
     setBarDatas(historyData);
+    setStatistics(statistics);
   };
 
   useEffect(() => {
