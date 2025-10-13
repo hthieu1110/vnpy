@@ -1,8 +1,9 @@
-import { Form, Select, InputNumber, DatePicker, Input } from "antd";
+import { Form, Select, InputNumber, DatePicker, Input, Button } from "antd";
 import { TickerAutoComplete } from "@/components/TickerAutoComplete";
 import { useBacktesterStore } from "@/stores/useBacktesterStore";
 import { Interval, Strategy } from "@/types";
 import { useEffect, useMemo } from "react";
+import { useBacktester } from "@/hooks/useBacktester";
 
 type BacktestFormProps = {
   strategies: Strategy[];
@@ -11,6 +12,8 @@ type BacktestFormProps = {
 export const BacktestForm = (props: BacktestFormProps) => {
   const { strategies } = props;
   const { params, actions: backtesterActions } = useBacktesterStore();
+  const { startDownloadData, isDownloading } = useBacktester();
+
   const [form] = Form.useForm();
   const currentStrategyName = form.getFieldValue("strategy");
 
@@ -101,6 +104,17 @@ export const BacktestForm = (props: BacktestFormProps) => {
             }))}
           />
         </Form.Item>
+
+        <Button
+          size="middle"
+          variant="solid"
+          color="green"
+          loading={isDownloading}
+          onClick={startDownloadData}
+          style={{ marginTop: 20 }}
+        >
+          Download Data
+        </Button>
       </div>
 
       <div style={{ display: "flex", flexDirection: "row", gap: 16 }}>
@@ -130,7 +144,12 @@ export const BacktestForm = (props: BacktestFormProps) => {
           name="rate"
           rules={[{ required: true, message: "Please input price!" }]}
         >
-          <InputNumber placeholder="Rate" min={0} controls={false} style={{ width: 100 }} />
+          <InputNumber
+            placeholder="Rate"
+            min={0}
+            controls={false}
+            style={{ width: 100 }}
+          />
         </Form.Item>
 
         <Form.Item
@@ -164,7 +183,11 @@ export const BacktestForm = (props: BacktestFormProps) => {
           name="pricetick"
           rules={[{ required: true, message: "Please input volume!" }]}
         >
-          <InputNumber placeholder="Pricetick" controls={false} style={{ width: 74 }} />
+          <InputNumber
+            placeholder="Pricetick"
+            controls={false}
+            style={{ width: 74 }}
+          />
         </Form.Item>
 
         <Form.Item
