@@ -31,7 +31,7 @@ export const OptimizationResultsTable = (
       rowKey={(record) => JSON.stringify(record.params)}
       dataSource={optimizationResults}
       columns={columns}
-      pagination={{ pageSize: 10 }}
+      pagination={{ pageSize: 16 }}
     />
   );
 };
