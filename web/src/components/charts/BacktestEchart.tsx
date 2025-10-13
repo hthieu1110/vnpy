@@ -42,10 +42,12 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
         tradesByDatetime.set(trade.datetime, existing);
       });
 
-      // Create a map of datetime to bar data for quick lookup
+      // Create a map of datetime to bar data and index for quick lookup
       const barDataMap = new Map<number, BarData>();
-      barDatas.forEach((bar) => {
+      const barIndexMap = new Map<number, number>();
+      barDatas.forEach((bar, index) => {
         barDataMap.set(bar.datetime, bar);
+        barIndexMap.set(bar.datetime, index);
       });
 
       // Calculate price range for offset calculation
@@ -58,13 +60,18 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
       const result: Array<{ value: [number, number]; label: any }> = [];
       tradesByDatetime.forEach((tradesAtTime) => {
         const bar = barDataMap.get(tradesAtTime[0].datetime);
+        const barIndex = barIndexMap.get(tradesAtTime[0].datetime);
+        
+        // Skip if we can't find the bar index
+        if (barIndex === undefined) return;
+        
         const basePrice = bar ? (isLong ? bar.low_price : bar.high_price) : tradesAtTime[0].price;
         const basePriceWithGap = basePrice + (isLong ? -gapFromBar : gapFromBar);
 
-        tradesAtTime.forEach((trade, index) => {
+        tradesAtTime.forEach((_trade, index) => {
           const offset = offsetMultiplier * index * (isLong ? -1 : 1);
           result.push({
-            value: [trade.datetime, basePriceWithGap + offset],
+            value: [barIndex, basePriceWithGap + offset],
             label: {
               show: true,
               position: isLong ? 'bottom' : 'top',
@@ -117,8 +124,9 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
         type: 'category',
         data: barDatas.map((c) => c.datetime),
         axisLabel: {
-          formatter: (value: string) => {
-            return dtToLabel(new Date(value));
+          formatter: (value: number) => {
+            // Convert Python timestamp (seconds) to JavaScript timestamp (milliseconds)
+            return dtToLabel(new Date(value * 1000));
           },
           rotate: 0,
           fontSize: 10,
@@ -169,7 +177,9 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
           height: 20,
           brushSelect: false,
           labelFormatter: (value: number) => {
-            return dtToLabel(new Date(barDatas[value]?.datetime));
+            // Convert Python timestamp (seconds) to JavaScript timestamp (milliseconds)
+            const datetime = barDatas[value]?.datetime;
+            return datetime ? dtToLabel(new Date(datetime * 1000)) : '';
           },
         },
       ],
