@@ -1,5 +1,5 @@
 import { BacktestStatistics } from "@/types";
-import { List, Table } from "antd";
+import { List } from "antd";
 
 interface StatisticsTableProps {
   statistics: BacktestStatistics;
@@ -16,19 +16,6 @@ export const StatisticsTable = (props: StatisticsTableProps) => {
       value: props.statistics[key as keyof BacktestStatistics],
     };
   });
-
-  const columns = [
-    {
-      title: "Indicator",
-      dataIndex: "indicator",
-      key: "indicator",
-    },
-    {
-      title: "Value",
-      dataIndex: "value",
-      key: "value",
-    },
-  ];
 
   return (
     <List
@@ -56,8 +43,4 @@ export const StatisticsTable = (props: StatisticsTableProps) => {
       )}
     />
   );
-
-  //   return (
-  //     <Table dataSource={data} columns={columns} pagination={{ pageSize: 16 }} />
-  //   );
 };
