@@ -35,7 +35,7 @@ def main():
 
     main_engine.add_gateway(BinanceSpotGateway, gateway_name="Vision")
 
-    main_engine.add_app(CtaStrategyApp)
+    cta_strategy = main_engine.add_app(CtaStrategyApp)
     rpc_service = main_engine.add_app(RpcServiceApp)
     backtester = main_engine.add_app(CtaBacktesterApp)
 
