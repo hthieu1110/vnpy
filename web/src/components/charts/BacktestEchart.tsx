@@ -259,5 +259,5 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
     };
   }, [barDatas, trades]);
 
-  return <div ref={chartRef} style={{ width: '100%', height: 400 }} />;
+  return <div ref={chartRef} style={{ width: '100%', height: 640 }} />;
 };

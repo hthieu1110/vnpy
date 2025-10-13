@@ -65,14 +65,14 @@ export const BacktestTab = () => {
       historyDataPromise,
     ]);
 
-    const filteredHistory = historyData.filter(
-      (c) => !(c.low_price < 115_000 || c.high_price > 125_000)
-    );
+    // const filteredHistory = historyData.filter(
+    //   (c) => !(c.low_price < 115_000 || c.high_price > 125_000)
+    // );
 
     setTrades(trades);
     setOrders(orders);
     setDailyResults(dailyResults);
-    setBarDatas(filteredHistory);
+    setBarDatas(historyData);
   };
 
   useEffect(() => {

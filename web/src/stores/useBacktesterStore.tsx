@@ -37,7 +37,7 @@ export const useBacktesterStore = create<BacktesterState>((set) => ({
   isOptimizing: false,
   params: {
     strategy: 'MySimpleMaStrategy',
-    symbol: 'BTCUSDT_SPOT_BINANCE',
+    symbol: 'SOLUSDT_SPOT_BINANCE',
     exchange: 'GLOBAL',
     interval: Interval.MINUTE,
     startDate: dayjs(Date.now() - 24 * 60 * 60 * 7 * 1000),
