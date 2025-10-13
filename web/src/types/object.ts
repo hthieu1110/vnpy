@@ -1,4 +1,4 @@
-import { Direction, Interval, Status } from "./constants";
+import { Direction, Interval, OptimizationTarget, Status } from "./constants";
 
 interface BaseData {
   gateway_name: string;
@@ -120,16 +120,16 @@ export interface OrderData extends BaseTradingInfo {
 }
 
 export interface QuoteData extends BaseTradingInfo {
-    quoteid: string
-    bid_price: number;
-    bid_volume: number;
-    ask_price: number;
-    ask_volume: number;
-    bid_offset: string;
-    ask_offset: string;
-    status: string;
-    datetime: number;
-    reference: string;
+  quoteid: string;
+  bid_price: number;
+  bid_volume: number;
+  ask_price: number;
+  ask_volume: number;
+  bid_offset: string;
+  ask_offset: string;
+  status: string;
+  datetime: number;
+  reference: string;
 }
 
 export interface CancelRequest extends BaseTradingInfo {
@@ -165,8 +165,56 @@ export interface BarData extends BaseTradingInfo {
   open_interest: number;
 }
 
-
 export interface Strategy {
   strategy_name: string;
   strategy_params: Record<string, number | string | boolean>;
+}
+
+export interface OptimizationParam {
+  parameter: string;
+  start: number;
+  step: number;
+  end: number;
+}
+
+export interface OptimizationParamsConfig {
+  optimizationTarget: OptimizationTarget;
+  processLimit: number;
+  optimizationParams: OptimizationParam[];
+}
+
+export interface OptimizationResult {
+  params: Record<string, number>;
+  target_value: number;
+  statistics: BacktestStatistics;
+}
+
+export interface BacktestStatistics {
+  annual_return: number;
+  capital: number;
+  daily_commission: number;
+  daily_net_pnl: number;
+  daily_return: number;
+  daily_slippage: number;
+  daily_trade_count: number;
+  daily_turnover: number;
+  end_balance: number;
+  end_date: string;
+  ewm_sharpe: number;
+  loss_days: number;
+  max_ddpercent: number;
+  max_drawdown: number;
+  max_drawdown_duration: number;
+  profit_days: number;
+  return_drawdown_ratio: number;
+  return_std: number;
+  sharpe_ratio: number;
+  start_date: string;
+  total_commission: number;
+  total_days: number;
+  total_net_pnl: number;
+  total_return: number;
+  total_slippage: number;
+  total_trade_count: number;
+  total_turnover: number;
 }

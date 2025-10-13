@@ -1,8 +1,10 @@
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
+from vnpy_ctastrategy.backtesting import OptimizationSetting
+
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
-from api.utils import gen_jwt_token, to_dataclass
+from api.utils import gen_jwt_token, to_dataclass, to_json
 
 from routers import trading_router, market_router
 
@@ -52,6 +54,19 @@ def args_convert(funcName: str, data: dict) -> dict:
         case "start_downloading" | "start_backtesting":
             data["start"] = datetime.fromtimestamp(data["start"], timezone.utc)
             data["end"] = datetime.fromtimestamp(data["end"], timezone.utc)
+        case "start_optimization":
+            data["start"] = datetime.fromtimestamp(data["start"], timezone.utc)
+            data["end"] = datetime.fromtimestamp(data["end"], timezone.utc)
+
+            settings = data["optimization_setting"]
+            optimization_setting = OptimizationSetting()
+            optimization_setting.set_target(settings["optimizationTarget"])
+            for param in settings["optimizationParams"]:
+                optimization_setting.add_parameter(
+                    param["parameter"], param["start"], param["end"], param["step"]
+                )
+
+            data["optimization_setting"] = optimization_setting
         case _:
             pass
 
@@ -60,11 +75,12 @@ def args_convert(funcName: str, data: dict) -> dict:
 
 @app.post("/rpc/{engineName}/{action}")
 async def rpc(engineName: str, action: str, data: dict = Body(...)):
+    """Make RPC request to rpc_server"""
     try:
         func = getattr(app.state.rpc_client, f"{engineName}:{action}")
         converted_data = args_convert(action, data)
         result = func(**converted_data)
-        return result
+        return to_json(result)
     except Exception as e:
         if isinstance(e, RemoteException) and "KeyError" in str(e):
             raise HTTPException(status_code=404, detail=f"Action {action} not found")

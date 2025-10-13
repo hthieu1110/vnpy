@@ -483,7 +483,6 @@ class BacktesterManager(QtWidgets.QWidget):
     def show_optimization_result(self) -> None:
         """"""
         result_values: list = self.backtester_engine.get_result_values()
-
         dialog: OptimizationResultMonitor = OptimizationResultMonitor(
             result_values, self.target_display
         )

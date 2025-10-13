@@ -1,5 +1,5 @@
 import { getVtSymbol } from '@/utils/getVtSymbol';
-import { backtesterEngineRpc } from '../engineRPCs/backtesterEngineRpc';
+import { backtesterEngineRpc } from '../engineRpcs/backtesterEngineRpc';
 import { useBacktesterStore } from '../stores/useBacktesterStore';
 import { useCallback } from 'react';
 

@@ -24,6 +24,13 @@ export const useRegisterBacktesterEvents = () => {
       } else if (log.msg.includes("unable to get historical data")) {
         console.error("unable to get historical data");
         backtesterActions.setIsDownloading(false);
+      } else if (
+        log.msg.includes("optimization completed") ||
+        log.msg.includes("algorithm complete") ||
+        log.msg.includes("calculation completed")
+      ) {
+        console.log("optimization completed");
+        backtesterActions.setIsOptimizing(false);
       }
       dataActions.addLog("Backtester", log);
     });

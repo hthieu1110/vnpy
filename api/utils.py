@@ -1,17 +1,14 @@
 from dataclasses import asdict, dataclass, is_dataclass
-import datetime
+from datetime import datetime
+import numpy as np
 from enum import Enum
-import json
-import time
+import json, time, jwt, httpx
 from typing import Callable, get_type_hints
-import httpx
-import jwt
+
 from vnpy_rpcservice.rpc_service import RpcEngine
 from api.config import CENTRI_HOST, CENTRI_PORT
 from vnpy.event.engine import Event, EventEngine
 from vnpy.trader.logger import logger
-from datetime import datetime
-
 
 headers = {"Content-Type": "application/json", "Authorization": f"apikey http_api_key"}
 
@@ -24,18 +21,29 @@ def get_http_client():
 
 
 def to_json(data: any) -> dict:
-    if not is_dataclass(data):
-        return data
+    """
+    Convert data to JSON.
+    """
+    if isinstance(data, list) or isinstance(data, tuple):
+        return [to_json(item) for item in data]
+    elif isinstance(data, dict):
+        return {key: to_json(value) for key, value in data.items()}
+    elif isinstance(data, Enum):
+        return data.value
+    elif isinstance(data, datetime):
+        return data.timestamp()
+    elif isinstance(data, np.int64):
+        return int(data)
+    elif isinstance(data, np.float64):
+        return float(data)
+    elif isinstance(data, np.ndarray):
+        return data.tolist()
+    elif isinstance(data, np.str_):
+        return str(data)
+    elif is_dataclass(data):
+        return to_json(asdict(data))
 
-    d = asdict(data)
-    for key, value in d.items():
-        if is_dataclass(value):
-            d[key] = to_json(value)
-        elif isinstance(value, Enum):
-            d[key] = value.value
-        elif isinstance(value, datetime):
-            d[key] = value.timestamp()
-    return d
+    return data
 
 
 def register_rpc(rpc_service: RpcEngine, engine_name: str, func: Callable):
@@ -110,7 +118,7 @@ def to_dataclass(data: dict, dtClass: dataclass):
 class EventRegistry:
     def __init__(self, event_engine: EventEngine):
         self.event_engine = event_engine
-    
+
     def add(self, event: str):
         self.event_engine.register(event, publish_event_to_centri)
 
@@ -118,10 +126,11 @@ class EventRegistry:
         for event in events:
             self.add(event)
 
+
 class RpcRegistry:
     def __init__(self, rpc_service: RpcEngine):
         self.rpc_service = rpc_service
-    
+
     def add(self, engine_name: str, func: Callable):
         register_rpc(self.rpc_service, engine_name, func)
 
