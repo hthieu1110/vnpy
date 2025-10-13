@@ -19,7 +19,7 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
   const { cancelAllOrders, isOrderCancelling } = useOrders();
 
   const handleSubmitOrder = async (values: any) => {
-    form.resetFields();
+    // form.resetFields();
 
     const defaultValues = {
       exchange: 'GLOBAL',
@@ -54,12 +54,12 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
         layout={props.layout || 'inline'}
         onFinish={handleSubmitOrder}
         initialValues={{
-          symbol: 'BTCUSDT_SPOT_BINANCE',
+          symbol: 'SOLUSDT_SPOT_BINANCE',
           exchange: 'GLOBAL',
           direction: Direction.LONG,
           type: Type.LIMIT,
-          volume: 0.0001,
-          price: 120_000,
+          volume: 0.1,
+          price: 200,
           offset: Offset.NONE,
           reference: 'TEST',
         }}
