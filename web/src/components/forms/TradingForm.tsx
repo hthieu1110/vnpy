@@ -13,6 +13,14 @@ type TradingFormProps = {
   onSelectSymbol?: (symbol: string) => void;
 };
 
+const subscribeSymbol = (symbol: string, gateway: string) => {
+  const subRequest: SubscribeRequest = {
+    symbol: symbol,
+    exchange: "GLOBAL",
+  };
+  mainEngineRpc.subscribe(subRequest, gateway);
+};
+
 export const TradingForm: React.FC<TradingFormProps> = (props) => {
   const [form] = Form.useForm();
   const [estimated, setEstimated] = useState(0);
@@ -22,11 +30,7 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
   const currentSymbol = form.getFieldValue("symbol");
   useEffect(() => {
     if (currentSymbol) {
-      const subRequest: SubscribeRequest = {
-        symbol: currentSymbol,
-        exchange: "GLOBAL",
-      };
-      mainEngineRpc.subscribe(subRequest, gateway);
+      subscribeSymbol(currentSymbol, gateway);
     }
   }, [currentSymbol, gateway]);
 
@@ -58,6 +62,11 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
     }
     cancelAllOrders();
   };
+
+  useEffect(() => {
+    const initSymbol = form.getFieldValue("symbol");
+    props.onSelectSymbol?.(initSymbol);
+  }, []);
 
   return (
     <Card title="New Order" style={{ marginBottom: 24 }}>
