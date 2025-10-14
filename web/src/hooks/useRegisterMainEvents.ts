@@ -86,17 +86,28 @@ export const useRegisterMainEvents = () => {
     eventService.on(EVENT_LOG, updateLogs);
 
     eventService.on(EVENT_CONTRACT, (ctx) =>
-      upsertContract(ctx.data.event_data)
+      upsertContract(ctx.data.event_data, ["symbol", "exchange"])
     );
-    eventService.on(EVENT_ACCOUNT, (ctx) => upsertAccount(ctx.data.event_data));
+    eventService.on(EVENT_ACCOUNT, (ctx) =>
+      upsertAccount(ctx.data.event_data, "accountid")
+    );
     eventService.on(EVENT_POSITION, (ctx) =>
-      upsertPosition(ctx.data.event_data)
+      upsertPosition(ctx.data.event_data, [
+        "symbol",
+        "exchange",
+        "direction",
+        "volume",
+      ])
     );
-    eventService.on(EVENT_TRADE, (ctx) => upsertTrade(ctx.data.event_data));
+    eventService.on(EVENT_TRADE, (ctx) =>
+      upsertTrade(ctx.data.event_data, ["orderid", "tradeid"])
+    );
     eventService.on(EVENT_ORDER, (ctx) =>
       upsertOrder(ctx.data.event_data, "orderid")
     );
-    eventService.on(EVENT_QUOTE, (ctx) => upsertQuote(ctx.data.event_data));
+    eventService.on(EVENT_QUOTE, (ctx) =>
+      upsertQuote(ctx.data.event_data, "quoteid")
+    );
     eventService.on(EVENT_TICK, (ctx) => {
       upsertTick(ctx.data.event_data, ["symbol", "exchange", "gateway_name"]);
     });

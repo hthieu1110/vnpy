@@ -71,7 +71,7 @@ export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
         sticky
         scroll={{
           y: "25vh",
-          x: "max-content",
+          x: sortedOrderDatas.length > 0 ? "max-content" : undefined,
         }}
         style={{
           tableLayout: "fixed",

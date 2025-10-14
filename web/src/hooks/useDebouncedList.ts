@@ -24,11 +24,7 @@ export const useDebouncedList = <T>(delay: number) => {
   );
 
   const upsertValue = useCallback(
-    (newItem: T, key: keyof T | null | string[] = null) => {
-      if (!key) {
-        return addValue(newItem);
-      }
-
+    (newItem: T, key: keyof T | string[]) => {
       setValuesRef.current?.((values) => {
         let index = -1;
         if (!Array.isArray(key)) {

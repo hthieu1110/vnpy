@@ -44,7 +44,7 @@ export const AccountsWidget = (props: AccountsWidgetProps) => {
         sticky
         scroll={{
           y: "20vh",
-          x: "max-content",
+          x: filteredAccounts.length > 0 ? undefined : "max-content",
         }}
         style={{
           tableLayout: "fixed",

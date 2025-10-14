@@ -23,9 +23,9 @@ const getValByKey = (
   id: number,
   precision: number = 2
 ) => {
-  /** @ts-expect-error: ignore type error */
   return (
     Math.round(
+      /** @ts-expect-error: ignore type error */
       tick[`${key}_price_${id}`] * tick[`${key}_volume_${id}`] * 10 ** precision
     ) /
     10 ** precision

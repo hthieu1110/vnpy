@@ -32,7 +32,7 @@ export const PositionsWidget = (props: PositionsWidgetProps) => {
         sticky
         scroll={{
           y: "25vh",
-          // x: "max-content",
+          x: positions.length > 0 ? "max-content" : undefined,
         }}
         style={{
           tableLayout: "fixed",
