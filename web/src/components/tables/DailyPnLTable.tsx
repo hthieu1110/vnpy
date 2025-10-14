@@ -71,6 +71,7 @@ export const DailyPnLTable = (props: DailyPnLTableProps) => {
           emptyText: <CenteredText text="No daily results" />,
         }}
         sticky
+        virtual
         scroll={{
           y: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
           x: props.dailyResults.length > 0 ? true : undefined,

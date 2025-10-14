@@ -34,6 +34,7 @@ export const OptimizationResultsTable = (
       dataSource={optimizationResults}
       columns={columns}
       pagination={false}
+      virtual
       style={{
         height: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
         overflow: "auto",
