@@ -12,7 +12,7 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from vnpy.rpc.client import RemoteException, RpcClient
-from vnpy.trader.object import OrderRequest, CancelRequest
+from vnpy.trader.object import OrderRequest, CancelRequest, SubscribeRequest
 
 
 @asynccontextmanager
@@ -51,6 +51,8 @@ def args_convert(funcName: str, data: dict) -> dict:
             data["req"] = to_dataclass(data["req"], OrderRequest)
         case "cancel_order":
             data["req"] = to_dataclass(data["req"], CancelRequest)
+        case "subscribe":
+            data["req"] = to_dataclass(data["req"], SubscribeRequest)
         case "start_downloading" | "start_backtesting":
             data["start"] = datetime.fromtimestamp(data["start"], timezone.utc)
             data["end"] = datetime.fromtimestamp(data["end"], timezone.utc)

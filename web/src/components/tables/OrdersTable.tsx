@@ -30,9 +30,13 @@ export const OrdersTable = (props: OrdersTableProps) => {
       columns={columns}
       pagination={false}
       rowKey="orderid"
+      sticky
+      scroll={{
+        y: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
+        x: props.orders.length > 0 ? true : undefined,
+      }}
       style={{
-        height: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
-        overflow: "auto",
+        tableLayout: "fixed",
       }}
     />
   );

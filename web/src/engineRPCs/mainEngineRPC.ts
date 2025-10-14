@@ -2,6 +2,7 @@ import {
   Account,
   CancelRequest,
   Contract,
+  SubscribeRequest,
   OrderData,
   OrderRequest,
   Position,
@@ -86,6 +87,10 @@ class MainEngineRpc extends BaseEngineRpc {
       data: QuoteData[];
     };
     return data;
+  }
+
+  async subscribe(req: SubscribeRequest, gateway_name: string): Promise<void> {
+    await this.call("subscribe", { req, gateway_name });
   }
 }
 

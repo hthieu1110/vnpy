@@ -218,3 +218,8 @@ export interface BacktestStatistics {
   total_trade_count: number;
   total_turnover: number;
 }
+
+export interface SubscribeRequest {
+  symbol: string;
+  exchange: string;
+}

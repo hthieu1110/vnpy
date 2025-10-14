@@ -25,9 +25,13 @@ export const TradesTable = (props: TradesTableProps) => {
       columns={columns}
       pagination={false}
       rowKey="tradeid"
+      sticky
+      scroll={{
+        y: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
+        x: props.trades.length > 0 ? true : undefined,
+      }}
       style={{
-        height: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
-        overflow: "auto",
+        tableLayout: "fixed",
       }}
     />
   );

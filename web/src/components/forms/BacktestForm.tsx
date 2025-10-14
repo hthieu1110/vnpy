@@ -5,7 +5,7 @@ import { Interval, Strategy } from "@/types";
 import { useEffect, useMemo } from "react";
 import { useBacktester } from "@/hooks/useBacktester";
 
-export const BACKTEST_FORM_HEIGHT = 325;
+export const BACKTEST_FORM_HEIGHT = 350;
 
 type BacktestFormProps = {
   strategies: Strategy[];

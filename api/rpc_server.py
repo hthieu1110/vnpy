@@ -56,6 +56,7 @@ def main():
             main_engine.send_order,
             main_engine.cancel_order,
             main_engine.get_all_quotes,
+            main_engine.subscribe,
             main_engine.get_all_active_quotes,
         ],
     )

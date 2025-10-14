@@ -19,7 +19,11 @@ const DIRECTION_COLOR_MAP: Record<string, string> = {
 
 export const genColumns = (attrList: string[]) => {
   return attrList.map((attr) => ({
-    title: attr.charAt(0).toUpperCase() + attr.slice(1).replace(/_/g, " "),
+    title: (
+      <div className="text-wrap">
+        {attr.charAt(0).toUpperCase() + attr.slice(1).replace(/_/g, " ")}
+      </div>
+    ),
     dataIndex: attr,
     key: attr,
     align: "center" as const,
