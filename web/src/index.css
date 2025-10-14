@@ -93,3 +93,10 @@ a:hover {
 .form-compact .ant-form-item-label>label {
   font-size: 0.9em !important;
 }
+
+/* scrollable element overrides --------------------------------------------------- */
+div {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #efefef;
+  scroll-behavior: smooth;
+}

@@ -1,5 +1,6 @@
 import { BacktestStatistics } from "@/types";
 import { List } from "antd";
+import { BACKTEST_FORM_HEIGHT } from "../forms/BacktestForm";
 
 interface StatisticsTableProps {
   statistics: BacktestStatistics;
@@ -22,11 +23,8 @@ export const StatisticsTable = (props: StatisticsTableProps) => {
       rowKey="indicator"
       dataSource={data}
       style={{
-        height: "calc(100vh - 400px)",
+        height: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
         overflow: "auto",
-        scrollbarWidth: "thin",
-        scrollbarColor: "#ccc transparent",
-        border: "1px solid red",
       }}
       renderItem={(item, idx) => (
         <List.Item

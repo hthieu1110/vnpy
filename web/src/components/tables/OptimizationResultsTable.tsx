@@ -1,5 +1,6 @@
 import { Table } from "antd";
 import { OptimizationResult } from "@/types/object";
+import { BACKTEST_FORM_HEIGHT } from "../forms/BacktestForm";
 
 interface OptimizationResultsTableProps {
   optimizationResults: OptimizationResult[];
@@ -31,7 +32,11 @@ export const OptimizationResultsTable = (
       rowKey={(record) => JSON.stringify(record.params)}
       dataSource={optimizationResults}
       columns={columns}
-      pagination={{ pageSize: 16 }}
+      pagination={false}
+      style={{
+        height: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
+        overflow: "auto",
+      }}
     />
   );
 };

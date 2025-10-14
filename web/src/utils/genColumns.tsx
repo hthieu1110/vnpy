@@ -4,18 +4,18 @@ import React from "react";
 
 const STATUS_COLOR_MAP: Record<string, string> = {
   "All Traded": "green",
-  "Cancelled": "red",
-  "Rejected": "red",
-  "Submitting": "orange",
+  Cancelled: "red",
+  Rejected: "red",
+  Submitting: "orange",
   "Not Traded": "orange",
   "Part Traded": "orange",
-  "Completed": "green",
-}
+  Completed: "green",
+};
 
 const DIRECTION_COLOR_MAP: Record<string, string> = {
-  "Long": "green",
-  "Short": "red",
-}
+  Long: "green",
+  Short: "red",
+};
 
 export const genColumns = (attrList: string[]) => {
   return attrList.map((attr) => ({
@@ -23,7 +23,8 @@ export const genColumns = (attrList: string[]) => {
     dataIndex: attr,
     key: attr,
     align: "center" as const,
-    render: (value: unknown, item: unknown): React.ReactNode => {
+    sorter: (a: any, b: any) => a[attr] - b[attr],
+    render: (value: unknown): React.ReactNode => {
       let val = value;
       // boolean
       if (typeof value === "boolean") {
@@ -40,23 +41,17 @@ export const genColumns = (attrList: string[]) => {
         } else {
           val = value.toLocaleString();
         }
-      } 
+      }
       // string
-      else if (typeof value === "string") { 
+      else if (typeof value === "string") {
         if (attr === "direction") {
           val = (
-            <Tag color={DIRECTION_COLOR_MAP[value]}>
-              {value.toString()}
-            </Tag>
+            <Tag color={DIRECTION_COLOR_MAP[value]}>{value.toString()}</Tag>
           );
         } else if (attr === "status") {
-          val = (
-            <Tag color={STATUS_COLOR_MAP[value]}>
-              {value.toString()}
-            </Tag>
-          );
+          val = <Tag color={STATUS_COLOR_MAP[value]}>{value.toString()}</Tag>;
         }
-      } 
+      }
 
       return val as React.ReactNode;
     },
