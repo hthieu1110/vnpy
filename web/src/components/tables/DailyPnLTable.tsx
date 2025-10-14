@@ -1,6 +1,6 @@
 import { DailyResult } from "@/types/object";
 import { Modal, Table } from "antd";
-import { genColumns } from "@/utils/genColumns";
+import { useTableColumns } from "@/hooks/useTableColumns";
 import { useState } from "react";
 import { TradesTable } from "./TradesTable";
 import { InfoCircleOutlined } from "@ant-design/icons";
@@ -23,7 +23,7 @@ export const DailyPnLTable = (props: DailyPnLTableProps) => {
     setSelectedDailyResult(null);
   };
 
-  const columns = genColumns([
+  const columns = useTableColumns([
     "date",
     "close_price",
     "pre_close",

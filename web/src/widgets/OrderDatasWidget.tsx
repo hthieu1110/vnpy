@@ -1,6 +1,6 @@
 import { useDataStore } from "@/stores/useDataStore";
 import { OrderData } from "@/types/object";
-import { genColumns } from "@/utils/genColumns";
+import { useTableColumns } from "@/hooks/useTableColumns";
 import { Button, Card, Table } from "antd";
 import { useMemo } from "react";
 import { useOrders } from "@/hooks/useOrders";
@@ -17,7 +17,7 @@ export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
     [orderDatas]
   );
   const { cancelOrderById, isOrderCancelling } = useOrders();
-  const columns = genColumns([
+  const columns = useTableColumns([
     "orderid",
     "symbol",
     // 'exchange',

@@ -1,5 +1,5 @@
 import { TradeData } from "@/types/object";
-import { genColumns } from "@/utils/genColumns";
+import { useTableColumns } from "@/hooks/useTableColumns";
 import { Table } from "antd";
 import { BACKTEST_FORM_HEIGHT } from "../forms/BacktestForm";
 
@@ -9,7 +9,7 @@ type TradesTableProps = {
 };
 
 export const TradesTable = (props: TradesTableProps) => {
-  const columns = genColumns([
+  const columns = useTableColumns([
     "datetime",
     "orderid",
     "tradeid",

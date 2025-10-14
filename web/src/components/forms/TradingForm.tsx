@@ -1,16 +1,16 @@
 import { Card, Button, Form, Select, InputNumber, Space, Divider } from "antd";
 import { TickerAutoComplete } from "@/components/TickerAutoComplete";
-import { mainEngineRpc } from "@/engineRPCs/mainEngineRpc";
+import { mainEngineRpc } from "@/engineRpcs/mainEngineRpc";
 import { OrderRequest, SubscribeRequest } from "@/types/object";
 import { FormLayout } from "antd/es/form/Form";
 import { useEffect, useState } from "react";
 import { useAppStore } from "@/stores/useAppStore";
 import { useOrders } from "@/hooks/useOrders";
 import { Direction, Offset, Type } from "@/types/constants";
-import { useDataStore } from "@/stores/useDataStore";
 
 type TradingFormProps = {
   layout?: FormLayout;
+  onSelectSymbol?: (symbol: string) => void;
 };
 
 export const TradingForm: React.FC<TradingFormProps> = (props) => {
@@ -18,9 +18,6 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
   const [estimated, setEstimated] = useState(0);
   const { gateway } = useAppStore();
   const { cancelAllOrders, isOrderCancelling } = useOrders();
-
-  const ticks = useDataStore((state) => state.ticks);
-  console.log("ticks", ticks);
 
   const currentSymbol = form.getFieldValue("symbol");
   useEffect(() => {
@@ -86,52 +83,59 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
           name="symbol"
           rules={[{ required: true, message: "Please input symbol!" }]}
         >
-          <TickerAutoComplete style={{ width: 200 }} />
-        </Form.Item>
-
-        <Form.Item label="Type" name="type" rules={[{ required: true }]}>
-          <Select
-            style={{ width: 100 }}
-            options={Object.values(Type).map((value) => ({
-              label: value,
-              value,
-            }))}
+          <TickerAutoComplete
+            style={{ width: 210 }}
+            onSelect={props.onSelectSymbol}
           />
         </Form.Item>
 
-        <Form.Item
-          label="Direction"
-          name="direction"
-          rules={[{ required: true }]}
-        >
-          <Select
-            style={{ width: 100 }}
-            options={Object.values(Direction).map((value) => ({
-              label: value,
-              value,
-            }))}
-          />
-        </Form.Item>
+        <div className="flex flex-row gap-2">
+          <Form.Item label="Type" name="type" rules={[{ required: true }]}>
+            <Select
+              style={{ width: 100 }}
+              options={Object.values(Type).map((value) => ({
+                label: value,
+                value,
+              }))}
+            />
+          </Form.Item>
 
-        <Form.Item
-          label="Price"
-          name="price"
-          rules={[{ required: true, message: "Please input price!" }]}
-        >
-          <InputNumber placeholder="Price" min={0} style={{ width: 120 }} />
-        </Form.Item>
+          <Form.Item
+            label="Direction"
+            name="direction"
+            rules={[{ required: true }]}
+          >
+            <Select
+              style={{ width: 100 }}
+              options={Object.values(Direction).map((value) => ({
+                label: value,
+                value,
+              }))}
+            />
+          </Form.Item>
+        </div>
 
-        <Form.Item
-          label="Volume"
-          name="volume"
-          rules={[{ required: true, message: "Please input volume!" }]}
-        >
-          <InputNumber
-            placeholder="Volume"
-            min={0.00001}
-            style={{ width: 120 }}
-          />
-        </Form.Item>
+        <div className="flex flex-row gap-2">
+          <Form.Item
+            label="Price"
+            name="price"
+            rules={[{ required: true, message: "Please input price!" }]}
+          >
+            <InputNumber placeholder="Price" min={0} style={{ width: 100 }} />
+          </Form.Item>
+
+          <Form.Item
+            label="Volume"
+            name="volume"
+            rules={[{ required: true, message: "Please input volume!" }]}
+          >
+            <InputNumber
+              placeholder="Volume"
+              min={0.00001}
+              style={{ width: 100 }}
+            />
+          </Form.Item>
+        </div>
 
         <div className="text-sm text-gray-500 !mb-4">
           Estimated: ${estimated}

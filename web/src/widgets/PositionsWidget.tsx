@@ -1,5 +1,5 @@
 import { useDataStore } from "@/stores/useDataStore";
-import { genColumns } from "@/utils/genColumns";
+import { useTableColumns } from "@/hooks/useTableColumns";
 import { Card, Table } from "antd";
 
 type PositionsWidgetProps = {
@@ -9,7 +9,7 @@ type PositionsWidgetProps = {
 export const PositionsWidget = (props: PositionsWidgetProps) => {
   const positions = useDataStore((state) => state.positions);
 
-  const columns = genColumns([
+  const columns = useTableColumns([
     "symbol",
     "exchange",
     "direction",

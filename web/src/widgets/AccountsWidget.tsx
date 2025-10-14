@@ -1,5 +1,5 @@
 import { useDataStore } from "@/stores/useDataStore";
-import { genColumns } from "@/utils/genColumns";
+import { useTableColumns } from "@/hooks/useTableColumns";
 import { Card, Input, Table } from "antd";
 import { useState } from "react";
 
@@ -9,7 +9,7 @@ type AccountsWidgetProps = {
 
 export const AccountsWidget = (props: AccountsWidgetProps) => {
   const accounts = useDataStore((state) => state.accounts);
-  const columns = genColumns([
+  const columns = useTableColumns([
     "accountid",
     "balance",
     "frozen",

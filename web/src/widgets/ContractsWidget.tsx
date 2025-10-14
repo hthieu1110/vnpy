@@ -1,5 +1,5 @@
 import { useDataStore } from "@/stores/useDataStore";
-import { genColumns } from "@/utils/genColumns";
+import { useTableColumns } from "@/hooks/useTableColumns";
 import { Input, Table } from "antd";
 import { useState } from "react";
 
@@ -10,7 +10,7 @@ export const ContractsWidget = () => {
     contract.symbol.startsWith(searchText.toUpperCase())
   );
 
-  const columns = genColumns([
+  const columns = useTableColumns([
     "symbol",
     "name",
     "exchange",
