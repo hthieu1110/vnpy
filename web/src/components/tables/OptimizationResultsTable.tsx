@@ -24,6 +24,7 @@ export const OptimizationResultsTable = (
       title: "Target Value",
       dataIndex: "target_value",
       key: "target_value",
+      sorter: (a: OptimizationResult, b: OptimizationResult) => a.target_value - b.target_value,
     },
   ];
 

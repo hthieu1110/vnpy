@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Layout as AntLayout, theme } from "antd";
+import { Layout as AntLayout, theme, Divider } from "antd";
 
 import { useAppStore } from "../stores/useAppStore";
 import LogConsole from "./LogConsole";
@@ -35,9 +35,10 @@ export const Layout = () => {
         width={180}
         collapsedWidth={64}
       >
-        <div className="text-lg font-bold text-center !m-1 !my-2">
+        <div className="text-lg font-bold text-center !m-1 !my-2 bg-transparent">
           {collapsed ? "Yo !" : "Trading Platform"}
         </div>
+        <Divider />
         <LeftToolbar />
       </Sider>
 
