@@ -11,6 +11,7 @@ type OrderDatasWidgetProps = {
 
 export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
   const orderDatas = useDataStore((state) => state.orderDatas);
+
   const sortedOrderDatas = useMemo(() => orderDatas.sort((a, b) => +b.orderid - +a.orderid), [orderDatas]);
   const { cancelOrderById, isOrderCancelling } = useOrders();
   const columns = genColumns([

@@ -32,7 +32,7 @@ export const ContractsWidget = () => {
         style={{ marginBottom: 16, width: 300 }}
       />
 
-      <Table pagination={{ pageSize: 25 }} dataSource={filteredContracts} columns={columns} />
+      <Table rowKey='symbol' pagination={{ pageSize: 25 }} dataSource={filteredContracts} columns={columns} />
     </div>
   );
 };

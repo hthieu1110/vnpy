@@ -12,11 +12,8 @@ import { Home } from './pages/Home';
 import { useEffect } from 'react';
 import { mainEngineRpc } from './engineRPCs/mainEngineRpc';
 
-import settings from '../../.vntrader/connect_vision.json';
 import { useAppStore } from './stores/useAppStore';
-import { useSub_EVENT_CONTRACT } from './hooks/events/main/useSub_EVENT_CONTRACT';
 import { useSub_EVENT_LOG } from './hooks/events/main/useSub_EVENT_LOG';
-import { useSub_EVENT_ACCOUNT } from './hooks/events/main/useSub_EVENT_ACCOUNT';
 import { useSub_EVENT_POSITION } from './hooks/events/main/useSub_EVENT_POSITION';
 import { useSub_EVENT_TRADE } from './hooks/events/main/useSub_EVENT_TRADE';
 import { useSub_EVENT_ORDER } from './hooks/events/main/useSub_EVENT_ORDER';
@@ -55,11 +52,6 @@ export const App = () => {
     dataActions.setAccounts(accounts);
   };
 
-  const fetchOrderDatas = async () => {
-    const orderDatas = await mainEngineRpc.getAllOrders();
-    dataActions.setOrderDatas(orderDatas);
-  };
-
   useEffect(() => {
     mainEngineRpc.checkGatewayConnected('Vision').then((isConnected) => {
       if (isConnected) {
@@ -73,7 +65,6 @@ export const App = () => {
     if (gateway) {
       fetchContracts();
       fetchAccounts();
-      fetchOrderDatas();
     }
   }, [gateway]);
 
