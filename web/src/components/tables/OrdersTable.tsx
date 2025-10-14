@@ -31,7 +31,6 @@ export const OrdersTable = (props: OrdersTableProps) => {
       pagination={false}
       rowKey="orderid"
       sticky
-      virtual
       scroll={{
         y: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
         x: props.orders.length > 0 ? true : undefined,

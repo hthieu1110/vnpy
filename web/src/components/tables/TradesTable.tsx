@@ -26,7 +26,6 @@ export const TradesTable = (props: TradesTableProps) => {
       pagination={false}
       rowKey="tradeid"
       sticky
-      virtual
       scroll={{
         y: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
         x: props.trades.length > 0 ? true : undefined,
