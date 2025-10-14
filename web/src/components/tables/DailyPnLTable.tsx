@@ -5,7 +5,6 @@ import { useState } from "react";
 import { TradesTable } from "./TradesTable";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { BACKTEST_FORM_HEIGHT } from "../forms/BacktestForm";
-import { CenteredText } from "../CenteredText";
 
 type DailyPnLTableProps = {
   pageSize?: number;
@@ -67,9 +66,6 @@ export const DailyPnLTable = (props: DailyPnLTableProps) => {
         onRow={(record) => ({
           onClick: () => handleShowDailyTrades(record),
         })}
-        locale={{
-          emptyText: <CenteredText text="No daily results" />,
-        }}
         sticky
         scroll={{
           y: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
