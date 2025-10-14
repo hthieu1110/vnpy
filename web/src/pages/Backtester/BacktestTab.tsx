@@ -111,7 +111,7 @@ export const BacktestTab = () => {
             onClick={startBacktesting}
             className="!mb-4"
           >
-            Run Backtest
+            Backtest
           </Button>
         ),
       }}

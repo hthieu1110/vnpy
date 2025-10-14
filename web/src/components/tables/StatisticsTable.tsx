@@ -22,10 +22,11 @@ export const StatisticsTable = (props: StatisticsTableProps) => {
       rowKey="indicator"
       dataSource={data}
       style={{
-        maxHeight: 600,
+        height: "calc(100vh - 400px)",
         overflow: "auto",
         scrollbarWidth: "thin",
         scrollbarColor: "#ccc transparent",
+        border: "1px solid red",
       }}
       renderItem={(item, idx) => (
         <List.Item

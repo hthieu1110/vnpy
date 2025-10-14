@@ -42,12 +42,12 @@ a:hover {
 }
 
 /* card overrides --------------------------------------------------- */
-.ant-card-small > .ant-card-head {
+.ant-card-small>.ant-card-head {
   min-height: 24px;
 }
 
 /* table overrides --------------------------------------------------- */
-.ant-table-thead > tr > th {
+.ant-table-thead>tr>th {
   padding: 0 !important;
 }
 
@@ -55,21 +55,25 @@ a:hover {
   margin: 8px 0 0 !important;
 }
 
-.ant-table-wrapper .ant-table.ant-table-small thead > tr > th {
+.ant-table-wrapper .ant-table.ant-table-small thead>tr>th {
   font-size: 0.875em !important;
 }
 
-.ant-table-wrapper .ant-table.ant-table-small thead > tr > td,
-.ant-table-wrapper .ant-table.ant-table-small tbody > tr > td,
-.ant-table-wrapper .ant-table.ant-table-small tfoot > tr > td,
-.ant-table-wrapper .ant-table.ant-table-small th > tr > td {
+.ant-table-wrapper .ant-table.ant-table-small thead>tr>td,
+.ant-table-wrapper .ant-table.ant-table-small tbody>tr>td,
+.ant-table-wrapper .ant-table.ant-table-small tfoot>tr>td,
+.ant-table-wrapper .ant-table.ant-table-small th>tr>td {
   padding: 2px 4px !important;
   font-size: 0.9em !important;
 }
 
 /* tabs overrides --------------------------------------------------- */
-.ant-tabs-left >.ant-tabs-nav .ant-tabs-tab+.ant-tabs-tab {
+.ant-tabs-left>.ant-tabs-nav .ant-tabs-tab+.ant-tabs-tab {
   margin: 4px 0 0 0 !important;
+}
+
+.ant-tabs-left>.ant-tabs-nav .ant-tabs-tab {
+  padding: 6px 24px 6px 0 !important;
 }
 
 /* modal overrides --------------------------------------------------- */
@@ -86,6 +90,6 @@ a:hover {
   padding-bottom: 0px !important;
 }
 
-.form-compact .ant-form-item-label > label {
+.form-compact .ant-form-item-label>label {
   font-size: 0.9em !important;
 }
