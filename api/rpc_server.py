@@ -62,6 +62,7 @@ def main():
             main_engine.get_all_accounts,
             main_engine.get_all_contracts,
             main_engine.get_all_active_quotes,
+            main_engine.get_all_active_orders,
             main_engine.get_all_ticks,
 
             main_engine_extra.connect_and_track,

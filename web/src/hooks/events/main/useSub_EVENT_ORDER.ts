@@ -28,7 +28,8 @@ export const useSub_EVENT_ORDER = () => {
   // TODO: Load orders when creating subscription============
   useEffect(() => {
     (async () => {
-      const orderDatas = await mainEngineRpc.getAllOrders();
+      const orderDatas = await mainEngineRpc.getAllActiveOrders();
+      console.log('Orders loaded', orderDatas.length);
       for (const orderData of orderDatas) {
         upsert(orderData, 'orderid');
       }
