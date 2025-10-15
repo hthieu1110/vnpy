@@ -10,7 +10,7 @@ import { Contracts } from './pages/Contracts';
 import { Backtester } from './pages/Backtester';
 import { Home } from './pages/Home';
 import { useEffect } from 'react';
-import { mainEngineRpc } from './engineRPCs/mainEngineRpc';
+import { mainEngineRpc } from './engineRpcs/mainEngineRpc';
 
 import { useAppStore } from './stores/useAppStore';
 import { useSub_EVENT_LOG } from './hooks/events/main/useSub_EVENT_LOG';

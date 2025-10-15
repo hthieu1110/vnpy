@@ -154,6 +154,8 @@ export interface DailyResult {
 }
 
 export interface BarData extends BaseTradingInfo {
+  gateway_name: string;
+  extra: any;
   datetime: number;
   interval: Interval;
   open_price: number;
@@ -217,4 +219,56 @@ export interface BacktestStatistics {
   total_slippage: number;
   total_trade_count: number;
   total_turnover: number;
+}
+
+export interface SubscribeRequest {
+  symbol: string;
+  exchange: string;
+}
+
+export interface TickData extends BaseTradingInfo {
+  datetime: number;
+
+  name: string;
+  volume: number;
+  turnover: number;
+  open_interest: number;
+  last_price: number;
+  last_volume: number;
+  limit_up: number;
+  limit_down: number;
+
+  open_price: number;
+  high_price: number;
+  low_price: number;
+  pre_close: number;
+
+  bid_price_1: number;
+  bid_price_2: number;
+  bid_price_3: number;
+  bid_price_4: number;
+  bid_price_5: number;
+
+  ask_price_1: number;
+  ask_price_2: number;
+  ask_price_3: number;
+  ask_price_4: number;
+  ask_price_5: number;
+
+  bid_volume_1: number;
+  bid_volume_2: number;
+  bid_volume_3: number;
+  bid_volume_4: number;
+  bid_volume_5: number;
+
+  ask_volume_1: number;
+  ask_volume_2: number;
+  ask_volume_3: number;
+  ask_volume_4: number;
+  ask_volume_5: number;
+
+  localtime: number;
+  extra: {
+    bar?: BarData;
+  };
 }

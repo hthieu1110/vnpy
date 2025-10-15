@@ -34,7 +34,7 @@ def main():
 
     main_engine.add_gateway(BinanceSpotGateway, gateway_name="Vision")
 
-    main_engine.add_app(CtaStrategyApp)
+    cta_strategy = main_engine.add_app(CtaStrategyApp)
     rpc_service = main_engine.add_app(RpcServiceApp)
     backtester = main_engine.add_app(CtaBacktesterApp)
 
@@ -48,7 +48,7 @@ def main():
     rpc_registry = RpcRegistry(rpc_service)
 
     # main engine management -------------------------------------------------------------
-    main_engine_extra = MainEngineExtra(main_engine)    
+    main_engine_extra = MainEngineExtra(main_engine)
     rpc_registry.add_multi(
         "MainEngine",
         [
@@ -56,6 +56,7 @@ def main():
             main_engine.send_order,
             main_engine.cancel_order,
             main_engine.get_all_quotes,
+            main_engine.subscribe,
             main_engine.get_all_orders,
             main_engine.get_all_trades,
             main_engine.get_all_positions,
@@ -64,7 +65,6 @@ def main():
             main_engine.get_all_active_quotes,
             main_engine.get_all_active_orders,
             main_engine.get_all_ticks,
-
             main_engine_extra.connect_and_track,
             main_engine_extra.check_gateway_connected,
             main_engine_extra.close_gateway,
@@ -100,7 +100,6 @@ def main():
             backtester.reload_strategy_class,
             backtester.get_result_values,
             backtester.get_result_statistics,
-
             backtester_extra.get_all_strategies,
         ],
     )

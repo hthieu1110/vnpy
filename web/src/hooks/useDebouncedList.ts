@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
-import { useDebounce } from 'use-debounce';
+import { useCallback, useRef, useState } from "react";
+import { useDebounce } from "use-debounce";
 
 export const useDebouncedList = <T>(delay: number) => {
   const [values, setValues] = useState<T[]>([]);
@@ -24,13 +24,16 @@ export const useDebouncedList = <T>(delay: number) => {
   );
 
   const upsertValue = useCallback(
-    (newItem: T, key: keyof T | null = null) => {
-      if (!key) {
-        return addValue(newItem);
-      }
-
+    (newItem: T, key: keyof T | string[]) => {
       setValuesRef.current?.((values) => {
-        const index = values.findIndex((item) => item[key] === newItem[key]);
+        let index = -1;
+        if (!Array.isArray(key)) {
+          index = values.findIndex((item) => item[key] === newItem[key]);
+        } else {
+          index = values.findIndex((item) =>
+            key.every((k) => item[k as keyof T] === newItem[k as keyof T])
+          );
+        }
 
         if (index === -1) {
           // not found → insert

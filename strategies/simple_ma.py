@@ -12,12 +12,12 @@ from vnpy_ctastrategy import (
 
 class MySimpleMaStrategy(CtaTemplate):
     """Simple Moving Average Crossover Strategy"""
-    
+
     # Strategy parameters
     fast_ma: int = 10
     slow_ma: int = 20
     fixed_size: int = 1
-    
+
     # Strategy variables
     fast_ma_value: float = 0.0
     slow_ma_value: float = 0.0
@@ -27,7 +27,7 @@ class MySimpleMaStrategy(CtaTemplate):
         "slow_ma",
         "fixed_size",
     ]
-    
+
     variables = [
         "fast_ma_value",
         "slow_ma_value",
@@ -38,10 +38,10 @@ class MySimpleMaStrategy(CtaTemplate):
         Callback when strategy is inited.
         """
         self.write_log("Strategy initialized")
-        
+
         self.bg = BarGenerator(self.on_bar)
         self.am = ArrayManager()
-        
+
         # Load historical data for moving average calculation
         self.load_bar(10)
 
@@ -67,7 +67,7 @@ class MySimpleMaStrategy(CtaTemplate):
         # Calculate moving averages
         fast_ma_array = am.sma(self.fast_ma, array=True)
         slow_ma_array = am.sma(self.slow_ma, array=True)
-        
+
         self.fast_ma_value = fast_ma_array[-1]
         slow_ma_prev = slow_ma_array[-2]
         self.slow_ma_value = slow_ma_array[-1]
@@ -76,9 +76,13 @@ class MySimpleMaStrategy(CtaTemplate):
         # Generate trading signals based on MA crossover
         # Golden cross: fast MA crosses above slow MA -> Buy signal
         # Death cross: fast MA crosses below slow MA -> Sell signal
-        
-        cross_over = fast_ma_prev <= slow_ma_prev and self.fast_ma_value > self.slow_ma_value
-        cross_below = fast_ma_prev >= slow_ma_prev and self.fast_ma_value < self.slow_ma_value
+
+        cross_over = (
+            fast_ma_prev <= slow_ma_prev and self.fast_ma_value > self.slow_ma_value
+        )
+        cross_below = (
+            fast_ma_prev >= slow_ma_prev and self.fast_ma_value < self.slow_ma_value
+        )
 
         if self.pos == 0:
             # No position, check for entry signals
@@ -86,12 +90,12 @@ class MySimpleMaStrategy(CtaTemplate):
                 self.buy(bar.close_price, self.fixed_size)
             elif cross_below:
                 self.short(bar.close_price, self.fixed_size)
-                
+
         elif self.pos > 0:
             # Long position, check for exit signal
             if cross_below:
                 self.sell(bar.close_price, abs(self.pos))
-                
+
         elif self.pos < 0:
             # Short position, check for exit signal
             if cross_over:

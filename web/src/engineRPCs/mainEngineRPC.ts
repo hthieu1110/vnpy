@@ -2,6 +2,7 @@ import {
   Account,
   CancelRequest,
   Contract,
+  SubscribeRequest,
   OrderData,
   OrderRequest,
   Position,
@@ -70,6 +71,10 @@ class MainEngineRpc extends BaseEngineRpc {
 
   async closeGateway(gateway_name: string): Promise<unknown> {
     return await this.call('close_gateway', { gateway_name });
+  }
+
+  async subscribe(req: SubscribeRequest, gateway_name: string): Promise<void> {
+    await this.call("subscribe", { req, gateway_name });
   }
 }
 

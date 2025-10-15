@@ -13,10 +13,11 @@ import {
   DailyResult,
   BarData,
   BacktestStatistics,
+  Status,
 } from "@/types";
 import { usePrevious } from "@uidotdev/usehooks";
 import { Button, Tabs, TabsProps } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export const BacktestTab = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
@@ -111,7 +112,7 @@ export const BacktestTab = () => {
             onClick={startBacktesting}
             className="!mb-4"
           >
-            Run Backtest
+            Backtest
           </Button>
         ),
       }}

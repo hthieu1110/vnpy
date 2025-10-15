@@ -80,8 +80,8 @@ export const useBacktestOptimization = () => {
       ).map(([key, value]) => ({
         parameter: key,
         start: Number(value),
-        step: 1,
-        end: Number(value),
+        step: Number(value) % 1 === 0 ? 1 : 0.1,
+        end: Number(value) + (Number(value) % 1 === 0 ? 1 : 0.1),
       })),
     }));
   }, [params.strategySettings]);

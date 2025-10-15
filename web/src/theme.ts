@@ -2,7 +2,7 @@ import { ThemeConfig } from "antd";
 
 export const theme: ThemeConfig = {
   token: {
-    colorPrimary: "#1890ff",
+    colorPrimary: "#00BCD4",
   },
   components: {
     Card: {

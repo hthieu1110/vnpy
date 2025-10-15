@@ -1,4 +1,4 @@
-import { mainEngineRpc } from "@/engineRPCs/mainEngineRpc";
+import { mainEngineRpc } from "@/engineRpcs/mainEngineRpc";
 import { Status } from "@/types/constants";
 import { useDataStore } from "@/stores/useDataStore";
 import { useAppStore } from "@/stores/useAppStore";
