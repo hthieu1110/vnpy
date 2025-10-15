@@ -1,22 +1,32 @@
 import { useDataStore } from "@/stores/useDataStore";
 import { OrderData } from "@/types/object";
 import { useTableColumns } from "@/hooks/useTableColumns";
-import { Button, Card, Table } from "antd";
-import { useMemo } from "react";
+import { Button, Card, Switch, Table } from "antd";
+import { useMemo, useState } from "react";
 import { useOrders } from "@/hooks/useOrders";
+import { Status } from "@/types/constants";
 
 type OrderDatasWidgetProps = {
   pageSize?: number;
   height?: number | string;
 };
 
+const activeStatuses = [Status.NOTTRADED, Status.PARTTRADED, Status.SUBMITTING];
+
 export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
   const orderDatas = useDataStore((state) => state.orderDatas);
 
-  const sortedOrderDatas = useMemo(
-    () => orderDatas.sort((a, b) => +b.orderid - +a.orderid),
-    [orderDatas]
-  );
+  const [onlyActiveOrders, setOnlyActiveOrders] = useState(false);
+
+  const filteredOrderDatas = useMemo(() => {
+    const sortedOrderDatas = orderDatas.sort((a, b) => +b.orderid - +a.orderid);
+
+    if (onlyActiveOrders) {
+      return sortedOrderDatas.filter((order) => activeStatuses.includes(order.status));
+    }
+    return sortedOrderDatas;
+  }, [onlyActiveOrders, orderDatas]);
+
   const { cancelOrderById, isOrderCancelling } = useOrders();
   const columns = useTableColumns([
     "orderid",
@@ -62,17 +72,21 @@ export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
     },
   });
 
+
   return (
-    <Card title="Orders">
+    <Card title="Orders" extra={<div className="flex gap-2 items-center">
+      <span>Only Active Orders</span>
+      <Switch checked={onlyActiveOrders} onChange={() => setOnlyActiveOrders(!onlyActiveOrders)} />
+    </div>}>
       <Table
-        dataSource={sortedOrderDatas}
+        dataSource={filteredOrderDatas}
         columns={columns}
         pagination={props.pageSize ? { pageSize: props.pageSize } : false}
         rowKey="orderid"
         sticky
         scroll={{
           y: "25vh",
-          x: sortedOrderDatas.length > 0 ? "max-content" : undefined,
+          x: filteredOrderDatas.length > 0 ? "max-content" : undefined,
         }}
         style={{
           tableLayout: "fixed",
