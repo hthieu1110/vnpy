@@ -48,7 +48,7 @@ export const useTableColumns = (attrList: ([string, number] | string)[]) => {
             if (attr === 'datetime') {
               val = new Date(value * 1000).toLocaleString();
             } else {
-              val = value.toLocaleString();
+              val = <span style={{ color: value < 0 ? 'red' : '' }}>{value.toLocaleString()}</span>;
             }
           }
           // string

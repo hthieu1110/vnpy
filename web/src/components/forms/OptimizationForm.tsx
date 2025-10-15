@@ -1,71 +1,60 @@
-import { Table, InputNumber, Select, Row, Col, Button } from "antd";
-import type { ColumnType } from "antd/es/table";
-import { useBacktestOptimization } from "@/hooks/useBacktestOptimization";
-import { OptimizationParam, OptimizationTarget } from "@/types";
-import { backtesterEngineRpc } from "@/engineRpcs/backtesterEngineRpc";
-import { useBacktesterStore } from "@/stores/useBacktesterStore";
+import { Table, InputNumber, Select, Button } from 'antd';
+import type { ColumnType } from 'antd/es/table';
+import { useBacktestOptimization } from '@/hooks/useBacktestOptimization';
+import { OptimizationParam, OptimizationTarget } from '@/types';
+import { backtesterEngineRpc } from '@/engineRpcs/backtesterEngineRpc';
+import { useBacktesterStore } from '@/stores/useBacktesterStore';
 
 function snakeToText(snake: string) {
   return snake
-    .replace(/_/g, " ") // replace underscores with spaces
+    .replace(/_/g, ' ') // replace underscores with spaces
     .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalize first letter of each word
 }
 
 export const OptimizationForm = () => {
-  const {
-    optimizationParamsConfig,
-    updateConfig,
-    updateParamConfig,
-    genArgsForRpcCall,
-  } = useBacktestOptimization();
+  const { optimizationParamsConfig, updateConfig, updateParamConfig, genArgsForRpcCall } = useBacktestOptimization();
   const backtesterActions = useBacktesterStore((state) => state.actions);
   const isOptimizing = useBacktesterStore((state) => state.isOptimizing);
 
   const columns: ColumnType<OptimizationParam>[] = [
     {
-      title: "Parameter",
-      dataIndex: "parameter",
-      key: "parameter",
+      title: 'Parameter',
+      dataIndex: 'parameter',
+      key: 'parameter',
     },
     {
-      title: "Start",
-      dataIndex: "start",
-      key: "start",
+      title: 'Start',
+      dataIndex: 'start',
+      key: 'start',
       render: (value: number, record: OptimizationParam) => (
         <InputNumber
           value={value}
-          onChange={(newValue) =>
-            updateParamConfig(record.parameter, "start", newValue)
-          }
-          style={{ width: "100%" }}
+          onChange={(newValue) => updateParamConfig(record.parameter, 'start', newValue)}
+          style={{ width: 64 }}
         />
       ),
     },
     {
-      title: "Step",
-      dataIndex: "step",
-      key: "step",
+      title: 'Step',
+      dataIndex: 'step',
+      key: 'step',
       render: (value: number, record: OptimizationParam) => (
         <InputNumber
           value={value}
-          onChange={(newValue) =>
-            updateParamConfig(record.parameter, "step", newValue)
-          }
-          style={{ width: "100%" }}
+          onChange={(newValue) => updateParamConfig(record.parameter, 'step', newValue)}
+          style={{ width: 50 }}
         />
       ),
     },
     {
-      title: "End",
-      dataIndex: "end",
-      key: "end",
+      title: 'End',
+      dataIndex: 'end',
+      key: 'end',
       render: (value: number, record: OptimizationParam) => (
         <InputNumber
           value={value}
-          onChange={(newValue) =>
-            updateParamConfig(record.parameter, "end", newValue)
-          }
-          style={{ width: "100%" }}
+          onChange={(newValue) => updateParamConfig(record.parameter, 'end', newValue)}
+          style={{ width: 64 }}
         />
       ),
     },
@@ -75,20 +64,20 @@ export const OptimizationForm = () => {
     backtesterActions.setIsOptimizing(true);
     const args = genArgsForRpcCall(false);
     const res = await backtesterEngineRpc.startOptimization(...args);
-    console.log("Multi-process Optimization", res);
+    console.log('Multi-process Optimization', res);
   };
 
   const handleGeneticAlgorithmOptimization = async () => {
     backtesterActions.setIsOptimizing(true);
     const args = genArgsForRpcCall(true);
     const res = await backtesterEngineRpc.startOptimization(...args);
-    console.log("Genetic Algorithm Optimization", res);
+    console.log('Genetic Algorithm Optimization', res);
   };
 
   return (
     <div>
-      <Row style={{ width: 280 }}>
-        <Col span={16}>
+      <div style={{ width: 320, display: 'flex', flexDirection: 'row', gap: 8 }}>
+        <div>
           <div>Target Optimization</div>
           <Select
             options={Object.values(OptimizationTarget).map((target) => ({
@@ -96,37 +85,37 @@ export const OptimizationForm = () => {
               value: target,
             }))}
             value={optimizationParamsConfig.optimizationTarget}
-            onChange={(value) => updateConfig("optimizationTarget", value)}
-            style={{ width: 160 }}
+            onChange={(value) => updateConfig('optimizationTarget', value)}
+            style={{ width: 210 }}
           />
-        </Col>
+        </div>
 
-        <Col span={8}>
+        <div>
           <div>Process</div>
           <InputNumber
             value={optimizationParamsConfig.processLimit}
-            onChange={(value) => updateConfig("processLimit", value)}
+            onChange={(value) => updateConfig('processLimit', value)}
             min={1}
-            style={{ width: 44 }}
+            style={{ width: 64 }}
           />
-        </Col>
-      </Row>
+        </div>
+      </div>
 
-      <div className="!mt-2" style={{ width: 240 }}>
+      <div className='!mt-2' style={{ width: 240 }}>
         <Table
           columns={columns}
           dataSource={optimizationParamsConfig.optimizationParams}
-          rowKey="parameter"
+          rowKey='parameter'
           pagination={false}
         />
       </div>
 
-      <div className="!mt-2 flex flex-col w-[240px]">
+      <div className='!mt-2 flex flex-col w-[240px]'>
         <Button
           onClick={handleMultiProcessOptimization}
-          type="primary"
-          size="middle"
-          className="!mt-2"
+          type='primary'
+          size='middle'
+          className='!mt-2'
           loading={isOptimizing}
         >
           Multi-process Optimization
@@ -134,9 +123,9 @@ export const OptimizationForm = () => {
 
         <Button
           onClick={handleGeneticAlgorithmOptimization}
-          type="primary"
-          size="middle"
-          className="!mt-2"
+          type='primary'
+          size='middle'
+          className='!mt-2'
           loading={isOptimizing}
         >
           Genetic Algorithm Optimization

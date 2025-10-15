@@ -9,6 +9,8 @@ interface DataTableProps<T> {
   rowKey: string | ((record: T) => string);
   searchColumn?: keyof T;
   extra?: React.ReactNode;
+  headTextMode?: 'ellipsis' | 'normal';
+  bodyTextMode?: 'ellipsis' | 'normal';
   onRow?: (record: T, index: number) => {
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   };
@@ -48,7 +50,7 @@ export const DataTable = <T,>(props: DataTableProps<T>) => {
       style={{ height: '100%' }}
       styles={{
         body: {
-          height: extra ? 'calc(100% - 24px)' : '100%',
+          height: extra || props.title ? 'calc(100% - 24px)' : '100%',
         },
       }}
     >
@@ -57,6 +59,8 @@ export const DataTable = <T,>(props: DataTableProps<T>) => {
         onRow={props.onRow as any}
         dataSource={filteredData as Record<string, any>[]}
         columns={props.columns as VirtualTableColumnType<Record<string, any>>[]}
+        headTextMode={props.headTextMode}
+        bodyTextMode={props.bodyTextMode}
       />
     </Card>
   );

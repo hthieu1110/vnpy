@@ -24,18 +24,18 @@ export const DailyPnLTable = (props: DailyPnLTableProps) => {
 
   const columns = useTableColumns([
     ['date', 2],
-    'close_price',
-    'pre_close',
+    ['close_price', 2],
+    ['pre_close', 2],
     'trade_count',
     'start_pos',
     'end_pos',
-    'turnover',
-    'commission',
+    ['turnover', 2],
+    ['commission', 2],
     'slippage',
-    'trading_pnl',
-    'holding_pnl',
-    'total_pnl',
-    'net_pnl',
+    ['trading_pnl', 2],
+    ['holding_pnl', 2],
+    ['total_pnl', 2],
+    ['net_pnl', 2],
   ]);
 
   return (
@@ -57,6 +57,7 @@ export const DailyPnLTable = (props: DailyPnLTableProps) => {
         dataSource={props.dailyResults}
         columns={columns}
         rowKey='date'
+        headTextMode='normal'
         onRow={(record) => ({
           onClick: () => handleShowDailyTrades(record),
         })}

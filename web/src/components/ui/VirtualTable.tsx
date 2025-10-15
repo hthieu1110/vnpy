@@ -21,6 +21,8 @@ export interface VirtualTableProps<T = any> extends Omit<TableProps<T>, 'dataSou
   onSelectionChange?: (selectedRowKeys: React.Key[], selectedRows: T[]) => void;
   selectedRowKeys?: React.Key[];
   rowKey?: string | ((record: T) => string);
+  headTextMode?: 'ellipsis' | 'normal';
+  bodyTextMode?: 'ellipsis' | 'normal';
 }
 
 // Default row height
@@ -107,6 +109,8 @@ const renderCellContent = (value: unknown, column: ColumnType<any>, record: any)
 type SortDirection = 'ascend' | 'descend' | null;
 
 export const VirtualTable = <T extends Record<string, any>>({
+  headTextMode = 'ellipsis',
+  bodyTextMode = 'ellipsis',
   dataSource = [],
   columns = [],
   height = 400,
@@ -303,11 +307,13 @@ export const VirtualTable = <T extends Record<string, any>>({
                       <span
                         style={{
                           marginRight: 4,
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
                           flex: 1,
                           fontSize: '0.9em',
+                          ...(headTextMode === 'ellipsis' && {
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }),
                         }}
                       >
                         {typeof column.title === 'string' ? column.title : String(column.title)}
@@ -419,12 +425,14 @@ export const VirtualTable = <T extends Record<string, any>>({
                             width: columnWidths[columnKey],
                             padding: '2px 4px',
                             textAlign: column.align || 'left',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
                             fontSize: '1em',
                             maxWidth: 0, // Force ellipsis to work
                             display: 'table-cell',
+                            ...(bodyTextMode === 'ellipsis' && {
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }),
                           }}
                           title={String(value)} // Show full text on hover
                         >
