@@ -14,16 +14,17 @@ export const Trading = () => {
         <TradingForm layout="vertical" onSelectSymbol={setSymbol} />
         {symbol && <QuotesTable symbol={symbol} />}
       </div>
-      <div className="flex-1 flex-col gap-4" >
+
+      <div className="flex-1 flex flex-col gap-4" >
         <div style={{ height: "calc(100vh / 3)" }}>
           <OrdersTableWithActions />
         </div>
 
-        <div style={{ height: "calc(100vh / 3 - 100px)" }}>
+        <div style={{ height: 200 }}>
           <PositionsTable />
         </div>
 
-        <div style={{ height: "calc(100vh / 3)" }}>
+        <div style={{ height: 200 }}>
           <AccountsTable searchColumn="accountid" />
         </div>
       </div>

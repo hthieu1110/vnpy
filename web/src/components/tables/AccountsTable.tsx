@@ -19,6 +19,7 @@ export const AccountsTable = (props: AccountsTableProps) => {
 
     return (
         <DataTable
+            title="Accounts"
             dataSource={accounts}
             columns={columns}
             rowKey="accountid"

@@ -9,7 +9,7 @@ type TradesTableProps = {
 
 export const TradesTable = (props: TradesTableProps) => {
   const columns = useTableColumns([
-    "datetime",
+    ['datetime', 2],
     "orderid",
     "tradeid",
     "direction",

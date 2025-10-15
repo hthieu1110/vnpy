@@ -8,7 +8,7 @@ import { notification } from "antd";
 export const useOrders = () => {
   const [api] = notification.useNotification();
 
-  const orderDatas = useDataStore((state) => state.orderDatas);
+  const orders = useDataStore((state) => state.orders);
   const [gateway, isOrderCancelling, appActions] = useAppStore((state) => [
     state.gateway,
     state.isOrderCancelling,
@@ -16,7 +16,7 @@ export const useOrders = () => {
   ]);
 
   const cancelAllOrders = async () => {
-    const activeOrders = orderDatas.filter(
+    const activeOrders = orders.filter(
       (order) => order.status === Status.NOTTRADED
     );
 
@@ -27,7 +27,7 @@ export const useOrders = () => {
   };
 
   const cancelOrderById = async (orderId: string) => {
-    const orderData = orderDatas.find((order) => order.orderid === orderId);
+    const orderData = orders.find((order) => order.orderid === orderId);
     if (!orderData) {
       api.error({
         message: "Order not found",

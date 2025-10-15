@@ -5,6 +5,7 @@ from enum import Enum
 import json, time, jwt, httpx
 from typing import Callable, get_type_hints
 
+from vnpy_ctastrategy.backtesting import DailyResult
 from vnpy_rpcservice.rpc_service import RpcEngine
 from api.config import CENTRI_HOST, CENTRI_PORT
 from vnpy.event.engine import Event, EventEngine
@@ -24,6 +25,8 @@ def to_json(data: any) -> dict:
     """
     Convert data to JSON.
     """
+    if is_dataclass(data):
+        return to_json(asdict(data))
     if isinstance(data, list) or isinstance(data, tuple):
         return [to_json(item) for item in data]
     elif isinstance(data, dict):
@@ -40,8 +43,14 @@ def to_json(data: any) -> dict:
         return data.tolist()
     elif isinstance(data, np.str_):
         return str(data)
-    elif is_dataclass(data):
-        return to_json(asdict(data))
+    elif isinstance(data, DailyResult):
+        trades = []
+        for trade in data.trades:
+            timestamp = trade.datetime.timestamp()
+            trade.datetime = timestamp
+            trades.append(trade)
+        data.trades = trades
+        return data
 
     return data
 

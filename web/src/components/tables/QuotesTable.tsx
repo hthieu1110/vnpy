@@ -48,11 +48,11 @@ export const QuotesTable = (props: QuotesTableProps) => {
 
   return (
     <div>
-      <div>Updated {updatedAt.toLocaleString()}</div>
+      <div className="italic text-sm text-gray-500">Updated {updatedAt.toLocaleString()}</div>
       <Card title="Ask">
         {[5, 4, 3, 2, 1].map((id: number) => (
           <div key={id} className="flex justify-between">
-            <span className="text-red-500">
+            <span className="text-red-500 font-bold">
               {getByKey(tick, "ask_price", id)}
             </span>
             <span>{getByKey(tick, "ask_volume", id)}</span>
@@ -69,7 +69,7 @@ export const QuotesTable = (props: QuotesTableProps) => {
       <Card title="Bid">
         {[1, 2, 3, 4, 5].map((id: number) => (
           <div key={id} className="flex justify-between">
-            <span className="text-green-500">
+            <span className="text-green-500 font-bold">
               {getByKey(tick, "bid_price", id)}
             </span>
             <span>{getByKey(tick, "bid_volume", id)}</span>

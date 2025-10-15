@@ -1,28 +1,69 @@
-import { Layout, Model } from "flexlayout-react";
-import json from "./dashboard-layout.json";
-import 'flexlayout-react/style/light.css';
-import { AccountsWidget } from "@/widgets/AccountsWidget";
-import { ContractsWidget } from "@/widgets/ContractsWidget";
-
-const model = Model.fromJson(json);
-
+import { Card, Row, Col, Statistic } from 'antd';
+import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { useAppStore } from '../stores/useAppStore';
+import { useDataStore } from '@/stores/useDataStore';
+import { Status } from '@/types/constants';
 
 export const Dashboard = () => {
-  const factory = (node: any) => {
-    const componentName = node.getComponent();
-    let Component = null;
-    switch (componentName) {
-      case "AccountsWidget":
-        Component = <AccountsWidget />;
-        break;
-      case "ContractsWidget":
-        Component = <ContractsWidget />;
-        break;
-    }
-    return <div style={{ padding: '16px' }}>{Component}</div>;
-  };
+  const isConnected = useAppStore((state) => state.gateway);
+  const positions = useDataStore((state) => state.positions);
+  const orders = useDataStore((state) => state.orders);
 
-  return <div style={{ height: "100%", width: "100%", position: "relative" }}>
-    <Layout model={model} factory={factory} />
-  </div>;
+  return (
+    <div>
+      <h1 style={{ marginBottom: 24 }}>Dashboard</h1>
+
+      <Row gutter={16}>
+        <Col span={6}>
+          <Card>
+            <Statistic
+              title='Connection Status'
+              value={isConnected ? 'Connected' : 'Disconnected'}
+              valueStyle={{ color: isConnected ? '#3f8600' : '#cf1322' }}
+              prefix={isConnected ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic title='Active Positions' value={positions.length} valueStyle={{ color: '#1890ff' }} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic
+              title='Pending Orders'
+              value={orders.filter((o) => o.status === Status.SUBMITTING).length}
+              valueStyle={{ color: '#faad14' }}
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic
+              title='Total P&L'
+              value={0}
+              precision={2}
+              valueStyle={{ color: '#3f8600' }}
+              prefix='$'
+              suffix=''
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={16} style={{ marginTop: 24 }}>
+        <Col span={12}>
+          <Card title='Recent Activity'>
+            <p>No recent activity</p>
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card title='Market Overview'>
+            <p>Market data will appear here</p>
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
 };

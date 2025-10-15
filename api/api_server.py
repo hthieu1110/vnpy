@@ -82,7 +82,8 @@ async def rpc(engineName: str, action: str, data: dict = Body(...)):
         func = getattr(app.state.rpc_client, f"{engineName}:{action}")
         converted_data = args_convert(action, data)
         result = func(**converted_data)
-        return to_json(result)
+        json_result = to_json(result)
+        return json_result
     except Exception as e:
         if isinstance(e, RemoteException) and "KeyError" in str(e):
             raise HTTPException(status_code=404, detail=f"Action {action} not found")
