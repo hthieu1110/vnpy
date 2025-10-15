@@ -2,8 +2,7 @@ from typing import Callable
 from vnpy_binance import BinanceSpotGateway
 from vnpy_ctastrategy import CtaStrategyApp
 from vnpy_rpcservice import RpcServiceApp
-from vnpy_rpcservice.rpc_service import RpcEngine
-from api.rpc_server_extra import BacktesterEngineExtra
+from api.rpc_server_extra import BacktesterEngineExtra, MainEngineExtra
 from vnpy_ctabacktester import CtaBacktesterApp
 
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
@@ -49,14 +48,26 @@ def main():
     rpc_registry = RpcRegistry(rpc_service)
 
     # main engine management -------------------------------------------------------------
+    main_engine_extra = MainEngineExtra(main_engine)    
     rpc_registry.add_multi(
         "MainEngine",
         [
-            main_engine.connect,
+            # main_engine.connect,
             main_engine.send_order,
             main_engine.cancel_order,
             main_engine.get_all_quotes,
+            main_engine.get_all_orders,
+            main_engine.get_all_trades,
+            main_engine.get_all_positions,
+            main_engine.get_all_accounts,
+            main_engine.get_all_contracts,
             main_engine.get_all_active_quotes,
+            main_engine.get_all_active_orders,
+            main_engine.get_all_ticks,
+
+            main_engine_extra.connect_and_track,
+            main_engine_extra.check_gateway_connected,
+            main_engine_extra.close_gateway,
         ],
     )
 
@@ -89,6 +100,7 @@ def main():
             backtester.reload_strategy_class,
             backtester.get_result_values,
             backtester.get_result_statistics,
+
             backtester_extra.get_all_strategies,
         ],
     )

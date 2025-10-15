@@ -1,0 +1,68 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Webapp:3000",
+        "type": "shell",
+        "command": "make webapp",
+        "presentation": {
+          "panel": "new",
+          "reveal": "always",
+          "group": "frontend",
+          "focus": true
+        }
+      },
+      {
+        "label": "API:8001",
+        "type": "shell",
+        "command": "make api_server",
+        "presentation": {
+          "panel": "new",
+          "reveal": "always",
+          "group": "backend",
+          "focus": false
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Centri:8000",
+        "type": "shell",
+        "command": "make centri",
+        "presentation": {
+          "panel": "new",
+          "reveal": "always",
+          "group": "external",
+          "focus": false
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "RPC:2014:4102",
+        "type": "shell",
+        "command": "make rpc_server",
+        "presentation": {
+          "panel": "new",
+          "reveal": "always",
+          "group": "backend",
+          "focus": false
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Kill All Python/Centrifugo",
+        "type": "shell",
+        "command": "killall Python; killall centrifugo;",
+        "presentation": {
+          "close": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Run All TradingServices",
+        "dependsOn": ["Kill All Python/Centrifugo", "Webapp:3000", "API:8001", "RPC:2014:4102", "Centri:8000"],
+        "dependsOrder": "parallel",
+        "problemMatcher": []
+      }
+    ]
+  }
+  
