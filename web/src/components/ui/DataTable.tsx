@@ -9,6 +9,9 @@ interface DataTableProps<T> {
   rowKey: string | ((record: T) => string);
   searchColumn?: keyof T;
   extra?: React.ReactNode;
+  onRow?: (record: T, index: number) => {
+    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+  };
 }
 
 export const DataTable = <T,>(props: DataTableProps<T>) => {
@@ -51,6 +54,7 @@ export const DataTable = <T,>(props: DataTableProps<T>) => {
     >
       <VirtualTable
         rowKey={props.rowKey as string}
+        onRow={props.onRow as any}
         dataSource={filteredData as Record<string, any>[]}
         columns={props.columns as VirtualTableColumnType<Record<string, any>>[]}
       />

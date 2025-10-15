@@ -307,6 +307,7 @@ export const VirtualTable = <T extends Record<string, any>>({
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           flex: 1,
+                          fontSize: '0.9em',
                         }}
                       >
                         {typeof column.title === 'string' ? column.title : String(column.title)}
@@ -421,6 +422,7 @@ export const VirtualTable = <T extends Record<string, any>>({
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
+                            fontSize: '1em',
                             maxWidth: 0, // Force ellipsis to work
                             display: 'table-cell',
                           }}

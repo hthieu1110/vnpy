@@ -1,10 +1,10 @@
 import { DailyResult } from '@/types/object';
-import { Modal, Table } from 'antd';
+import { Modal } from 'antd';
 import { useTableColumns } from '@/hooks/useTableColumns';
 import { useState } from 'react';
 import { TradesTable } from './TradesTable';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { BACKTEST_FORM_HEIGHT } from '../forms/BacktestForm';
+import { DataTable } from '../ui/DataTable';
 
 type DailyPnLTableProps = {
   pageSize?: number;
@@ -23,7 +23,7 @@ export const DailyPnLTable = (props: DailyPnLTableProps) => {
   };
 
   const columns = useTableColumns([
-    'date',
+    ['date', 2],
     'close_price',
     'pre_close',
     'trade_count',
@@ -53,22 +53,13 @@ export const DailyPnLTable = (props: DailyPnLTableProps) => {
         Click on a row to see daily trades !
       </div>
 
-      <Table
+      <DataTable
         dataSource={props.dailyResults}
         columns={columns}
-        pagination={false}
         rowKey='date'
         onRow={(record) => ({
           onClick: () => handleShowDailyTrades(record),
         })}
-        sticky
-        scroll={{
-          y: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
-          x: props.dailyResults.length > 0 ? true : undefined,
-        }}
-        style={{
-          tableLayout: 'fixed',
-        }}
       />
     </div>
   );

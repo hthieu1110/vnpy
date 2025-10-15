@@ -74,20 +74,12 @@ export const BacktestTab = () => {
     {
       key: 'pnl_distribution',
       label: 'PnL Distribution',
-      children: (
-        <TabContentWrapper>
-          <PnLDistributionChart dailyResults={dailyResults} />
-        </TabContentWrapper>
-      ),
+      children: <PnLDistributionChart dailyResults={dailyResults} />,
     },
     {
       key: 'backtest_echart',
       label: 'Backtest Chart',
-      children: (
-        <TabContentWrapper>
-          <BacktestEchart barDatas={barDatas} trades={trades} />
-        </TabContentWrapper>
-      ),
+      children: <BacktestEchart barDatas={barDatas} trades={trades} />,
     },
   ];
 
