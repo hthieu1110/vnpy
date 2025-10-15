@@ -52,6 +52,11 @@ export const App = () => {
     dataActions.setAccounts(accounts);
   };
 
+  const fetchOrders = async () => {
+    const orders = await mainEngineRpc.getAllOrders();
+    dataActions.setOrders(orders);
+  };
+
   useEffect(() => {
     mainEngineRpc.checkGatewayConnected('Vision').then((isConnected) => {
       if (isConnected) {
@@ -65,6 +70,7 @@ export const App = () => {
     if (gateway) {
       fetchContracts();
       fetchAccounts();
+      fetchOrders();
     }
   }, [gateway]);
 

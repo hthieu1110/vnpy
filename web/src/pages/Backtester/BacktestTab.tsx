@@ -13,11 +13,14 @@ import {
   DailyResult,
   BarData,
   BacktestStatistics,
-  Status,
 } from "@/types";
 import { usePrevious } from "@uidotdev/usehooks";
 import { Button, Tabs, TabsProps } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+
+const TabContentWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <div style={{ height: "calc(100vh - 200px)" }}>{children}</div>;
+};
 
 export const BacktestTab = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
@@ -34,37 +37,37 @@ export const BacktestTab = () => {
     {
       key: "statistics",
       label: "Statistics",
-      children: <StatisticsTable statistics={statistics} />,
+      children: <TabContentWrapper><StatisticsTable statistics={statistics} /></TabContentWrapper>,
     },
     {
       key: "orders",
       label: "Orders",
-      children: <OrdersTable orders={orders} pageSize={16} />,
+      children: <TabContentWrapper><OrdersTable orders={orders} /></TabContentWrapper>,
     },
     {
       key: "trades",
       label: "Trades",
-      children: <TradesTable trades={trades} pageSize={16} />,
+      children: <TabContentWrapper><TradesTable trades={trades} /></TabContentWrapper>,
     },
     {
       key: "daily_pnl",
       label: "Daily PnL",
-      children: <DailyPnLTable dailyResults={dailyResults} pageSize={16} />,
+      children: <TabContentWrapper><DailyPnLTable dailyResults={dailyResults} /></TabContentWrapper>,
     },
     {
       key: "daily_pnl_chart",
       label: "Daily PnL Chart",
-      children: <DailyPnLChart dailyResults={dailyResults} />,
+      children: <TabContentWrapper><DailyPnLChart dailyResults={dailyResults} /></TabContentWrapper>,
     },
     {
       key: "pnl_distribution",
       label: "PnL Distribution",
-      children: <PnLDistributionChart dailyResults={dailyResults} />,
+      children: <TabContentWrapper><PnLDistributionChart dailyResults={dailyResults} /></TabContentWrapper>,
     },
     {
       key: "backtest_echart",
       label: "Backtest Chart",
-      children: <BacktestEchart barDatas={barDatas} trades={trades} />,
+      children: <TabContentWrapper><BacktestEchart barDatas={barDatas} trades={trades} /></TabContentWrapper>,
     },
   ];
 
@@ -119,7 +122,6 @@ export const BacktestTab = () => {
       tabPosition="left"
       defaultActiveKey="1"
       items={tabItems}
-      onChange={() => {}}
     />
   );
 };

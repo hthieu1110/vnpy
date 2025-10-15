@@ -1,9 +1,10 @@
-import { ContractsWidget } from "@/widgets/ContractsWidget";
+import { ContractsTable } from "@/components/tables/ContractsTable";
+import { Page } from "@/components/ui/Page";
 
 export const Contracts = () => {
   return (
-    <div>
-      <ContractsWidget />
-    </div>
+    <Page>
+      <ContractsTable />
+    </Page>
   );
 };

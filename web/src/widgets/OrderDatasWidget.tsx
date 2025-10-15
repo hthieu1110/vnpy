@@ -14,18 +14,18 @@ type OrderDatasWidgetProps = {
 const activeStatuses = [Status.NOTTRADED, Status.PARTTRADED, Status.SUBMITTING];
 
 export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
-  const orderDatas = useDataStore((state) => state.orderDatas);
+  const orders = useDataStore((state) => state.orders);
 
   const [onlyActiveOrders, setOnlyActiveOrders] = useState(false);
 
-  const filteredOrderDatas = useMemo(() => {
-    const sortedOrderDatas = orderDatas.sort((a, b) => +b.orderid - +a.orderid);
+  const filteredOrders = useMemo(() => {
+    const sortedOrders = orders.sort((a, b) => +b.orderid - +a.orderid);
 
     if (onlyActiveOrders) {
-      return sortedOrderDatas.filter((order) => activeStatuses.includes(order.status));
+      return sortedOrders.filter((order) => activeStatuses.includes(order.status));
     }
-    return sortedOrderDatas;
-  }, [onlyActiveOrders, orderDatas]);
+    return sortedOrders;
+  }, [onlyActiveOrders, orders]);
 
   const { cancelOrderById, isOrderCancelling } = useOrders();
   const columns = useTableColumns([
@@ -79,14 +79,14 @@ export const OrderDatasWidget = (props: OrderDatasWidgetProps) => {
       <Switch checked={onlyActiveOrders} onChange={() => setOnlyActiveOrders(!onlyActiveOrders)} />
     </div>}>
       <Table
-        dataSource={filteredOrderDatas}
+        dataSource={filteredOrders}
         columns={columns}
         pagination={props.pageSize ? { pageSize: props.pageSize } : false}
         rowKey="orderid"
         sticky
         scroll={{
           y: "25vh",
-          x: filteredOrderDatas.length > 0 ? "max-content" : undefined,
+          x: filteredOrders.length > 0 ? "max-content" : undefined,
         }}
         style={{
           tableLayout: "fixed",

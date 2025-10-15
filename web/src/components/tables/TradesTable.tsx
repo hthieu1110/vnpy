@@ -1,7 +1,6 @@
 import { TradeData } from "@/types/object";
 import { useTableColumns } from "@/hooks/useTableColumns";
-import { Table } from "antd";
-import { BACKTEST_FORM_HEIGHT } from "../forms/BacktestForm";
+import { DataTable } from "../ui/DataTable";
 
 type TradesTableProps = {
   pageSize?: number;
@@ -19,20 +18,9 @@ export const TradesTable = (props: TradesTableProps) => {
     "volume",
   ]);
 
-  return (
-    <Table
-      dataSource={props.trades}
-      columns={columns}
-      pagination={false}
-      rowKey="tradeid"
-      sticky
-      scroll={{
-        y: `calc(100vh - ${BACKTEST_FORM_HEIGHT}px)`,
-        x: props.trades.length > 0 ? true : undefined,
-      }}
-      style={{
-        tableLayout: "fixed",
-      }}
-    />
-  );
+  return <DataTable
+    dataSource={props.trades}
+    columns={columns}
+    rowKey="tradeid"
+  />;
 };

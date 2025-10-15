@@ -1,9 +1,9 @@
-import { AccountsWidget } from '@/widgets/AccountsWidget';
+import { AccountsTable } from "@/components/tables/AccountsTable";
+import { Page } from "@/components/ui/Page";
 
 export const Accounts = () => {
-  return (
-    <div>
-      <AccountsWidget pageSize={25} />
-    </div>
-  );
+  return <Page>
+    <AccountsTable />
+  </Page>;
 };
+

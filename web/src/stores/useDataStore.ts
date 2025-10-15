@@ -10,6 +10,7 @@ import {
   TickData,
   Trade,
 } from "@/types/object";
+import { upsertByKeys } from "@/utils/upsertByKeys";
 
 interface DataState {
   contracts: Contract[];
@@ -17,7 +18,7 @@ interface DataState {
   accounts: Account[];
   positions: Position[];
   trades: Trade[];
-  orderDatas: OrderData[];
+  orders: OrderData[];
   quotes: Quote[];
   ticks: TickData[];
   // Actions
@@ -29,10 +30,12 @@ interface DataState {
     setAccounts: (accounts: Account[]) => void;
     setPositions: (positions: Position[]) => void;
     setTrades: (trades: Trade[]) => void;
-    setOrderDatas: (orders: OrderData[]) => void;
+    setOrders: (orders: OrderData[]) => void;
     removeOrderData: (orderid: string) => void;
     setQuotes: (quotes: Quote[]) => void;
     setTicks: (ticks: TickData[]) => void;
+    upsertAccount: (account: Account) => void;
+    upsertOrder: (orderData: OrderData) => void;
   };
 }
 
@@ -43,7 +46,7 @@ export const useDataStore = create<DataState>()(
     accounts: [],
     positions: [],
     trades: [],
-    orderDatas: [],
+    orders: [],
     quotes: [],
     ticks: [],
     actions: {
@@ -60,15 +63,23 @@ export const useDataStore = create<DataState>()(
       setAccounts: (accounts: Account[]) => set({ accounts }),
       setPositions: (positions: Position[]) => set({ positions }),
       setTrades: (trades: Trade[]) => set({ trades }),
-      setOrderDatas: (orderDatas: OrderData[]) => set({ orderDatas }),
+      setOrders: (orders: OrderData[]) => set({ orders }),
       removeOrderData: (orderid: string) =>
         set((state) => ({
-          orderDatas: state.orderDatas.filter(
+          orders: state.orders.filter(
             (order) => order.orderid !== orderid
           ),
         })),
       setQuotes: (quotes: Quote[]) => set({ quotes }),
       setTicks: (ticks: TickData[]) => set({ ticks }),
+
+      upsertAccount: (account: Account) => {
+        set((state) => ({ accounts: upsertByKeys<Account>(state.accounts, account, 'accountid') }))
+      },
+
+      upsertOrder: (order: OrderData) => {
+        set((state) => ({ orders: upsertByKeys<OrderData>(state.orders, order, 'orderid') }))
+      },
     },
   }))
 );
