@@ -37,7 +37,7 @@ def main():
     cta_strategy = main_engine.add_app(CtaStrategyApp)
     rpc_service = main_engine.add_app(RpcServiceApp)
     backtester = main_engine.add_app(CtaBacktesterApp)
-    # paper_account = main_engine.add_app(PaperAccountApp)
+    paper_account = main_engine.add_app(PaperAccountApp)
 
     # manage rpc service -------------------------------------------------------------
     rpc_service.start(

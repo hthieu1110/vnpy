@@ -26,7 +26,7 @@ export const OrdersTable = (props: OrdersTableProps) => {
   ]);
 
   if (props.excludes) {
-    columns = columns.filter((column) => !props.excludes.includes(column.dataIndex as string));
+    columns = columns.filter((column) => !props?.excludes?.includes(column.dataIndex as string));
   }
 
   return <DataTable
