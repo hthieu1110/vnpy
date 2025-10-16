@@ -6,7 +6,7 @@ export const PositionsTable = () => {
     const positions = useDataStore((state) => state.positions);
 
     const columns = useTableColumns([
-        "symbol",
+        ["symbol", 2],
         "exchange",
         "direction",
         "volume",
