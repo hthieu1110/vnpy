@@ -3,12 +3,14 @@ import { useTableColumns } from "@/hooks/useTableColumns";
 import { DataTable } from "../ui/DataTable";
 
 type OrdersTableProps = {
-  pageSize?: number;
   orders: OrderData[];
+  title?: string;
+  height?: number;
+  excludes?: string[];
 };
 
 export const OrdersTable = (props: OrdersTableProps) => {
-  const columns = useTableColumns([
+  let columns = useTableColumns([
     ["datetime", 2],
     ["orderid", 1],
     ["symbol", 2],
@@ -23,9 +25,15 @@ export const OrdersTable = (props: OrdersTableProps) => {
     // "reference",
   ]);
 
+  if (props.excludes) {
+    columns = columns.filter((column) => !props.excludes.includes(column.dataIndex as string));
+  }
+
   return <DataTable
+    title={props.title}
     dataSource={props.orders}
     columns={columns}
     rowKey="orderid"
+    height={props.height}
   />;
 };

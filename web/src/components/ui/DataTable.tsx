@@ -4,6 +4,7 @@ import { VirtualTable, VirtualTableColumnType } from '../ui/VirtualTable';
 
 interface DataTableProps<T> {
   title?: string;
+  height?: number;
   dataSource: T[];
   columns: VirtualTableColumnType<T>[];
   rowKey: string | ((record: T) => string);
@@ -43,14 +44,16 @@ export const DataTable = <T,>(props: DataTableProps<T>) => {
     );
   }, [props.extra, props.searchColumn]);
 
+  const cardHeight = props.height ? props.height + 'px' : '100%';
+
   return (
     <Card
       title={props.title}
       extra={extra}
-      style={{ height: '100%' }}
+      style={{ height: cardHeight }}
       styles={{
         body: {
-          height: extra || props.title ? 'calc(100% - 24px)' : '100%',
+          height: extra || props.title ? `calc(100% - 24px)` : '100%',
         },
       }}
     >
