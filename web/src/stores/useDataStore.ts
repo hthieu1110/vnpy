@@ -36,6 +36,7 @@ interface DataState {
     setTicks: (ticks: TickData[]) => void;
     upsertAccount: (account: Account) => void;
     upsertOrder: (orderData: OrderData) => void;
+    upsertTick: (tickData: TickData) => void;
   };
 }
 
@@ -79,6 +80,10 @@ export const useDataStore = create<DataState>()(
 
       upsertOrder: (order: OrderData) => {
         set((state) => ({ orders: upsertByKeys<OrderData>(state.orders, order, 'orderid') }))
+      },
+
+      upsertTick: (tick: TickData) => {
+        set((state) => ({ ticks: upsertByKeys<TickData>(state.ticks, tick, 'symbol') }))
       },
     },
   }))

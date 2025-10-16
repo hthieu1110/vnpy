@@ -74,11 +74,6 @@ export interface Account extends BaseData {
   frozen: number;
 }
 
-export interface Tick extends BaseData {
-  symbol: string;
-  exchange: string;
-}
-
 export interface Order extends BaseData {
   symbol: string;
   exchange: string;

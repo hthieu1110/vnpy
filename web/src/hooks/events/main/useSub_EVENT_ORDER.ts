@@ -2,13 +2,16 @@ import { EVENT_ORDER } from '@/types/events';
 import { useDataStore } from '@/stores/useDataStore';
 import { useEffect } from 'react';
 import { eventService } from '@/services/eventService';
+import { OrderData } from '@/types';
 
 export const useSub_EVENT_ORDER = () => {
   const dataActions = useDataStore((state) => state.actions);
 
   useEffect(() => {
     eventService.on(EVENT_ORDER, (ctx) => {
-      dataActions.upsertOrder(ctx.data.event_data);
+      const order = ctx.data.event_data as OrderData;
+      console.log("Order received", order);
+      dataActions.upsertOrder(order);
     });
 
     return () => {

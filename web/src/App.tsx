@@ -44,6 +44,8 @@ export const App = () => {
       if (isConnected) {
         appActions.setIsConnecting(false);
         appActions.setConnectedGateway('Vision');
+      } else {
+        navigate('/');
       }
     });
   }, []);
