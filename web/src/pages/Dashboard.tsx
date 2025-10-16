@@ -3,11 +3,18 @@ import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { useAppStore } from '../stores/useAppStore';
 import { useDataStore } from '@/stores/useDataStore';
 import { Status } from '@/types/constants';
+import { useMemo } from 'react';
 
 export const Dashboard = () => {
-  const isConnected = useAppStore((state) => state.gateway);
+  const connectedGateway = useAppStore((state) => state.connectedGateway);
   const positions = useDataStore((state) => state.positions);
   const orders = useDataStore((state) => state.orders);
+
+  const pendingOrders = useMemo(() => orders.filter((o) => o.status === Status.SUBMITTING || o.status === Status.NOTTRADED), [orders]);
+
+  if (!connectedGateway) {
+    return null;
+  }
 
   return (
     <div>
@@ -18,9 +25,9 @@ export const Dashboard = () => {
           <Card>
             <Statistic
               title='Connection Status'
-              value={isConnected ? 'Connected' : 'Disconnected'}
-              valueStyle={{ color: isConnected ? '#3f8600' : '#cf1322' }}
-              prefix={isConnected ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+              value={connectedGateway ? 'Connected' : 'Disconnected'}
+              valueStyle={{ color: connectedGateway ? '#3f8600' : '#cf1322' }}
+              prefix={connectedGateway ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
             />
           </Card>
         </Col>
@@ -33,7 +40,7 @@ export const Dashboard = () => {
           <Card>
             <Statistic
               title='Pending Orders'
-              value={orders.filter((o) => o.status === Status.SUBMITTING).length}
+              value={pendingOrders.length}
               valueStyle={{ color: '#faad14' }}
             />
           </Card>

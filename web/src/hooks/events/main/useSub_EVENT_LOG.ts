@@ -13,7 +13,7 @@ export const useSub_EVENT_LOG = () => {
     (ctx: PublicationContext) => {
       const log = ctx.data;
       if (log.event_data.msg === 'Account data received') {
-        appActions.setGateway('Vision');
+        appActions.setConnectedGateway('Vision');
       }
       dataActions.addLog('Main', log.event_data);
     },

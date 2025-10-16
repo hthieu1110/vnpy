@@ -1,4 +1,4 @@
-import { mainEngineRpc } from "@/engineRpcs/mainEngineRpc";
+import { mainRpc } from "@/services/rpcs/mainRpc";
 import { Status } from "@/types/constants";
 import { useDataStore } from "@/stores/useDataStore";
 import { useAppStore } from "@/stores/useAppStore";
@@ -9,8 +9,8 @@ export const useOrders = () => {
   const [api] = notification.useNotification();
 
   const orders = useDataStore((state) => state.orders);
-  const [gateway, isOrderCancelling, appActions] = useAppStore((state) => [
-    state.gateway,
+  const [connectedGateway, isOrderCancelling, appActions] = useAppStore((state) => [
+    state.connectedGateway,
     state.isOrderCancelling,
     state.actions,
   ]);
@@ -45,7 +45,7 @@ export const useOrders = () => {
         exchange: orderData.exchange,
       };
 
-      const res = await mainEngineRpc.cancelOrder(req, gateway);
+      const res = await mainRpc.cancelOrder(req, connectedGateway);
       return res;
     } catch (error) {
       api.error({

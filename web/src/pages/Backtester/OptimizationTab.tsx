@@ -1,6 +1,6 @@
 import { OptimizationForm } from "@/components/forms/OptimizationForm";
 import { OptimizationResultsTable } from "@/components/tables/OptimizationResultsTable";
-import { backtesterEngineRpc } from "@/engineRpcs/backtesterEngineRpc";
+import { backtesterRpc } from "@/services/rpcs/backtesterRpc";
 import { useBacktesterStore } from "@/stores/useBacktesterStore";
 import { usePrevious } from "@uidotdev/usehooks";
 import { useEffect, useState, useCallback } from "react";
@@ -13,7 +13,7 @@ export const OptimizationTab = () => {
 
   const fetchOptimizationResults = useCallback(async () => {
     setTimeout(async () => {
-      const results = await backtesterEngineRpc.getResultValues();
+      const results = await backtesterRpc.getResultValues();
       setOptimizationResults(results);
     }, 300);
   }, []);

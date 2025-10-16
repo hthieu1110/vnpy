@@ -2,7 +2,7 @@ import { Table, InputNumber, Select, Button } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 import { useBacktestOptimization } from '@/hooks/useBacktestOptimization';
 import { OptimizationParam, OptimizationTarget } from '@/types';
-import { backtesterEngineRpc } from '@/engineRpcs/backtesterEngineRpc';
+import { backtesterRpc } from '@/services/rpcs/backtesterRpc';
 import { useBacktesterStore } from '@/stores/useBacktesterStore';
 
 function snakeToText(snake: string) {
@@ -63,14 +63,14 @@ export const OptimizationForm = () => {
   const handleMultiProcessOptimization = async () => {
     backtesterActions.setIsOptimizing(true);
     const args = genArgsForRpcCall(false);
-    const res = await backtesterEngineRpc.startOptimization(...args);
+    const res = await backtesterRpc.startOptimization(...args);
     console.log('Multi-process Optimization', res);
   };
 
   const handleGeneticAlgorithmOptimization = async () => {
     backtesterActions.setIsOptimizing(true);
     const args = genArgsForRpcCall(true);
-    const res = await backtesterEngineRpc.startOptimization(...args);
+    const res = await backtesterRpc.startOptimization(...args);
     console.log('Genetic Algorithm Optimization', res);
   };
 

@@ -78,4 +78,4 @@ class MainEngineRpc extends BaseEngineRpc {
   }
 }
 
-export const mainEngineRpc = new MainEngineRpc(import.meta.env.VITE_API_URL, 'MainEngine');
+export const mainRpc = new MainEngineRpc(import.meta.env.VITE_API_URL, 'MainEngine');

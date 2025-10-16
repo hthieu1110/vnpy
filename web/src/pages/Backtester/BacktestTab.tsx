@@ -5,7 +5,7 @@ import { DailyPnLTable } from '@/components/tables/DailyPnLTable';
 import { OrdersTable } from '@/components/tables/OrdersTable';
 import { StatisticsTable } from '@/components/tables/StatisticsTable';
 import { TradesTable } from '@/components/tables/TradesTable';
-import { backtesterEngineRpc } from '@/engineRpcs/backtesterEngineRpc';
+import { backtesterRpc } from '@/services/rpcs/backtesterRpc';
 import { useBacktester } from '@/hooks/useBacktester';
 import { OrderData, TradeData, DailyResult, BarData, BacktestStatistics } from '@/types';
 import { usePrevious } from '@uidotdev/usehooks';
@@ -84,11 +84,11 @@ export const BacktestTab = () => {
   ];
 
   const fetchOrdersAndTrades = async () => {
-    const ordersPromise = backtesterEngineRpc.getAllOrders();
-    const tradesPromise = backtesterEngineRpc.getAllTrades();
-    const dailyResultsPromise = backtesterEngineRpc.getAllDailyResults();
-    const historyDataPromise = backtesterEngineRpc.getHistoryData();
-    const statisticsPromise = backtesterEngineRpc.getResultStatistics();
+    const ordersPromise = backtesterRpc.getAllOrders();
+    const tradesPromise = backtesterRpc.getAllTrades();
+    const dailyResultsPromise = backtesterRpc.getAllDailyResults();
+    const historyDataPromise = backtesterRpc.getHistoryData();
+    const statisticsPromise = backtesterRpc.getResultStatistics();
 
     const [orders, trades, dailyResults, historyData, statistics] = await Promise.all([
       ordersPromise,

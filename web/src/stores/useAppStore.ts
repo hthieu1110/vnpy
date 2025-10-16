@@ -9,7 +9,7 @@ interface User {
 
 interface AppState {
   user: User | null;
-  gateway: string;
+  connectedGateway: string;
   theme: "light" | "dark";
   isShowLogs: boolean;
   isAutoShowLogs: boolean;
@@ -19,7 +19,7 @@ interface AppState {
   // Actions
   actions: {
     setUser: (user: User | null) => void;
-    setGateway: (connectedGateway: string) => void;
+    setConnectedGateway: (connectedGateway: string) => void;
     setIsConnecting: (connecting: boolean) => void;
     setTheme: (theme: "light" | "dark") => void;
     setLogConsoleVisible: (visible: boolean) => void;
@@ -34,7 +34,7 @@ export const useAppStore = create<AppState>()(
     persist(
       (set) => ({
         user: null,
-        gateway: "",
+        connectedGateway: "",
         theme: "light",
         isShowLogs: false,
         isAutoShowLogs: false,
@@ -42,13 +42,13 @@ export const useAppStore = create<AppState>()(
         isOrderCancelling: false,
         actions: {
           setUser: (user) => set({ user }),
-          setGateway: (connectedGateway) =>
-            set({ gateway: connectedGateway, isConnecting: false }),
+          setConnectedGateway: (connectedGateway) =>
+            set({ connectedGateway, isConnecting: false }),
           setIsConnecting: (connecting) => set({ isConnecting: connecting }),
           setTheme: (theme) => set({ theme }),
           setLogConsoleVisible: (visible) => set({ isShowLogs: visible }),
           setIsAutoShowLogs: (isAutoShowLogs) => set({ isAutoShowLogs }),
-          logout: () => set({ user: null, gateway: "", isConnecting: false }),
+          logout: () => set({ user: null, connectedGateway: "", isConnecting: false }),
           setIsOrderCancelling: (isOrderCancelling) =>
             set({ isOrderCancelling }),
         },

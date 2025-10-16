@@ -1,7 +1,7 @@
 import { Layout, Button, theme, Checkbox } from 'antd';
 import { FileTextOutlined } from '@ant-design/icons';
 import { useAppStore } from '@/stores/useAppStore';
-import { mainEngineRpc } from '@/engineRpcs/mainEngineRpc';
+import { mainRpc } from '@/services/rpcs/mainRpc';
 import { useNavigate } from 'react-router-dom';
 
 import settings from '../../../.vntrader/connect_vision.json';
@@ -9,19 +9,20 @@ import settings from '../../../.vntrader/connect_vision.json';
 const { Header } = Layout;
 
 export const HeaderToolbar = () => {
-  const navigate = useNavigate();
-  const { gateway, isShowLogs, isConnecting, isAutoShowLogs, actions: appActions } = useAppStore();
+  const { connectedGateway, isShowLogs, isConnecting, isAutoShowLogs, actions: appActions } = useAppStore();
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const connectGateway = async () => {
+  const navigate = useNavigate();
+
+  const connectGateway = async (gateway_name: string) => {
     appActions.setIsConnecting(true);
-    await mainEngineRpc.connectAndTrack(settings, 'Vision');
+    await mainRpc.connectAndTrack(settings, gateway_name);
   };
 
   const handleLogout = () => {
-    mainEngineRpc.closeGateway(gateway);
+    mainRpc.closeGateway(connectedGateway);
     appActions.logout();
     navigate('/');
   };
@@ -31,7 +32,11 @@ export const HeaderToolbar = () => {
       className='flex justify-between items-center !px-5 sticky top-0 z-10 shadow-sm'
       style={{ background: colorBgContainer, height: 48 }}
     >
-      <div className='text-lg font-bold'>{gateway && 'Gateway ' + gateway}</div>
+      {connectedGateway ? (
+        <div className='text-lg font-bold'>{connectedGateway && 'Connected Gateway: ' + connectedGateway}</div>
+      ) : (
+        <div className='text-lg font-bold'>Connect to a Gateway to start trading</div>
+      )}
 
       <div style={{ display: 'flex', gap: 8 }}>
         <Checkbox checked={isAutoShowLogs} onChange={(e) => appActions.setIsAutoShowLogs(e.target.checked)}>
@@ -46,13 +51,13 @@ export const HeaderToolbar = () => {
           Logs
         </Button>
 
-        {gateway ? (
+        {connectedGateway ? (
           <Button color='danger' variant='outlined' onClick={handleLogout}>
             Logout
           </Button>
         ) : (
-          <Button loading={isConnecting} color='primary' variant='outlined' onClick={connectGateway}>
-            Connect Gateway
+          <Button loading={isConnecting} color='primary' variant='outlined' onClick={() => connectGateway('Vision')}>
+            Connect to Gateway Vision
           </Button>
         )}
       </div>

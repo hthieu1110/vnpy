@@ -26,17 +26,17 @@ export const OrdersTableWithActions = () => {
 
     const { cancelOrderById, isOrderCancelling } = useOrders();
     const columns = useTableColumns([
-        ["orderid", 1],
-        ["symbol", 2],
+        ["orderid", 2],
+        ["symbol", 3],
         // 'exchange',
         "type",
         "direction",
         // "offset",
-        "price",
-        "volume",
-        "traded",
-        "status",
-        ["datetime", 2],
+        ["price", 2],
+        ["volume", 2],
+        ["traded", 2],
+        ["status", 2],
+        ["datetime", 3],
         // "reference",
     ]);
 
@@ -44,7 +44,7 @@ export const OrdersTableWithActions = () => {
         title: "Action",
         dataIndex: "action",
         key: "action",
-        flex: 1,
+        flex: 2,
         align: "center",
         // @ts-expect-error: we add new action on existing columns so the type is not correct
         render: (_: unknown, _item: OrderData): React.ReactNode | null => {

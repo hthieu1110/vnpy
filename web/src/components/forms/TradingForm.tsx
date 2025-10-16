@@ -1,6 +1,6 @@
 import { Card, Button, Form, Select, InputNumber, Space, Divider } from "antd";
 import { TickerAutoComplete } from "@/components/TickerAutoComplete";
-import { mainEngineRpc } from "@/engineRpcs/mainEngineRpc";
+import { mainRpc } from "@/services/rpcs/mainRpc";
 import { OrderRequest, SubscribeRequest } from "@/types/object";
 import { FormLayout } from "antd/es/form/Form";
 import { useEffect, useState } from "react";
@@ -18,21 +18,21 @@ const subscribeSymbol = (symbol: string, gateway: string) => {
     symbol: symbol,
     exchange: "GLOBAL",
   };
-  mainEngineRpc.subscribe(subRequest, gateway);
+  mainRpc.subscribe(subRequest, gateway);
 };
 
 export const TradingForm: React.FC<TradingFormProps> = (props) => {
   const [form] = Form.useForm();
   const [estimated, setEstimated] = useState(0);
-  const { gateway } = useAppStore();
+  const { connectedGateway } = useAppStore();
   const { cancelAllOrders, isOrderCancelling } = useOrders();
 
   const currentSymbol = form.getFieldValue("symbol");
   useEffect(() => {
     if (currentSymbol) {
-      subscribeSymbol(currentSymbol, gateway);
+      subscribeSymbol(currentSymbol, connectedGateway);
     }
-  }, [currentSymbol, gateway]);
+  }, [currentSymbol, connectedGateway]);
 
   const handleSubmitOrder = async (values: any) => {
     // form.resetFields();
@@ -48,7 +48,7 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
       ...defaultValues,
     };
 
-    const resp = await mainEngineRpc.sendOrder(order, gateway);
+    const resp = await mainRpc.sendOrder(order, connectedGateway);
     console.log(resp);
   };
 

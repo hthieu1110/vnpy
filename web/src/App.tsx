@@ -1,15 +1,13 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Trading } from './pages/Trading';
-import { Market } from './pages/Market';
 import { Settings } from './pages/Settings';
 import { Accounts } from './pages/Accounts';
 import { Contracts } from './pages/Contracts';
 import { Backtester } from './pages/Backtester';
-import { Home } from './pages/Home';
 import { useEffect } from 'react';
-import { mainEngineRpc } from './engineRpcs/mainEngineRpc';
+import { mainRpc } from './services/rpcs/mainRpc';
 
 import { useAppStore } from './stores/useAppStore';
 import { useSub_EVENT_LOG } from './hooks/events/main/useSub_EVENT_LOG';
@@ -24,9 +22,9 @@ import { useSub_EVENT_BACKTESTER_OPTIMIZATION_FINISHED } from './hooks/events/ba
 import { useDataStore } from './stores/useDataStore';
 
 export const App = () => {
-  const appActions = useAppStore((state) => state.actions);
+  const { connectedGateway, actions: appActions } = useAppStore();
   const dataActions = useDataStore((state) => state.actions);
-  const gateway = useAppStore((state) => state.gateway);
+  const navigate = useNavigate();
 
   // useSub_EVENT_CONTRACT();
   // useSub_EVENT_ACCOUNT();
@@ -41,48 +39,40 @@ export const App = () => {
   useSub_EVENT_BACKTESTER_BACKTESTING_FINISHED();
   useSub_EVENT_BACKTESTER_OPTIMIZATION_FINISHED();
 
-  const fetchContracts = async () => {
-    const contracts = await mainEngineRpc.getAllContracts();
-    dataActions.setContracts(contracts);
-  };
-
-  const fetchAccounts = async () => {
-    const accounts = await mainEngineRpc.getAllAccounts();
-    dataActions.setAccounts(accounts);
-  };
-
-  const fetchOrders = async () => {
-    const orders = await mainEngineRpc.getAllOrders();
-    dataActions.setOrders(orders);
-  };
-
   useEffect(() => {
-    mainEngineRpc.checkGatewayConnected('Vision').then((isConnected) => {
+    mainRpc.checkGatewayConnected('Vision').then((isConnected) => {
       if (isConnected) {
         appActions.setIsConnecting(false);
-        appActions.setGateway('Vision');
+        appActions.setConnectedGateway('Vision');
       }
     });
   }, []);
 
   useEffect(() => {
-    if (gateway) {
-      fetchContracts();
-      fetchAccounts();
-      fetchOrders();
-    }
-  }, [gateway]);
+    if (!connectedGateway) return;
+
+    (async () => {
+      const accountsPromise = mainRpc.getAllAccounts();
+      const contractsPromise = mainRpc.getAllContracts();
+      const ordersPromise = mainRpc.getAllOrders();
+
+      const [accounts, contracts, orders] = await Promise.all([accountsPromise, contractsPromise, ordersPromise]);
+
+      dataActions.setAccounts(accounts);
+      dataActions.setContracts(contracts);
+      dataActions.setOrders(orders);
+    })();
+
+  }, [connectedGateway, dataActions, navigate]);
 
   return (
     <Routes>
       <Route path='/' element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path='dashboard' element={<Dashboard />} />
+        <Route index element={<Dashboard />} />
         <Route path='trading' element={<Trading />} />
         <Route path='backtester' element={<Backtester />} />
         <Route path='accounts' element={<Accounts />} />
         <Route path='contracts' element={<Contracts />} />
-        <Route path='market' element={<Market />} />
         <Route path='settings' element={<Settings />} />
       </Route>
     </Routes>

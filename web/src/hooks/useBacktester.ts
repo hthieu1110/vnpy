@@ -1,5 +1,5 @@
 import { getVtSymbol } from '@/utils/getVtSymbol';
-import { backtesterEngineRpc } from '../engineRpcs/backtesterEngineRpc';
+import { backtesterRpc } from '../services/rpcs/backtesterRpc';
 import { useBacktesterStore } from '../stores/useBacktesterStore';
 import { useCallback } from 'react';
 
@@ -10,7 +10,7 @@ export const useBacktester = () => {
     backtesterActions.setIsDownloading(true);
 
     const vtSymbol = getVtSymbol(params.symbol, params.exchange);
-    await backtesterEngineRpc.startDownloading(
+    await backtesterRpc.startDownloading(
       vtSymbol,
       params.interval,
       params.startDate.valueOf(),
@@ -24,7 +24,7 @@ export const useBacktester = () => {
 
     const vtSymbol = getVtSymbol(params.symbol, params.exchange);
 
-    await backtesterEngineRpc.startBacktesting(
+    await backtesterRpc.startBacktesting(
       params.strategy,
       vtSymbol,
       params.interval,

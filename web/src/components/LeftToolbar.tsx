@@ -6,28 +6,17 @@ import {
   StockOutlined,
   LineChartOutlined,
   SettingOutlined,
-  HomeOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/stores/useAppStore";
-import { useEffect } from "react";
 
 export const LeftToolbar = () => {
   const navigate = useNavigate();
-  const gateway = useAppStore((state) => state.gateway);
-
-  useEffect(() => {
-    navigate("/");
-  }, []);
+  const connectedGateway = useAppStore((state) => state.connectedGateway);
 
   const menuItems = [
     {
       key: "/",
-      icon: <HomeOutlined />,
-      label: "Home",
-    },
-    {
-      key: "/dashboard",
       icon: <DashboardOutlined />,
       label: "Dashboard",
     },
@@ -52,11 +41,6 @@ export const LeftToolbar = () => {
       label: "Backtester",
     },
     {
-      key: "/market",
-      icon: <LineChartOutlined />,
-      label: "Market",
-    },
-    {
       key: "/settings",
       icon: <SettingOutlined />,
       label: "Settings",
@@ -71,7 +55,7 @@ export const LeftToolbar = () => {
       items={menuItems}
       onClick={({ key }) => navigate(key)}
       className="sticky top-0"
-      disabled={!gateway}
+      disabled={!connectedGateway}
     />
   );
 };

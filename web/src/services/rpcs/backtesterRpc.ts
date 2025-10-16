@@ -159,7 +159,7 @@ export class BacktesterEngineRpc extends BaseEngineRpc {
   }
 }
 
-export const backtesterEngineRpc = new BacktesterEngineRpc(
+export const backtesterRpc = new BacktesterEngineRpc(
   import.meta.env.VITE_API_URL,
   "CtaBacktesterApp"
 );

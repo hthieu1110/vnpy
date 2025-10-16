@@ -14,9 +14,9 @@ export const Settings = () => {
   }
 
   const handleTestConnection = () => {
-    appActions.setGateway('Vision')
+    appActions.setConnectedGateway('Vision')
     message.success('Connection test successful')
-    setTimeout(() => appActions.setGateway(null), 3000)
+    setTimeout(() => appActions.setConnectedGateway(''), 3000)
   }
 
   return (
