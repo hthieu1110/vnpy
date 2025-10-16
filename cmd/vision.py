@@ -19,11 +19,11 @@ def main():
     event_engine = EventEngine()
     main_engine = MainEngine(event_engine)
 
-    # main_engine.add_gateway(BinanceSpotGateway, gateway_name="Vision")
-    main_engine.add_app(PaperAccountApp)
-    # main_engine.add_app(CtaStrategyApp)
-    # main_engine.add_app(ChartWizardApp)
-    # main_engine.add_app(CtaBacktesterApp)
+    main_engine.add_gateway(BinanceSpotGateway, gateway_name="Vision")
+    # main_engine.add_app(PaperAccountApp)
+    main_engine.add_app(CtaStrategyApp)
+    main_engine.add_app(ChartWizardApp)
+    main_engine.add_app(CtaBacktesterApp)
 
     # main_engine.add_app(NovaStrategyApp)
 

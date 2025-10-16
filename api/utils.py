@@ -58,7 +58,7 @@ def to_json(data: any) -> dict:
 def register_rpc(rpc_service: RpcEngine, engine_name: str, func: Callable):
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)
-
+    
     wrapper.__name__ = f"{engine_name}:{func.__name__}"
 
     rpc_service.server.register(wrapper)

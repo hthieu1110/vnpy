@@ -10,8 +10,8 @@ export const useSub_EVENT_ORDER = () => {
   useEffect(() => {
     eventService.on(EVENT_ORDER, (ctx) => {
       const order = ctx.data.event_data as OrderData;
-      console.log("Order received", order);
-      dataActions.upsertOrder(order);
+      dataActions.upsertData('orders', order, 'orderid');
+      console.log("EVENT_ORDER", order);
     });
 
     return () => {

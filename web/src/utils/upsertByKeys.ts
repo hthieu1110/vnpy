@@ -1,5 +1,5 @@
 /** Insert or update values into array by keys */
-export const upsertByKeys = <T>(currentValues: T[], newValue: T, keys: keyof T | keyof T[]) => {
+export const upsertByKeys = <T>(currentValues: T[], newValue: T, keys: keyof T | (keyof T)[]) => {
         const keysArray = Array.isArray(keys) ? keys : [keys];
 
         const index = currentValues.findIndex((item) =>

@@ -58,13 +58,13 @@ export interface Quote extends BaseData {
   ask_volume: number;
 }
 
-export interface Trade extends BaseData {
-  symbol: string;
-  exchange: string;
-  tradeid: string;
-  price: number;
-  volume: number;
-}
+// export interface Trade extends BaseData {
+//   symbol: string;
+//   exchange: string;
+//   tradeid: string;
+//   price: number;
+//   volume: number;
+// }
 
 export interface Account extends BaseData {
   symbol: string;

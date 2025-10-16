@@ -1,42 +1,24 @@
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
-import {
-  Account,
-  Contract,
-  Log,
-  OrderData,
-  Position,
-  Quote,
-  TickData,
-  Trade,
-} from "@/types/object";
-import { upsertByKeys } from "@/utils/upsertByKeys";
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+import { Account, Contract, Log, OrderData, Position, Quote, TickData, TradeData } from '@/types/object';
+import { upsertByKeys } from '@/utils/upsertByKeys';
 
 interface DataState {
   contracts: Contract[];
   logs: Log[];
   accounts: Account[];
   positions: Position[];
-  trades: Trade[];
+  trades: TradeData[];
   orders: OrderData[];
   quotes: Quote[];
   ticks: TickData[];
   // Actions
   actions: {
     addLog: (engine: string, log: Log) => void;
-    setLogs: (logs: Log[]) => void;
-    addContract: (contract: Contract) => void;
-    setContracts: (contracts: Contract[]) => void;
-    setAccounts: (accounts: Account[]) => void;
-    setPositions: (positions: Position[]) => void;
-    setTrades: (trades: Trade[]) => void;
-    setOrders: (orders: OrderData[]) => void;
-    removeOrderData: (orderid: string) => void;
-    setQuotes: (quotes: Quote[]) => void;
-    setTicks: (ticks: TickData[]) => void;
-    upsertAccount: (account: Account) => void;
-    upsertOrder: (orderData: OrderData) => void;
-    upsertTick: (tickData: TickData) => void;
+    removeOrderById: (orderid: string) => void;
+    upsertData: <T>(dataKey: keyof DataState, newData: T, keys: keyof T | (keyof T)[]) => void;
+    addData: <T>(dataKey: keyof DataState, newData: T) => void;
+    setDatas: <T>(dataKey: keyof DataState, newData: T[]) => void;
   };
 }
 
@@ -57,33 +39,18 @@ export const useDataStore = create<DataState>()(
           log.engine = engine;
           return { logs: [...state.logs, log] };
         }),
-      setLogs: (logs: Log[]) => set({ logs }),
-      addContract: (contract: Contract) =>
-        set((state) => ({ contracts: [...state.contracts, contract] })),
-      setContracts: (contracts: Contract[]) => set({ contracts }),
-      setAccounts: (accounts: Account[]) => set({ accounts }),
-      setPositions: (positions: Position[]) => set({ positions }),
-      setTrades: (trades: Trade[]) => set({ trades }),
-      setOrders: (orders: OrderData[]) => set({ orders }),
-      removeOrderData: (orderid: string) =>
+      removeOrderById: (orderid: string) =>
         set((state) => ({
-          orders: state.orders.filter(
-            (order) => order.orderid !== orderid
-          ),
+          orders: state.orders.filter((order) => order.orderid !== orderid),
         })),
-      setQuotes: (quotes: Quote[]) => set({ quotes }),
-      setTicks: (ticks: TickData[]) => set({ ticks }),
-
-      upsertAccount: (account: Account) => {
-        set((state) => ({ accounts: upsertByKeys<Account>(state.accounts, account, 'accountid') }))
+      upsertData: <T>(dataKey: keyof DataState, newData: T, keys: keyof T | (keyof T)[]) => {
+        set((state) => ({ [dataKey]: upsertByKeys<T>(state[dataKey] as T[], newData, keys) }));
       },
-
-      upsertOrder: (order: OrderData) => {
-        set((state) => ({ orders: upsertByKeys<OrderData>(state.orders, order, 'orderid') }))
+      addData: <T>(dataKey: keyof DataState, newData: T) => {
+        set((state) => ({ [dataKey]: [...(state[dataKey] as T[]), newData] }));
       },
-
-      upsertTick: (tick: TickData) => {
-        set((state) => ({ ticks: upsertByKeys<TickData>(state.ticks, tick, 'symbol') }))
+      setDatas: <T>(dataKey: keyof DataState, newData: T[]) => {
+        set({ [dataKey]: newData });
       },
     },
   }))

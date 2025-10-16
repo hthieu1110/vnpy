@@ -49,7 +49,7 @@ export const TradingForm: React.FC<TradingFormProps> = (props) => {
     };
 
     const resp = await mainRpc.sendOrder(order, connectedGateway);
-    console.log(resp);
+    console.log("OrderId:", resp);
   };
 
   const handleValuesChange = (_: any, allFields: any) => {

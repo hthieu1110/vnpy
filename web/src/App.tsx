@@ -60,9 +60,9 @@ export const App = () => {
 
       const [accounts, contracts, orders] = await Promise.all([accountsPromise, contractsPromise, ordersPromise]);
 
-      dataActions.setAccounts(accounts);
-      dataActions.setContracts(contracts);
-      dataActions.setOrders(orders);
+      dataActions.setDatas('accounts', accounts);
+      dataActions.setDatas('contracts', contracts);
+      dataActions.setDatas('orders', orders);
     })();
 
   }, [connectedGateway, dataActions, navigate]);

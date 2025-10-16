@@ -1,9 +1,9 @@
-from typing import Callable
 from vnpy_binance import BinanceSpotGateway
 from vnpy_ctastrategy import CtaStrategyApp
 from vnpy_rpcservice import RpcServiceApp
 from api.rpc_server_extra import BacktesterEngineExtra, MainEngineExtra
 from vnpy_ctabacktester import CtaBacktesterApp
+from vnpy_paperaccount import PaperAccountApp
 
 from api.config import RPC_HOST, RPC_REP_PORT, RPC_PUB_PORT
 from vnpy.event.engine import EventEngine
@@ -37,6 +37,7 @@ def main():
     cta_strategy = main_engine.add_app(CtaStrategyApp)
     rpc_service = main_engine.add_app(RpcServiceApp)
     backtester = main_engine.add_app(CtaBacktesterApp)
+    # paper_account = main_engine.add_app(PaperAccountApp)
 
     # manage rpc service -------------------------------------------------------------
     rpc_service.start(

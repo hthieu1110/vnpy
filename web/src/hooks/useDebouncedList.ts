@@ -9,13 +9,6 @@ export const useDebouncedList = <T>(delay: number) => {
   const setValuesRef = useRef<typeof setValues>();
   setValuesRef.current = setValues;
 
-  const addValue = useCallback(
-    (value: T) => {
-      setValuesRef.current?.((values) => [...values, value]);
-    },
-    [setValuesRef]
-  );
-
   const removeValue = useCallback(
     (value: T) => {
       setValuesRef.current?.((values) => values.filter((v) => v !== value));
@@ -46,7 +39,7 @@ export const useDebouncedList = <T>(delay: number) => {
         return updated;
       });
     },
-    [setValuesRef, addValue]
+    [setValuesRef]
   );
 
   return [debouncedValues, upsertValue, removeValue] as unknown as [

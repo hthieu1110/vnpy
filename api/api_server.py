@@ -12,6 +12,7 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from vnpy.rpc.client import RemoteException, RpcClient
+from vnpy.trader.logger import logger
 from vnpy.trader.object import OrderRequest, CancelRequest, SubscribeRequest
 
 
@@ -86,7 +87,8 @@ async def rpc(engineName: str, action: str, data: dict = Body(...)):
         return json_result
     except Exception as e:
         if isinstance(e, RemoteException) and "KeyError" in str(e):
-            raise HTTPException(status_code=404, detail=f"Action {action} not found")
+            logger.error(e)
+            raise HTTPException(status_code=404, detail=f"Action {action} not found.")
         raise e
 
 
