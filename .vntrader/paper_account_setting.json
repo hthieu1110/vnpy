@@ -1,5 +1,5 @@
 {
     "trade_slippage": 0,
-    "timer_interval": 4,
+    "timer_interval": 5,
     "instant_trade": true
 }

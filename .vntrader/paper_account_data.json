@@ -1,1 +1,50 @@
-[]
+[
+    {
+        "vt_symbol": "BTCUSDT.BINANCE",
+        "volume": 0.1,
+        "price": 45000.0,
+        "direction": "Long"
+    },
+    {
+        "vt_symbol": "ETHUSDT.BINANCE",
+        "volume": 1.5,
+        "price": 2800.0,
+        "direction": "Long"
+    },
+    {
+        "vt_symbol": "ADAUSDT.BINANCE",
+        "volume": 1000.0,
+        "price": 0.45,
+        "direction": "Long"
+    },
+    {
+        "vt_symbol": "SOLUSDT.BINANCE",
+        "volume": 10.0,
+        "price": 95.0,
+        "direction": "Short"
+    },
+    {
+        "vt_symbol": "DOTUSDT.BINANCE",
+        "volume": 50.0,
+        "price": 6.8,
+        "direction": "Net"
+    },
+    {
+        "vt_symbol": "LINKUSDT.BINANCE",
+        "volume": 25.0,
+        "price": 12.5,
+        "direction": "Long"
+    },
+    {
+        "vt_symbol": "MATICUSDT.BINANCE",
+        "volume": 500.0,
+        "price": 0.85,
+        "direction": "Short"
+    },
+    {
+        "vt_symbol": "AVAXUSDT.BINANCE",
+        "volume": 5.0,
+        "price": 32.0,
+        "direction": "Long"
+    }
+]
