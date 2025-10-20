@@ -11,6 +11,7 @@ import { OrderData, TradeData, DailyResult, BarData, BacktestStatistics } from '
 import { usePrevious } from '@uidotdev/usehooks';
 import { Button, Tabs, TabsProps } from 'antd';
 import { useEffect, useState } from 'react';
+import { BacktestLightweightChart } from '@/components/charts/BacktestLightweightChart';
 
 const TabContentWrapper = ({ children }: { children: React.ReactNode }) => {
   return <div style={{ height: 'calc(100vh - 325px)' }}>{children}</div>;
@@ -80,6 +81,11 @@ export const BacktestTab = () => {
       key: 'backtest_echart',
       label: 'Backtest Chart',
       children: <BacktestEchart barDatas={barDatas} trades={trades} />,
+    },
+    {
+      key: 'backtest_lightweight_chart',
+      label: 'Backtest Lightweight Chart',
+      children: <BacktestLightweightChart barDatas={barDatas} trades={trades} />,
     },
   ];
 

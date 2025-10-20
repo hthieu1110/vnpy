@@ -25,7 +25,7 @@ export const BacktestLightweightChart = ({ barDatas, trades }: BacktestLightweig
     // --- 1️⃣ Create chart ---
     chartRef.current = createChart(containerRef.current!, {
       width: containerRef.current!.clientWidth,
-      height: 400,
+      height: 600,
       layout: {
         background: { color: '#ffffff' },
         textColor: '#333',

@@ -1,8 +1,8 @@
 [
     {
         "vt_symbol": "SOLUSDT_SPOT_BINANCE.GLOBAL",
-        "volume": 7.199999999999996,
-        "price": 187.94000000000008,
+        "volume": 100000.0,
+        "price": 187.01,
         "direction": "Net"
     }
 ]

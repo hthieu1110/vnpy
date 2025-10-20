@@ -13,7 +13,7 @@ const dtToLabel = (dt: Date) => {
   const day = String(dt.getDate()).padStart(2, '0');
   const hours = String(dt.getHours()).padStart(2, '0');
   const minutes = String(dt.getMinutes()).padStart(2, '0');
-  
+
   // Show time if not midnight, otherwise just show date
   if (hours === '00' && minutes === '00') {
     return `${month}-${day}`;
@@ -61,10 +61,10 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
       tradesByDatetime.forEach((tradesAtTime) => {
         const bar = barDataMap.get(tradesAtTime[0].datetime);
         const barIndex = barIndexMap.get(tradesAtTime[0].datetime);
-        
+
         // Skip if we can't find the bar index
         if (barIndex === undefined) return;
-        
+
         const basePrice = bar ? (isLong ? bar.low_price : bar.high_price) : tradesAtTime[0].price;
         const basePriceWithGap = basePrice + (isLong ? -gapFromBar : gapFromBar);
 
@@ -188,6 +188,12 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
           name: 'Price',
           type: 'candlestick',
           data: barDatas.map((c) => [c.open_price, c.close_price, c.low_price, c.high_price]),
+          itemStyle: {
+            color: '#26a69a', // Green for bullish (close > open)
+            color0: '#ef5350', // Red for bearish (close < open)
+            borderColor: '#26a69a',
+            borderColor0: '#ef5350',
+          },
         },
         {
           name: 'Buy',
@@ -212,7 +218,9 @@ export const BacktestEchart = ({ barDatas, trades }: BacktestEChartProps) => {
           },
         },
       ],
-      tooltip: { trigger: 'axis' },
+      tooltip: {
+        trigger: 'axis',
+      },
     };
 
     // Handle dataZoom events to update y-axis dynamically
