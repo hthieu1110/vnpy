@@ -1,6 +1,6 @@
 import { useDataStore } from '@/stores/useDataStore';
-import { AutoComplete, AutoCompleteProps } from 'antd';
-import { useEffect, useState } from 'react';
+import { AutoComplete } from 'antd';
+import { useMemo, useState } from 'react';
 
 interface TickerAutoCompleteProps {
   onSelect?: (symbol: string) => void;
