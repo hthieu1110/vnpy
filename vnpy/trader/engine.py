@@ -242,7 +242,7 @@ class MainEngine:
         """
         gateway: BaseGateway | None = self.get_gateway(gateway_name)
         if gateway:
-            self.write_log(_("连接登录 -> {}").format(gateway_name))
+            self.write_log(_("Connect -> {}").format(gateway_name))
 
             gateway.connect(setting)
 
@@ -252,7 +252,7 @@ class MainEngine:
         """
         gateway: BaseGateway | None = self.get_gateway(gateway_name)
         if gateway:
-            self.write_log(_("订阅行情 -> {}：{}").format(gateway_name, req))
+            self.write_log(_("Subscribe -> {}：{}").format(gateway_name, req))
 
             gateway.subscribe(req)
 
@@ -262,7 +262,7 @@ class MainEngine:
         """
         gateway: BaseGateway | None = self.get_gateway(gateway_name)
         if gateway:
-            self.write_log(_("委托下单 -> {}：{}").format(gateway_name, req))
+            self.write_log(_("Send order -> {}：{}").format(gateway_name, req))
 
             return gateway.send_order(req)
         else:
@@ -274,7 +274,7 @@ class MainEngine:
         """
         gateway: BaseGateway | None = self.get_gateway(gateway_name)
         if gateway:
-            self.write_log(_("委托撤单 -> {}：{}").format(gateway_name, req))
+            self.write_log(_("Cancel order -> {}：{}").format(gateway_name, req))
 
             gateway.cancel_order(req)
 
@@ -284,7 +284,7 @@ class MainEngine:
         """
         gateway: BaseGateway | None = self.get_gateway(gateway_name)
         if gateway:
-            self.write_log(_("报价下单 -> {}：{}").format(gateway_name, req))
+            self.write_log(_("Send quote -> {}：{}").format(gateway_name, req))
 
             return gateway.send_quote(req)
         else:
@@ -296,7 +296,7 @@ class MainEngine:
         """
         gateway: BaseGateway | None = self.get_gateway(gateway_name)
         if gateway:
-            self.write_log(_("报价撤单 -> {}：{}").format(gateway_name, req))
+            self.write_log(_("Cancel quote -> {}：{}").format(gateway_name, req))
 
             gateway.cancel_quote(req)
 
@@ -306,7 +306,7 @@ class MainEngine:
         """
         gateway: BaseGateway | None = self.get_gateway(gateway_name)
         if gateway:
-            self.write_log(_("查询K线 -> {}：{}").format(gateway_name, req))
+            self.write_log(_("Query K-line -> {}：{}").format(gateway_name, req))
 
             return gateway.query_history(req)
         else:
